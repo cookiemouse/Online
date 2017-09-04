@@ -7,4 +7,5 @@
     <color name="colorNull">#00000000</color>
     <color name="colorBlueTheme">#3cabfa</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorGrayAlpha">#22222222</color>
 </resources>

@@ -1,5 +1,7 @@
 package com.tianyigps.online.base;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,9 +40,10 @@ public class BaseActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_base);
 
         //透明状态栏
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().hide();
-//        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         mLoadingDialogFragment = new LoadingDialogFragment();
@@ -157,6 +160,19 @@ public class BaseActivity extends AppCompatActivity {
         if (mLoadingDialogFragment.isAdded()) {
             mLoadingDialogFragment.dismiss();
         }
+    }
+
+    //  显示信息对话框
+    public void showMessageDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        builder.create().show();
     }
 
 }
