@@ -24,4 +24,18 @@ public class Data {
 
     //  网络错误
     public static final String DEFAULT_MESSAGE = "网络请求失败，请检查网络！";
+
+    //  SharedPreferences
+    public final static String DATA_SHAREDPREFERENCES = "online_sharedpreferences";
+
+    public static final String CHECK_USER_CID = "check_user_cid";
+    public static final String CHECK_USER_PATH = "check_user_path";
+    public static final String CHECK_USER_CONTACT_ADDR = "check_user_contact_addr";
+    public static final String CHECK_USER_CONTACT_PHONE = "check_user_contact_phone";
+    public static final String CHECK_USER_CONTACT_NAME = "check_user_contact_name";
+    public static final String CHECK_USER_NAME = "check_user_name";
+    public static final String CHECK_USER_TOKEN = "check_user_name";
+
+    public static final String LOGIN_REMEMBER_PASSWORD = "login_remember_password";
+    public static final String LOGIN_AUTO = "login_auto";
 }

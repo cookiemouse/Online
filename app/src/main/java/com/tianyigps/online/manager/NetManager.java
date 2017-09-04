@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.tianyigps.online.data.Urls;
 import com.tianyigps.online.interfaces.OnCheckUserListener;
-import com.tianyigps.online.utils.MD5U;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +39,7 @@ public class NetManager {
             builder.url(Urls.CHECK_USER + "userName=" + userName + "&token=" + token);
         } else {
             builder.url(Urls.CHECK_USER + "userName=" + userName
-                    + "&password=" + MD5U.getMd5(password));
+                    + "&password=" + password);
         }
         mRequest = builder.build();
         Log.i(TAG, "checkUser: url-OnCheckUserListener->" + mRequest.url());

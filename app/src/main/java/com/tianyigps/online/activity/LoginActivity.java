@@ -17,6 +17,7 @@ import com.tianyigps.online.bean.CheckUserBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnCheckUserListener;
 import com.tianyigps.online.manager.NetManager;
+import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
 
 public class LoginActivity extends BaseActivity {
@@ -32,6 +33,11 @@ public class LoginActivity extends BaseActivity {
 
     private NetManager mNetManager;
     private String mStringMessage;
+    private SharedManager mSharedManager;
+
+    private int mCid;
+    private String mPath, mContactAddr, mContactPhone, mContactName, mName, mToken;
+    private boolean mRememberPassword, mAutoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,13 @@ public class LoginActivity extends BaseActivity {
         myHandler = new MyHandler();
 
         mNetManager = new NetManager();
+
+        mSharedManager = new SharedManager(this);
+
+        mRememberPassword = mSharedManager.getRememberPassword();
+        mAutoLogin = mSharedManager.getAutoLogin();
+        mCheckBoxPassword.setChecked(mRememberPassword);
+        mCheckBoxAuto.setChecked(mAutoLogin);
     }
 
     /**
@@ -68,13 +81,17 @@ public class LoginActivity extends BaseActivity {
             public void onClick(View view) {
                 String account = mEditTextAccount.getText().toString();
                 String password = mEditTextPassword.getText().toString();
-                boolean remembered = mCheckBoxPassword.isChecked();
-                boolean auto = mCheckBoxAuto.isChecked();
+                mRememberPassword = mCheckBoxPassword.isChecked();
+                mAutoLogin = mCheckBoxAuto.isChecked();
 
                 if (RegularU.isEmpty(account)) {
+                    mStringMessage = "请输入账号！";
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
                 if (RegularU.isEmpty(password)) {
+                    mStringMessage = "请输入密码！";
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
                 // TODO: 2017/9/4 登录
@@ -99,16 +116,19 @@ public class LoginActivity extends BaseActivity {
                 if (!checkUserBean.isSuccess()) {
                     mStringMessage = checkUserBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
                 }
                 CheckUserBean.ObjBean objBean = checkUserBean.getObj();
                 CheckUserBean.ObjBean.DataBean dataBean = objBean.getData();
-                dataBean.getCid();
-                dataBean.getPath();
-                dataBean.getContactAddr();
-                dataBean.getContactName();
-                dataBean.getContactPhone();
-                dataBean.getName();
-                dataBean.getToken();
+                mCid = dataBean.getCid();
+                mPath = dataBean.getPath();
+                mContactAddr = dataBean.getContactAddr();
+                mContactName = dataBean.getContactName();
+                mContactPhone = dataBean.getContactPhone();
+                mName = dataBean.getName();
+                mToken = dataBean.getToken();
+
+                myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
             @Override
@@ -133,6 +153,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            disMissLoadingDialog();
             switch (msg.what) {
                 case Data.MSG_ERO: {
                     showMessageDialog(mStringMessage);
@@ -147,6 +168,9 @@ public class LoginActivity extends BaseActivity {
                 }
                 case Data.MSG_1: {
                     //  登录成功
+                    mSharedManager.saveUserData(mCid, mPath, mContactAddr, mContactName, mContactPhone, mName, mToken);
+                    mSharedManager.saveRememberPassword(mRememberPassword);
+                    mSharedManager.saveAutoLogin(mAutoLogin);
                     break;
                 }
             }

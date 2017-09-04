@@ -9,5 +9,5 @@ public class Urls {
     private static final String IP = "http://sit.tianyigps.cn/app-service/app";
 //    private static final String IP = "http://www.tianyigps.cn/app";
 
-    public static final String CHECK_USER = IP + "/loginController.do?checkuser";
+    public static final String CHECK_USER = IP + "/loginController.do?checkuser&";
 }
