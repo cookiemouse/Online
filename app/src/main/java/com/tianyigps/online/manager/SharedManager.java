@@ -20,7 +20,8 @@ public class SharedManager {
     /**
      * 保存用户信息
      */
-    public void saveUserData(int cid, String path, String contactAddr, String contactName, String contactPhone, String name, String token) {
+    public void saveUserData(int cid, String path, String contactAddr, String contactName, String contactPhone
+            , String name, String token, String account, String password) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt(Data.CHECK_USER_CID, cid);
         editor.putString(Data.CHECK_USER_PATH, path);
@@ -29,6 +30,8 @@ public class SharedManager {
         editor.putString(Data.CHECK_USER_CONTACT_PHONE, contactPhone);
         editor.putString(Data.CHECK_USER_NAME, name);
         editor.putString(Data.CHECK_USER_TOKEN, token);
+        editor.putString(Data.CHECK_USER_ACCOUNT, account);
+        editor.putString(Data.CHECK_USER_PASSWORD, password);
         editor.apply();
     }
 
@@ -81,6 +84,18 @@ public class SharedManager {
      */
     public String getToken() {
         return mSharedPreferences.getString(Data.CHECK_USER_TOKEN, "");
+    }
+
+    /**
+     * 获取UserName
+     */
+    public String getAccount() {
+        return mSharedPreferences.getString(Data.CHECK_USER_ACCOUNT, "");
+    }
+
+    //获取密码
+    public String getPassword() {
+        return mSharedPreferences.getString(Data.CHECK_USER_PASSWORD, "");
     }
 
     /**

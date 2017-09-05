@@ -33,6 +33,8 @@
     <dimen name="dp_14_n">-14dp</dimen>
     <dimen name="dp_16_n">-16dp</dimen>
 
+    <dimen name="px_1">1px</dimen>
+
 
     <!--字体-->
     <dimen name="sp_12">12sp</dimen>

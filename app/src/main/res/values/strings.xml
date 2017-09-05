@@ -7,4 +7,8 @@
     <string name="auto_login">自动登录</string>
 
     <string name="ensure">确定</string>
+    <string name="choice_car">选车</string>
+    <string name="monitor">监控</string>
+    <string name="warn">报警</string>
+    <string name="setting">设置</string>
 </resources>

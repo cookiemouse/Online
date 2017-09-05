@@ -1,25 +1,60 @@
 package com.tianyigps.online;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.widget.Button;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.view.WindowManager;
+import android.widget.ImageView;
 
-import com.tianyigps.online.base.BaseActivity;
+import com.google.gson.Gson;
+import com.tianyigps.online.activity.FragmentContentActivity;
+import com.tianyigps.online.activity.LoginActivity;
+import com.tianyigps.online.bean.CheckUserBean;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.interfaces.OnCheckUserListener;
+import com.tianyigps.online.manager.NetManager;
+import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.RegularU;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.PermissionListener;
+import com.yanzhenjie.permission.Rationale;
+import com.yanzhenjie.permission.RationaleListener;
 
-public class GuideActivity extends BaseActivity {
+import java.util.List;
 
-    private Button mButton;
+public class GuideActivity extends Activity {
+
+    private static final String TAG = "GuideActivity";
+
+    private ImageView mImageView;
 
     //  Handler
     private MyHandler myHandler;
+
+    private SharedManager mSharedManager;
+
+    private NetManager mNetManager;
+
+    private String mUserName, mPassword;
+    private boolean mIsAuto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
+            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
+        }
 
         init();
 
@@ -27,20 +62,107 @@ public class GuideActivity extends BaseActivity {
     }
 
     private void init() {
-        mButton = (Button) findViewById(R.id.btn_activity_guide);
+        mImageView = (ImageView) findViewById(R.id.iv_activity_guide);
 
         myHandler = new MyHandler();
+
+        mNetManager = new NetManager();
+
+        mSharedManager = new SharedManager(this);
+        mUserName = mSharedManager.getAccount();
+        mPassword = mSharedManager.getPassword();
+        mIsAuto = mSharedManager.getAutoLogin();
+
+        applyPermiss();
     }
 
     private void setEventListener() {
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mNetManager.setOnCheckUserListener(new OnCheckUserListener() {
             @Override
-            public void onClick(View view) {
-                showLoadingDialog();
+            public void onSuccess(String result) {
+                Gson gson = new Gson();
+                CheckUserBean checkUserBean = gson.fromJson(result, CheckUserBean.class);
+                if (!checkUserBean.isSuccess()) {
+                    myHandler.sendEmptyMessage(Data.MSG_ERO);
+                    return;
+                }
 
-                myHandler.sendEmptyMessageDelayed(Data.MSG_NOTHING, 2000);
+                myHandler.sendEmptyMessage(Data.MSG_2);
+            }
+
+            @Override
+            public void onFailure() {
+                myHandler.sendEmptyMessage(Data.MSG_ERO);
             }
         });
+    }
+
+    //  登录
+    private void login() {
+        Log.i(TAG, "init: mUserName-->" + mUserName);
+        Log.i(TAG, "init: mToken-->" + mPassword);
+        if (mIsAuto && !RegularU.isEmpty(mPassword) && !RegularU.isEmpty(mUserName)) {
+            mNetManager.login(mUserName, mPassword);
+        } else {
+            myHandler.sendEmptyMessage(Data.MSG_ERO);
+        }
+    }
+
+    //  跳转至登录页
+    private void toLoginActivity() {
+        Intent intent = new Intent(GuideActivity.this, LoginActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+    //  跳转到主页
+    private void toFragmentContent() {
+        Intent intent = new Intent(GuideActivity.this, FragmentContentActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+    //  运行时权限
+    private void applyPermiss() {
+        AndPermission
+                .with(GuideActivity.this)
+                .requestCode(100)
+                .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        , Manifest.permission.ACCESS_FINE_LOCATION
+                        , Manifest.permission.CAMERA)
+                .rationale(new RationaleListener() {
+                    @Override
+                    public void showRequestPermissionRationale(int requestCode, Rationale rationale) {
+                        AndPermission.rationaleDialog(GuideActivity.this, rationale).show();
+                    }
+                })
+                .callback(new PermissionListener() {
+                    @Override
+                    public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
+                        myHandler.sendEmptyMessageDelayed(Data.MSG_1, Data.DELAY_1000);
+                    }
+
+                    @Override
+                    public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
+                        if (AndPermission.hasAlwaysDeniedPermission(GuideActivity.this, deniedPermissions)) {
+                            showMessageDialog();
+                        }
+                    }
+                }).start();
+    }
+
+    private void showMessageDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GuideActivity.this);
+        builder.setMessage("应用权限被禁止，请打开相关权限");
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                GuideActivity.this.finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class MyHandler extends Handler {
@@ -48,8 +170,23 @@ public class GuideActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case Data.MSG_NOTHING: {
-                    disMissLoadingDialog();
+                case Data.MSG_ERO: {
+                    //  跳转到登录页
+                    toLoginActivity();
+                    break;
+                }
+                case Data.MSG_1: {
+                    //  开始验证
+                    login();
+                    break;
+                }
+                case Data.MSG_2: {
+                    //  跳转到主页
+                    toFragmentContent();
+                    break;
+                }
+                default: {
+                    Log.i(TAG, "handleMessage: default." + msg.what);
                 }
             }
         }

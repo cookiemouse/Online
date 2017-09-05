@@ -1,24 +1,35 @@
 package com.tianyigps.online.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
+import com.tianyigps.online.adapter.PopupAccountAdapter;
 import com.tianyigps.online.base.BaseActivity;
 import com.tianyigps.online.bean.CheckUserBean;
+import com.tianyigps.online.data.Account;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnCheckUserListener;
+import com.tianyigps.online.manager.DataManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends BaseActivity {
 
@@ -34,10 +45,16 @@ public class LoginActivity extends BaseActivity {
     private NetManager mNetManager;
     private String mStringMessage;
     private SharedManager mSharedManager;
+    private DataManager mDataManager;
 
     private int mCid;
-    private String mPath, mContactAddr, mContactPhone, mContactName, mName, mToken;
+    private String mPath, mContactAddr, mContactPhone, mContactName, mName, mToken, mAccount, mPassword;
     private boolean mRememberPassword, mAutoLogin;
+
+    //  popupWindow账户列表
+    private PopupWindow mPopupWindow;
+    private List<Account> mAccountList;
+    private Account mAccountData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +64,12 @@ public class LoginActivity extends BaseActivity {
         init();
 
         setEventListener();
+    }
+
+    @Override
+    protected void onStop() {
+        mDataManager.close();
+        super.onStop();
     }
 
     /**
@@ -66,6 +89,12 @@ public class LoginActivity extends BaseActivity {
 
         mSharedManager = new SharedManager(this);
 
+        mDataManager = new DataManager(this);
+
+        mPopupWindow = new PopupWindow(this);
+
+        mAccountList = new ArrayList<>();
+
         mRememberPassword = mSharedManager.getRememberPassword();
         mAutoLogin = mSharedManager.getAutoLogin();
         mCheckBoxPassword.setChecked(mRememberPassword);
@@ -79,24 +108,25 @@ public class LoginActivity extends BaseActivity {
         mButtonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String account = mEditTextAccount.getText().toString();
-                String password = mEditTextPassword.getText().toString();
+                mAccount = mEditTextAccount.getText().toString();
+                mPassword = mEditTextPassword.getText().toString();
                 mRememberPassword = mCheckBoxPassword.isChecked();
                 mAutoLogin = mCheckBoxAuto.isChecked();
 
-                if (RegularU.isEmpty(account)) {
+                if (RegularU.isEmpty(mAccount)) {
                     mStringMessage = "请输入账号！";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                if (RegularU.isEmpty(password)) {
+                if (RegularU.isEmpty(mPassword)) {
                     mStringMessage = "请输入密码！";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                // TODO: 2017/9/4 登录
+
+                //  2017/9/4 登录
                 showLoadingDialog();
-                mNetManager.login(account, password, "");
+                mNetManager.login(mAccount, mPassword);
             }
         });
 
@@ -104,6 +134,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/4 下拉列表
+                showPopupWindow();
             }
         });
 
@@ -144,6 +175,34 @@ public class LoginActivity extends BaseActivity {
      * 显示popupWindow
      */
     private void showPopupWindow() {
+        if (mPopupWindow.isShowing()) {
+            mPopupWindow.dismiss();
+        }
+        View view = LayoutInflater.from(this).inflate(R.layout.view_popup_account, null);
+        ListView listView = view.findViewById(R.id.lv_view_popup_account);
+        mAccountList.clear();
+        mAccountList.addAll(mDataManager.getAccounts());
+
+        PopupAccountAdapter popupAccountAdapter = new PopupAccountAdapter(this, mAccountList);
+        listView.setAdapter(popupAccountAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mAccountData = mAccountList.get(i);
+                myHandler.sendEmptyMessage(Data.MSG_2);
+                mPopupWindow.dismiss();
+            }
+        });
+        mPopupWindow.setContentView(view);
+        mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.showAsDropDown(mEditTextAccount);
+    }
+
+    //  跳转到主页
+    private void toFragmentContent() {
+        Intent intent = new Intent(LoginActivity.this, FragmentContentActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
     /**
@@ -168,9 +227,19 @@ public class LoginActivity extends BaseActivity {
                 }
                 case Data.MSG_1: {
                     //  登录成功
-                    mSharedManager.saveUserData(mCid, mPath, mContactAddr, mContactName, mContactPhone, mName, mToken);
+                    mSharedManager.saveUserData(mCid, mPath, mContactAddr, mContactName, mContactPhone, mName, mToken, mAccount, mPassword);
                     mSharedManager.saveRememberPassword(mRememberPassword);
                     mSharedManager.saveAutoLogin(mAutoLogin);
+                    if (mRememberPassword) {
+                        mDataManager.saveAccount(mAccount, mPassword);
+                    }
+                    toFragmentContent();
+                    break;
+                }
+                case Data.MSG_2: {
+                    //  popupWindow选择帐户
+                    mEditTextAccount.setText(mAccountData.getmAccount());
+                    mEditTextPassword.setText(mAccountData.getmPassword());
                     break;
                 }
             }

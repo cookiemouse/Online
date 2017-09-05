@@ -33,14 +33,14 @@ public class NetManager {
                 .build();
     }
 
-    public void login(String userName, String password, String token) {
+    /**
+     * @param userName 用户名、账户
+     * @param password 密码
+     */
+    public void login(String userName, String password) {
         Request.Builder builder = new Request.Builder();
-        if ("".equals(password)) {
-            builder.url(Urls.CHECK_USER + "userName=" + userName + "&token=" + token);
-        } else {
-            builder.url(Urls.CHECK_USER + "userName=" + userName
-                    + "&password=" + password);
-        }
+        builder.url(Urls.CHECK_USER + "userName=" + userName
+                + "&password=" + password);
         mRequest = builder.build();
         Log.i(TAG, "checkUser: url-OnCheckUserListener->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

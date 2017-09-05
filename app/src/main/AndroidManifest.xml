@@ -3,6 +3,13 @@
           package="com.tianyigps.online">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- 相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA"/>f
 
     <application
         android:allowBackup="true"
@@ -10,18 +17,28 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".GuideActivity">
-
-        </activity>
-        <activity android:name=".base.BaseActivity">
-        </activity>
-        <activity android:name=".activity.LoginActivity">
+        android:theme="@style/AppThemeAnim">
+        <activity
+            android:name=".GuideActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".base.BaseActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+        <activity
+            android:name=".activity.FragmentContentActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

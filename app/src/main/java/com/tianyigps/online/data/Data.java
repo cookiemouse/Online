@@ -35,7 +35,20 @@ public class Data {
     public static final String CHECK_USER_CONTACT_NAME = "check_user_contact_name";
     public static final String CHECK_USER_NAME = "check_user_name";
     public static final String CHECK_USER_TOKEN = "check_user_name";
+    public static final String CHECK_USER_ACCOUNT = "check_user_account";
+    public static final String CHECK_USER_PASSWORD = "check_user_password";
 
     public static final String LOGIN_REMEMBER_PASSWORD = "login_remember_password";
     public static final String LOGIN_AUTO = "login_auto";
+
+    //  延时时间
+    public static final int DELAY_200 = 200;
+    public static final int DELAY_500 = 500;
+    public static final int DELAY_1000 = 1000;
+    public static final int DELAY_2000 = 2000;
+    public static final int DELAY_4000 = 4000;
+
+    //  数据库，表
+    public final static String DATA_DB_NAME = "tianyi_online_database_db.db";
+    public final static String TAB_ACCOUNT = "tab_account";
 }
