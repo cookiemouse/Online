@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.google.gson.Gson;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.LoginActivity;
@@ -55,6 +56,9 @@ public class GuideActivity extends Activity {
             WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
             localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
         }
+
+        //  百度地图初始化
+        SDKInitializer.initialize(getApplicationContext());
 
         init();
 

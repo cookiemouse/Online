@@ -11,4 +11,7 @@
     <string name="monitor">监控</string>
     <string name="warn">报警</string>
     <string name="setting">设置</string>
+    <string name="car_monitor">车辆监控</string>
+    <string name="map">地图</string>
+    <string name="satellite">卫星</string>
 </resources>

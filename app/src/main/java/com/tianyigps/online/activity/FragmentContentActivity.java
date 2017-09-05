@@ -133,7 +133,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     }
 
     //  显示选车
-    private void showChoiceCar() {
+    public void showChoiceCar() {
         setDefault();
         mTextViewChoiceCar.setTextColor(getResources().getColor(R.color.colorBlueTheme));
         mImageViewChoiceCar.setImageResource(R.drawable.ic_choice_car_blue);
