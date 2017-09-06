@@ -5,7 +5,7 @@
         android:width="@dimen/dp_32"
         android:height="@dimen/dp_16" />
 
-    <corners android:radius="@dimen/dp_2" />
+    <corners android:radius="@dimen/dp_4" />
 
     <solid android:color="@color/colorBlueTheme" />
 

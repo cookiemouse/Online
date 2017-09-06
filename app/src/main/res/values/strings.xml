@@ -18,4 +18,10 @@
     <string name="setup">设定</string>
     <string name="enter_name_or_car_no">请输入名称或车牌号</string>
     <string name="search">搜索</string>
+    <string name="exit_account">退出账号</string>
+    <string name="set_flush_time">设置刷新时间</string>
+    <string name="set_main_page">设置登陆主页</string>
+    <string name="opinion">意见反馈</string>
+    <string name="instructions">使用说明</string>
+    <string name="about">关于</string>
 </resources>

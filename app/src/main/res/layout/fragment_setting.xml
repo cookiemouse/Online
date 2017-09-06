@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlueTheme"
+        android:padding="@dimen/dp_2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/setting"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/sp_18"/>
+    </RelativeLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_8">
+
+        <TableRow
+            android:id="@+id/tr_fragment_set_flush_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_table_row">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/set_flush_time"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_go"
+                />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tr_fragment_set_main_page"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_table_row">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/set_main_page"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_go"
+                />
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginRight="@dimen/dp_8"
+        android:background="@drawable/bg_table_row">
+
+        <TableRow
+            android:id="@+id/tr_fragment_opinion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/opinion"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_go"
+                />
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px_1"
+            android:layout_marginBottom="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_4"
+            android:background="@color/colorBlueTheme"/>
+
+        <TableRow
+            android:id="@+id/tr_fragment_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/instructions"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_go"
+                />
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px_1"
+            android:layout_marginBottom="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_4"
+            android:background="@color/colorBlueTheme"/>
+
+        <TableRow
+            android:id="@+id/tr_fragment_about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/about"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_go"
+                />
+        </TableRow>
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/btn_fragment_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="@drawable/bg_button"
+        android:text="@string/exit_account"
+        android:textColor="@color/colorWhite"/>
+
+</LinearLayout>
