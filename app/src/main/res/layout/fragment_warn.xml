@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlueTheme"
+        android:padding="@dimen/dp_2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/warn_information"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/sp_18"/>
+
+        <TextView
+            android:id="@+id/tv_fragment_warn_setup"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:layout_marginRight="@dimen/dp_8"
+            android:gravity="center"
+            android:text="@string/setup"
+            android:textColor="@color/colorWhite"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/dp_8"
+        android:paddingLeft="@dimen/dp_16"
+        android:paddingRight="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_8">
+
+        <EditText
+            android:id="@+id/et_fragment_warn_search"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_weight="1"
+            android:background="@drawable/bg_edit_search"
+            android:gravity="center"
+            android:hint="@string/enter_name_or_car_no"
+            android:lines="1"
+            android:textSize="@dimen/sp_14"/>
+
+        <TextView
+            android:id="@+id/tv_fragment_warn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:background="@drawable/bg_text_search"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:text="@string/search"
+            android:textColor="@color/colorWhite"/>
+
+    </LinearLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_fragment_warn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/lv_fragment_warn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/colorBlueTheme"
+            android:dividerHeight="@dimen/px_1"
+            android:scrollbars="none"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>

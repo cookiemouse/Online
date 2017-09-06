@@ -14,4 +14,8 @@
     <string name="car_monitor">车辆监控</string>
     <string name="map">地图</string>
     <string name="satellite">卫星</string>
+    <string name="warn_information">报警信息</string>
+    <string name="setup">设定</string>
+    <string name="enter_name_or_car_no">请输入名称或车牌号</string>
+    <string name="search">搜索</string>
 </resources>
