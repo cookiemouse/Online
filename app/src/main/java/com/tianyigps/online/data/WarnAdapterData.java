@@ -6,11 +6,13 @@ package com.tianyigps.online.data;
 
 public class WarnAdapterData {
     private String name, type, date;
+    private String imei;
 
-    public WarnAdapterData(String name, String type, String date) {
+    public WarnAdapterData(String name, String type, String date, String imei) {
         this.name = name;
         this.type = type;
         this.date = date;
+        this.imei = imei;
     }
 
     public String getName() {
@@ -35,5 +37,13 @@ public class WarnAdapterData {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 }

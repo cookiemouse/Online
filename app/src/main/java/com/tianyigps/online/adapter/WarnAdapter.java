@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.WarnAdapterData;
+import com.tianyigps.online.utils.TimeFormatU;
+import com.tianyigps.online.utils.WarnTypeU;
 
 import java.util.List;
 
@@ -60,8 +62,9 @@ public class WarnAdapter extends BaseAdapter {
         }
 
         viewHolder.tvName.setText(data.getName());
-        viewHolder.tvType.setText(data.getType());
-        viewHolder.tvDate.setText(data.getDate());
+        viewHolder.tvType.setText(WarnTypeU.getType(data.getType()));
+        long mills = TimeFormatU.dateToMillis2(data.getDate());
+        viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
 
         return view;
     }

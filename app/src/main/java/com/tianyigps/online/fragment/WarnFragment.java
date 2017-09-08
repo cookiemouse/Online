@@ -1,10 +1,15 @@
 package com.tianyigps.online.fragment;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +18,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.adapter.WarnAdapter;
+import com.tianyigps.online.bean.WarnListBean;
+import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.WarnAdapterData;
+import com.tianyigps.online.interfaces.OnGetWarnListListener;
+import com.tianyigps.online.manager.NetManager;
+import com.tianyigps.online.manager.SharedManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +37,8 @@ import java.util.List;
 
 public class WarnFragment extends Fragment {
 
+    private final static String TAG = "WarnFragment";
+
     private EditText mEditTextSearch;
     private TextView mTextViewSearch, mTextViewSetup;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -33,6 +46,14 @@ public class WarnFragment extends Fragment {
     private ListView mListView;
     private List<WarnAdapterData> mWarnAdapterDataList;
     private WarnAdapter mWarnAdapter;
+
+    private SharedManager mSharedManager;
+    private String mToken, mCondition;
+    private int mCid, mLastId;
+    private NetManager mNetManager;
+    private MyHandler myHandler;
+
+    private String mStringMessage;
 
     @Nullable
     @Override
@@ -44,6 +65,14 @@ public class WarnFragment extends Fragment {
         setEventListener();
 
         return view;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            getWarnInfo("01", "", "");
+        }
     }
 
     private void init(View view) {
@@ -58,11 +87,17 @@ public class WarnFragment extends Fragment {
         mWarnAdapterDataList = new ArrayList<>();
         mWarnAdapter = new WarnAdapter(getContext(), mWarnAdapterDataList);
 
-        for (int i = 0; i < 5; i++) {
-            mWarnAdapterDataList.add(new WarnAdapterData("沪KZ7555荣威白有线" + i, "断电报警", "7月19日"));
-        }
-
         mListView.setAdapter(mWarnAdapter);
+
+        mSharedManager = new SharedManager(getContext());
+        mToken = mSharedManager.getToken();
+        mCid = mSharedManager.getCid();
+
+        mNetManager = new NetManager();
+
+        myHandler = new MyHandler();
+
+        getWarnInfo("01", "", "");
     }
 
     private void setEventListener() {
@@ -89,5 +124,80 @@ public class WarnFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             }
         });
+
+        mNetManager.setOnGetWarnListListener(new OnGetWarnListListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                WarnListBean warnListBean = gson.fromJson(result, WarnListBean.class);
+                if (!warnListBean.isSuccess()) {
+                    mStringMessage = warnListBean.getMsg();
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
+                mWarnAdapterDataList.clear();
+                for (WarnListBean.ObjBean objBean : warnListBean.getObj()) {
+                    mWarnAdapterDataList.add(new WarnAdapterData(objBean.getName()
+                            , objBean.getWarn_type()
+                            , objBean.getReceive_time()
+                            , objBean.getImei()));
+                }
+                myHandler.sendEmptyMessage(Data.MSG_1);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.i(TAG, "onFailure: ");
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
+    }
+
+    //  获取报警信息
+    private void getWarnInfo(String type, String lastId, String condition) {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mNetManager.getWarnList(mToken, mCid, type, lastId, condition);
+    }
+
+    //  显示对话框
+    private void showMessageDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(mStringMessage);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            switch (msg.what) {
+                case Data.MSG_ERO: {
+                    break;
+                }
+                case Data.MSG_MSG: {
+                    showMessageDialog();
+                    break;
+                }
+                case Data.MSG_NOTHING: {
+                    break;
+                }
+                case Data.MSG_1: {
+                    mWarnAdapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
     }
 }
