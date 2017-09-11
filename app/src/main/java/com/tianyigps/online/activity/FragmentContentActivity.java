@@ -32,6 +32,8 @@ public class FragmentContentActivity extends AppCompatActivity {
     private ImageView mImageViewChoiceCar, mImageViewMonitor, mImageViewWarn, mImageViewSetting;
     private TextView mTextViewChoiceCar, mTextViewMonitor, mTextViewWarn, mTextViewSetting;
 
+    private View mViewBottom;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,8 @@ public class FragmentContentActivity extends AppCompatActivity {
 
     private void init() {
         mFrameLayout = (FrameLayout) findViewById(R.id.fl_activity_fragment_content);
+
+        mViewBottom = findViewById(R.id.view_layout_content_bottom);
 
         mLinearLayoutChoiceCar = (LinearLayout) findViewById(R.id.ll_content_bottom_choice_car);
         mLinearLayoutMonitor = (LinearLayout) findViewById(R.id.ll_content_bottom_monitor);
@@ -101,6 +105,13 @@ public class FragmentContentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showSetting();
+            }
+        });
+
+        mViewBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWarnFragment.hideWarnSettingFragment();
             }
         });
     }
@@ -162,5 +173,15 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewSetting.setTextColor(getResources().getColor(R.color.colorBlueTheme));
         mImageViewSetting.setImageResource(R.drawable.ic_setting_blue);
         showFragment(mSettingFragment);
+    }
+
+    //  显示BottomView
+    public void showBottomView() {
+        mViewBottom.setVisibility(View.VISIBLE);
+    }
+
+    //  隐藏BottomView
+    public void hideBottomView() {
+        mViewBottom.setVisibility(View.GONE);
     }
 }

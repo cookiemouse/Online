@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
+import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.WarnActivity;
 import com.tianyigps.online.adapter.WarnAdapter;
 import com.tianyigps.online.bean.WarnListBean;
@@ -59,6 +62,12 @@ public class WarnFragment extends Fragment {
 
     private String mStringMessage;
 
+    //  设定Fragment
+    private WarnSettingFragment mWarnSettingFragment;
+    private FragmentManager mFragmentManager;
+
+    private FragmentContentActivity mFragmentContentActivity;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +93,12 @@ public class WarnFragment extends Fragment {
         mTextViewSearch = view.findViewById(R.id.tv_fragment_warn_search);
         mTextViewSetup = view.findViewById(R.id.tv_fragment_warn_setup);
         mSwipeRefreshLayout = view.findViewById(R.id.srl_fragment_warn);
+
+        mFragmentContentActivity = (FragmentContentActivity) getActivity();
+
+        mFragmentManager = getChildFragmentManager();
+        mWarnSettingFragment = new WarnSettingFragment();
+
         mListView = view.findViewById(R.id.lv_fragment_warn);
 
         mSwipeRefreshLayout.setColorSchemeColors(0xff3cabfa);
@@ -108,6 +123,12 @@ public class WarnFragment extends Fragment {
         mTextViewSetup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "onClick: visible-->" + mWarnSettingFragment.isVisible());
+                if (mWarnSettingFragment.isVisible()) {
+                    hideWarnSettingFragment();
+                } else {
+                    showWarnSettingFragment();
+                }
             }
         });
 
@@ -201,6 +222,29 @@ public class WarnFragment extends Fragment {
         if (imm != null) {
             imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
         }
+    }
+
+    //  显示设定Fragmnet
+    private void showWarnSettingFragment() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        for (Fragment fragment : mFragmentManager.getFragments()) {
+            fragmentTransaction.hide(fragment);
+        }
+        if (mWarnSettingFragment.isAdded()) {
+            fragmentTransaction.show(mWarnSettingFragment);
+        } else {
+            fragmentTransaction.add(R.id.fl_fragment_warn_content, mWarnSettingFragment);
+        }
+        fragmentTransaction.commit();
+        mFragmentContentActivity.showBottomView();
+    }
+
+    //  隐藏设定Fragment
+    public void hideWarnSettingFragment() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.hide(mWarnSettingFragment);
+        fragmentTransaction.commit();
+        mFragmentContentActivity.hideBottomView();
     }
 
     private class MyHandler extends Handler {

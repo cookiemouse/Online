@@ -25,4 +25,6 @@
     <string name="instructions">使用说明</string>
     <string name="about">关于</string>
     <string name="car_choice">车辆选择</string>
+    <string name="receive_warn">接收我关注的车辆报警</string>
+    <string name="not_receive">不接收车辆报警</string>
 </resources>
