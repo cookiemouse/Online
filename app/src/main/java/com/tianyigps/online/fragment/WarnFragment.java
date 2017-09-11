@@ -2,7 +2,9 @@ package com.tianyigps.online.fragment;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
+import com.tianyigps.online.activity.WarnActivity;
 import com.tianyigps.online.adapter.WarnAdapter;
 import com.tianyigps.online.bean.WarnListBean;
 import com.tianyigps.online.data.Data;
@@ -48,7 +52,7 @@ public class WarnFragment extends Fragment {
     private WarnAdapter mWarnAdapter;
 
     private SharedManager mSharedManager;
-    private String mToken, mCondition;
+    private String mToken, mCondition = "";
     private int mCid, mLastId;
     private NetManager mNetManager;
     private MyHandler myHandler;
@@ -71,7 +75,7 @@ public class WarnFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getWarnInfo("01", "", "");
+            getWarnInfo("01", "", mCondition);
         }
     }
 
@@ -97,7 +101,7 @@ public class WarnFragment extends Fragment {
 
         myHandler = new MyHandler();
 
-        getWarnInfo("01", "", "");
+        getWarnInfo("01", "", mCondition);
     }
 
     private void setEventListener() {
@@ -110,18 +114,26 @@ public class WarnFragment extends Fragment {
         mTextViewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "onClick: mTextViewSearch");
+                hideKeyboard();
+                mCondition = mEditTextSearch.getText().toString();
+                mCondition = mCondition.trim();
+                getWarnInfo("01", "", mCondition);
             }
         });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                getWarnInfo("01", "", mCondition);
             }
         });
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), WarnActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -173,6 +185,14 @@ public class WarnFragment extends Fragment {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    //  关闭软键盘
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 
     private class MyHandler extends Handler {

@@ -44,7 +44,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppThemeAnim">
 
-        <!--百度地图Key-->
+        <!-- 百度地图Key -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="5rj8xzu13jCGdHX0np8Ymj8vCxQCDs8X"/>
@@ -72,7 +72,8 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <!--服务-->
+        <!-- 服务 -->
+
 
         <!-- 百度定位服务 -->
         <service
@@ -80,5 +81,8 @@
             android:enabled="true"
             android:process=":remote"/>
 
+        <activity android:name=".activity.WarnActivity">
+        </activity>
     </application>
+
 </manifest>

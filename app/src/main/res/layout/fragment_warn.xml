@@ -35,6 +35,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/dp_8"
         android:paddingLeft="@dimen/dp_16"
@@ -47,9 +49,12 @@
             android:layout_height="@dimen/dp_40"
             android:layout_weight="1"
             android:background="@drawable/bg_edit_search"
-            android:gravity="center"
             android:hint="@string/enter_name_or_car_no"
             android:lines="1"
+            android:paddingEnd="@dimen/dp_1"
+            android:paddingLeft="@dimen/dp_24"
+            android:paddingRight="@dimen/dp_1"
+            android:paddingStart="@dimen/dp_24"
             android:textSize="@dimen/sp_14"/>
 
         <TextView
@@ -57,8 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_40"
             android:background="@drawable/bg_text_search"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:gravity="center"
             android:text="@string/search"
             android:textColor="@color/colorWhite"/>
