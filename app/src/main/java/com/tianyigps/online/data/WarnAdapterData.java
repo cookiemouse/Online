@@ -7,12 +7,15 @@ package com.tianyigps.online.data;
 public class WarnAdapterData {
     private String name, type, date;
     private String imei;
+    private double latitude, longitude;
 
-    public WarnAdapterData(String name, String type, String date, String imei) {
+    public WarnAdapterData(String name, String type, String date, String imei, double latitude, double longitude) {
         this.name = name;
         this.type = type;
         this.date = date;
         this.imei = imei;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getName() {
@@ -45,5 +48,21 @@ public class WarnAdapterData {
 
     public void setImei(String imei) {
         this.imei = imei;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

@@ -31,91 +31,91 @@ public class WarnTypeU {
     public static final String getType(String type) {
         switch (type) {
             case WARN_1: {
-                type = "断电报警";
+                type = "断电";
                 break;
             }
             case WARN_2: {
-                type = "SOS报警";
+                type = "SOS";
                 break;
             }
             case WARN_3: {
-                type = "电池低电报警";
+                type = "电池低电";
                 break;
             }
             case WARN_4: {
-                type = "振动报警";
+                type = "振动";
                 break;
             }
             case WARN_5: {
-                type = "位移报警";
+                type = "位移";
                 break;
             }
             case WARN_6: {
-                type = "进入盲区报警";
+                type = "进入盲区";
                 break;
             }
             case WARN_7: {
-                type = "离开盲区报警";
+                type = "离开盲区";
                 break;
             }
             case WARN_8: {
-                type = "GPS天线开路报警";
+                type = "GPS天线开路";
                 break;
             }
             case WARN_9: {
-                type = "GPS天线短路报警";
+                type = "GPS天线短路";
                 break;
             }
             case WARN_81: {
-                type = "低速报警";
+                type = "低速";
                 break;
             }
             case WARN_82: {
-                type = "超速报警";
+                type = "超速";
                 break;
             }
             case WARN_83: {
-                type = "入围栏报警";
+                type = "入围栏";
                 break;
             }
             case WARN_84: {
-                type = "出围栏报警";
+                type = "出围栏";
                 break;
             }
             case WARN_85: {
-                type = "碰撞报警";
+                type = "碰撞";
                 break;
             }
             case WARN_86: {
-                type = "跌落报警";
+                type = "跌落";
                 break;
             }
             case WARN_93: {
-                type = "手机围栏报警";
+                type = "手机围栏";
                 break;
             }
             case WARN_94: {
-                type = "共享风险点出报警";
+                type = "共享风险点出";
                 break;
             }
             case WARN_95: {
-                type = "共享风险点入报警";
+                type = "共享风险点入";
                 break;
             }
             case WARN_96: {
-                type = "停车超时报警";
+                type = "停车超时";
                 break;
             }
             case WARN_97: {
-                type = "出风险点报警";
+                type = "出风险点";
                 break;
             }
             case WARN_98: {
-                type = "入风险点报警";
+                type = "入风险点";
                 break;
             }
             case WARN_99: {
-                type = "光感报警";
+                type = "光感";
                 break;
             }
         }

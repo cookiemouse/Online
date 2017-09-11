@@ -132,7 +132,13 @@ public class WarnFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                WarnAdapterData data = mWarnAdapterDataList.get(i);
                 Intent intent = new Intent(getActivity(), WarnActivity.class);
+                intent.putExtra(Data.INTENT_NAME, data.getName());
+                intent.putExtra(Data.INTENT_WARN_TYPE, data.getType());
+                intent.putExtra(Data.INTENT_DATE, data.getDate());
+                intent.putExtra(Data.INTENT_LATITUDE, data.getLatitude());
+                intent.putExtra(Data.INTENT_LONGITUDE, data.getLongitude());
                 startActivity(intent);
             }
         });
@@ -153,7 +159,9 @@ public class WarnFragment extends Fragment {
                     mWarnAdapterDataList.add(new WarnAdapterData(objBean.getName()
                             , objBean.getWarn_type()
                             , objBean.getReceive_time()
-                            , objBean.getImei()));
+                            , objBean.getImei()
+                            , objBean.getLatitude()
+                            , objBean.getLongitude()));
                 }
                 myHandler.sendEmptyMessage(Data.MSG_1);
             }

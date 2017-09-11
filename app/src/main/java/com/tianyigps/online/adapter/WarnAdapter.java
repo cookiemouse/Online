@@ -62,7 +62,7 @@ public class WarnAdapter extends BaseAdapter {
         }
 
         viewHolder.tvName.setText(data.getName());
-        viewHolder.tvType.setText(WarnTypeU.getType(data.getType()));
+        viewHolder.tvType.setText(WarnTypeU.getType(data.getType()) + "报警");
         long mills = TimeFormatU.dateToMillis2(data.getDate());
         viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
 

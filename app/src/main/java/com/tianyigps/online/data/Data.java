@@ -51,4 +51,13 @@ public class Data {
     //  数据库，表
     public final static String DATA_DB_NAME = "tianyi_online_database_db.db";
     public final static String TAB_ACCOUNT = "tab_account";
+
+    //  Intent
+    public final static String INTENT_IMEI = "intent_imei";
+
+    public final static String INTENT_WARN_TYPE = "intent_warn_type";
+    public final static String INTENT_DATE = "intent_date";
+    public final static String INTENT_NAME = "intent_name";
+    public final static String INTENT_LATITUDE = "intent_latitude";
+    public final static String INTENT_LONGITUDE = "intent_longitude";
 }
