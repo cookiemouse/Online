@@ -162,4 +162,20 @@ public class SharedManager {
     public boolean isWarn() {
         return mSharedPreferences.getBoolean(Data.IS_WARN, false);
     }
+
+    /**
+     * 保存刷新时间
+     */
+    public void saveFlushTime(int time) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Data.FLUSH_TIME, time);
+        editor.apply();
+    }
+
+    /**
+     * 获取刷新时间
+     */
+    public int getFlushTime() {
+        return mSharedPreferences.getInt(Data.FLUSH_TIME, 10);
+    }
 }

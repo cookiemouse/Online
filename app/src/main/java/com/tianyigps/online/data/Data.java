@@ -44,6 +44,8 @@ public class Data {
     public static final String IS_WARN = "is_warn";
     public static final String WARN_TYPE = "warn_type";
 
+    public static final String FLUSH_TIME = "flush_time";
+
     //  延时时间
     public static final int DELAY_200 = 200;
     public static final int DELAY_500 = 500;
