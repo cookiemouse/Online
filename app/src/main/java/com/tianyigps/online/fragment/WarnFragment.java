@@ -55,7 +55,7 @@ public class WarnFragment extends Fragment {
     private WarnAdapter mWarnAdapter;
 
     private SharedManager mSharedManager;
-    private String mToken, mCondition = "";
+    private String mToken, mCondition = "", mType;
     private int mCid, mLastId;
     private NetManager mNetManager;
     private MyHandler myHandler;
@@ -84,7 +84,7 @@ public class WarnFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getWarnInfo("01", "", mCondition);
+            getWarnInfo(mType, "", mCondition);
         }
     }
 
@@ -111,12 +111,13 @@ public class WarnFragment extends Fragment {
         mSharedManager = new SharedManager(getContext());
         mToken = mSharedManager.getToken();
         mCid = mSharedManager.getCid();
+        mType = mSharedManager.getWarnType();
 
         mNetManager = new NetManager();
 
         myHandler = new MyHandler();
 
-        getWarnInfo("01", "", mCondition);
+        getWarnInfo(mType, "", mCondition);
     }
 
     private void setEventListener() {
@@ -139,14 +140,14 @@ public class WarnFragment extends Fragment {
                 hideKeyboard();
                 mCondition = mEditTextSearch.getText().toString();
                 mCondition = mCondition.trim();
-                getWarnInfo("01", "", mCondition);
+                getWarnInfo(mType, "", mCondition);
             }
         });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getWarnInfo("01", "", mCondition);
+                getWarnInfo(mType, "", mCondition);
             }
         });
 
@@ -161,6 +162,14 @@ public class WarnFragment extends Fragment {
                 intent.putExtra(Data.INTENT_LATITUDE, data.getLatitude());
                 intent.putExtra(Data.INTENT_LONGITUDE, data.getLongitude());
                 startActivity(intent);
+            }
+        });
+
+        mWarnSettingFragment.setOnDismissListener(new WarnSettingFragment.OnDismissListener() {
+            @Override
+            public void onDismiss(String type) {
+                mType = type;
+                getWarnInfo(mType, "", mCondition);
             }
         });
 
@@ -204,6 +213,9 @@ public class WarnFragment extends Fragment {
 
     //  显示对话框
     private void showMessageDialog() {
+        if (null == getActivity()){
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(mStringMessage);
         builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {

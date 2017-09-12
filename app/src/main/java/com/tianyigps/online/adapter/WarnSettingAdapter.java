@@ -46,7 +46,7 @@ public class WarnSettingAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
 
-        AdapterWarnSettingData data = mDatas.get(i);
+        final AdapterWarnSettingData data = mDatas.get(i);
         ViewHolder viewHolder = null;
         if (null == view) {
             view = LayoutInflater.from(context).inflate(R.layout.item_warn_setting, viewGroup, false);
@@ -63,6 +63,13 @@ public class WarnSettingAdapter extends BaseAdapter {
         String title = WarnTypeU.getType(data.getType());
         viewHolder.tvTitle.setText(title);
         viewHolder.switchOpen.setChecked(data.isOpen());
+
+        viewHolder.switchOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                data.setOpen(!data.isOpen());
+            }
+        });
 
         return view;
     }

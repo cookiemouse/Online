@@ -129,4 +129,37 @@ public class SharedManager {
     public boolean getAutoLogin() {
         return mSharedPreferences.getBoolean(Data.LOGIN_AUTO, false);
     }
+
+    /**
+     * 保存报警类型
+     * 01,99
+     */
+    public void saveWarnType(String type) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Data.WARN_TYPE, type);
+        editor.apply();
+    }
+
+    /**
+     * 获取报警类型
+     */
+    public String getWarnType() {
+        return mSharedPreferences.getString(Data.WARN_TYPE, "");
+    }
+
+    /**
+     * 保存是否接收报警
+     */
+    public void saveWarn(boolean isWarn) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Data.IS_WARN, isWarn);
+        editor.apply();
+    }
+
+    /**
+     * 获取是否接收报警
+     */
+    public boolean isWarn() {
+        return mSharedPreferences.getBoolean(Data.IS_WARN, false);
+    }
 }
