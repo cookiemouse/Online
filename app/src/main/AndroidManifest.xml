@@ -87,6 +87,10 @@
         </activity>
         <activity android:name=".activity.OpinionActivity">
         </activity>
+        <activity android:name=".activity.InstructionActivity">
+        </activity>
+        <activity android:name=".activity.AboutActivity">
+        </activity>
     </application>
 
 </manifest>
