@@ -46,6 +46,8 @@ public class FlushTimeActivity extends BaseActivity {
     }
 
     private void init() {
+        this.setTitleText("刷新时间");
+
         mListView = (ListView) findViewById(R.id.lv_activity_flush_time);
 
         mSharedManager = new SharedManager(this);

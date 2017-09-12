@@ -27,4 +27,6 @@
     <string name="car_choice">车辆选择</string>
     <string name="receive_warn">接收我关注的车辆报警</string>
     <string name="not_receive">不接收车辆报警</string>
+    <string name="submit">提交</string>
+    <string name="hint_opinion">请留下您宝贵的意见......</string>
 </resources>

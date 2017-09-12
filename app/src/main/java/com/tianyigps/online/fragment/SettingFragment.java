@@ -11,6 +11,7 @@ import android.widget.TableRow;
 
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FlushTimeActivity;
+import com.tianyigps.online.activity.OpinionActivity;
 
 /**
  * Created by cookiemouse on 2017/9/5.
@@ -18,7 +19,7 @@ import com.tianyigps.online.activity.FlushTimeActivity;
 
 public class SettingFragment extends Fragment {
 
-    private TableRow mTableRowFlushTime;
+    private TableRow mTableRowFlushTime, mTableRowOpinion;
 
     @Nullable
     @Override
@@ -34,6 +35,7 @@ public class SettingFragment extends Fragment {
 
     private void init(View view) {
         mTableRowFlushTime = view.findViewById(R.id.tr_fragment_set_flush_time);
+        mTableRowOpinion = view.findViewById(R.id.tr_fragment_opinion);
     }
 
     private void setEventListener() {
@@ -41,6 +43,14 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), FlushTimeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mTableRowOpinion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), OpinionActivity.class);
                 startActivity(intent);
             }
         });
