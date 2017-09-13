@@ -16,6 +16,8 @@ import com.tianyigps.online.fragment.ChoiceCarFragment;
 import com.tianyigps.online.fragment.MonitorFragment;
 import com.tianyigps.online.fragment.SettingFragment;
 import com.tianyigps.online.fragment.WarnFragment;
+import com.tianyigps.online.utils.TimerU;
+import com.tianyigps.online.utils.ToastU;
 
 public class FragmentContentActivity extends AppCompatActivity {
 
@@ -34,6 +36,10 @@ public class FragmentContentActivity extends AppCompatActivity {
 
     private View mViewBottom;
 
+    private ToastU mToastU;
+    private TimerU mTimerU;
+    private boolean exitAble = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +55,25 @@ public class FragmentContentActivity extends AppCompatActivity {
         setEventListener();
     }
 
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        if (exitAble){
+            this.finish();
+            return;
+        }
+        exitAble = true;
+        mToastU.showToast("再按一次退出");
+        mTimerU.start();
+    }
+
     private void init() {
         mFrameLayout = (FrameLayout) findViewById(R.id.fl_activity_fragment_content);
 
         mViewBottom = findViewById(R.id.view_layout_content_bottom);
+
+        mToastU = new ToastU(this);
+        mTimerU = new TimerU(2);
 
         mLinearLayoutChoiceCar = (LinearLayout) findViewById(R.id.ll_content_bottom_choice_car);
         mLinearLayoutMonitor = (LinearLayout) findViewById(R.id.ll_content_bottom_monitor);
@@ -112,6 +133,17 @@ public class FragmentContentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mWarnFragment.hideWarnSettingFragment();
+            }
+        });
+
+        mTimerU.setOnTickListener(new TimerU.OnTickListener() {
+            @Override
+            public void onTick(int time) {
+            }
+
+            @Override
+            public void onEnd() {
+                exitAble = false;
             }
         });
     }

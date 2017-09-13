@@ -109,7 +109,7 @@
     <View
         android:id="@+id/view_layout_content_bottom"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
+        android:layout_height="@dimen/dp_52"
         android:visibility="gone"
         android:background="@color/colorGrayAlpha"/>
 
