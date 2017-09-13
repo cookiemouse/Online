@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Switch;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tianyigps.online.R;
@@ -62,12 +62,13 @@ public class WarnSettingAdapter extends BaseAdapter {
 
         String title = WarnTypeU.getType(data.getType());
         viewHolder.tvTitle.setText(title);
-        viewHolder.switchOpen.setChecked(data.isOpen());
+        viewHolder.switchOpen.setSelected(data.isOpen());
 
         viewHolder.switchOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 data.setOpen(!data.isOpen());
+                notifyDataSetChanged();
             }
         });
 
@@ -76,6 +77,6 @@ public class WarnSettingAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView tvTitle;
-        Switch switchOpen;
+        ImageView switchOpen;
     }
 }

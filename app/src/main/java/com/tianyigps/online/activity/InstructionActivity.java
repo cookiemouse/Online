@@ -20,7 +20,7 @@ public class InstructionActivity extends BaseActivity {
         init();
     }
 
-    private void init(){
+    private void init() {
         this.setTitleText("使用说明");
 
         mWebView = (WebView) findViewById(R.id.wv_activity_instruction);
@@ -28,7 +28,7 @@ public class InstructionActivity extends BaseActivity {
         mWebView.loadUrl("http://www.sina.com.cn");
 
         //覆盖WebView默认使用第三方或系统默认浏览器打开网页的行为，使网页用WebView打开
-        mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 // TODO Auto-generated method stub

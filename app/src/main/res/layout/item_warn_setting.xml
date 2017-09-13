@@ -3,6 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:padding="@dimen/dp_12"
+              android:gravity="center_vertical"
               android:orientation="horizontal">
 
     <TextView
@@ -11,9 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"/>
 
-    <Switch
+    <ImageView
         android:id="@+id/switch_item_warn_setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="@dimen/dp_32"
+        android:src="@drawable/bg_switch"/>
 
 </LinearLayout>

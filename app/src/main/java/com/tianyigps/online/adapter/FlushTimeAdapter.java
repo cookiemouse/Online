@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Switch;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tianyigps.online.R;
@@ -62,7 +62,7 @@ public class FlushTimeAdapter extends BaseAdapter {
         }
 
         viewHolder.time.setText("" + data.getTime());
-        viewHolder.switchOpen.setChecked(data.isOpen());
+        viewHolder.switchOpen.setSelected(data.isOpen());
 
         viewHolder.switchOpen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +80,6 @@ public class FlushTimeAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView time;
-        Switch switchOpen;
+        ImageView switchOpen;
     }
 }
