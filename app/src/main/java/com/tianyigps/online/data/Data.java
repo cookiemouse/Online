@@ -46,6 +46,8 @@ public class Data {
 
     public static final String FLUSH_TIME = "flush_time";
 
+    public static final String SHOW_ATTENTION = "show_attention";
+
     //  延时时间
     public static final int DELAY_200 = 200;
     public static final int DELAY_500 = 500;

@@ -1,6 +1,5 @@
 package com.tianyigps.online.manager;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.tianyigps.online.data.Urls;
@@ -572,10 +571,7 @@ public class NetManager {
      * @param imeiStr
      * @param attention
      */
-    public void showPointNew(String token, int cid, String cidStr, String imeiStr, @Nullable String attention) {
-        if (null == attention) {
-            attention = "";
-        }
+    public void showPointNew(String token, int cid, String cidStr, String imeiStr, boolean attention) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.SHOW_POINT_NEW + "token=" + token
                 + "&cid=" + cid

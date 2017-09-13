@@ -178,4 +178,20 @@ public class SharedManager {
     public int getFlushTime() {
         return mSharedPreferences.getInt(Data.FLUSH_TIME, 10);
     }
+
+    /**
+     * 保存是否显示已加关注车辆
+     */
+    public void saveShowAttention(boolean attention) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Data.SHOW_ATTENTION, attention);
+        editor.apply();
+    }
+
+    /**
+     * 获取是否显示已加关注车辆
+     */
+    public boolean getShowAttention() {
+        return mSharedPreferences.getBoolean(Data.SHOW_ATTENTION, false);
+    }
 }

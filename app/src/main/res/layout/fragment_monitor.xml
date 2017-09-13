@@ -31,9 +31,11 @@
             android:id="@+id/iv_fragment_monitor_2"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/iv_fragment_monitor_3"
+            android:layout_toStartOf="@+id/iv_fragment_monitor_3"
+            android:layout_marginEnd="@dimen/dp_2"
+            android:layout_marginRight="@dimen/dp_2"
             android:padding="@dimen/dp_8"
             android:src="@drawable/ic_monitor_2"/>
 
@@ -41,11 +43,9 @@
             android:id="@+id/iv_fragment_monitor_3"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="@dimen/dp_2"
-            android:layout_marginRight="@dimen/dp_2"
-            android:layout_toLeftOf="@+id/iv_fragment_monitor_2"
-            android:layout_toStartOf="@+id/iv_fragment_monitor_2"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
             android:src="@drawable/ic_monitor_3"/>
 
