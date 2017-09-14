@@ -13,6 +13,7 @@ public class RegularU {
 
     private static final String TAG = "RegularU";
     private static final String CHECK_CAR_NO = "[\\u4e00-\\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5,6}$";
+    private static final String CHECK_WEB_ADDRESS = "^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$";
 
     public static boolean checkCarNo(String carNo) {
         Log.i(TAG, "checkCarNo: carNo-->" + carNo);
@@ -24,5 +25,12 @@ public class RegularU {
 
     public static boolean isEmpty(String content) {
         return null == content || "".equals(content);
+    }
+
+    //  是否为网址
+    public static boolean isWebAddress(String address) {
+        Pattern pattern = Pattern.compile(CHECK_WEB_ADDRESS);
+        Matcher matcher = pattern.matcher(address);
+        return matcher.matches();
     }
 }
