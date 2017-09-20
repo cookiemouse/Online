@@ -34,6 +34,7 @@ import com.tianyigps.online.data.WarnAdapterData;
 import com.tianyigps.online.interfaces.OnGetWarnListListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,8 @@ public class WarnFragment extends Fragment {
     private MyHandler myHandler;
 
     private String mStringMessage;
+
+    private ToastU mToastU;
 
     //  设定Fragment
     private WarnSettingFragment mWarnSettingFragment;
@@ -107,6 +110,8 @@ public class WarnFragment extends Fragment {
         mWarnAdapter = new WarnAdapter(getContext(), mWarnAdapterDataList);
 
         mListView.setAdapter(mWarnAdapter);
+
+        mToastU = new ToastU(getContext());
 
         mSharedManager = new SharedManager(getContext());
         mToken = mSharedManager.getToken();
@@ -213,7 +218,7 @@ public class WarnFragment extends Fragment {
 
     //  显示对话框
     private void showMessageDialog() {
-        if (null == getActivity()){
+        if (null == getActivity()) {
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -226,6 +231,11 @@ public class WarnFragment extends Fragment {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    //  显示Toast
+    private void showToast(String msg) {
+        mToastU.showToast(msg);
     }
 
     //  关闭软键盘
@@ -271,7 +281,7 @@ public class WarnFragment extends Fragment {
                     break;
                 }
                 case Data.MSG_MSG: {
-                    showMessageDialog();
+                    showToast(mStringMessage);
                     break;
                 }
                 case Data.MSG_NOTHING: {

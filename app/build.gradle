@@ -40,4 +40,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.yanzhenjie:permission:1.0.8'
     testCompile 'junit:junit:4.12'
+    compile(name: 'grouplistlibrary', ext: 'aar')
 }

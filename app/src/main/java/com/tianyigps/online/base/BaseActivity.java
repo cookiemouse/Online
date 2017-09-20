@@ -13,7 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tianyigps.online.R;
-import com.tianyigps.online.fragment.LoadingDialogFragment;
+import com.tianyigps.online.dialog.LoadingDialogFragment;
+import com.tianyigps.online.utils.ToastU;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -29,6 +30,8 @@ public class BaseActivity extends AppCompatActivity {
 
     private OnTitleRightClickListener mOnTitleRightClickListener;
     private OnTitleBackClickListener mOnTitleBackClickListener;
+
+    private ToastU mToastU;
 
     //  LoadingFragment
     private LoadingDialogFragment mLoadingDialogFragment;
@@ -64,6 +67,8 @@ public class BaseActivity extends AppCompatActivity {
         this.setTitleBackground(R.color.colorBlueTheme);
         this.setTitleRightButtonVisibilite(false);
         mImageViewLeft.setImageResource(R.drawable.ic_back);
+
+        mToastU = new ToastU(this);
 
         mImageViewLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +160,7 @@ public class BaseActivity extends AppCompatActivity {
     //  显示Loading对话框
     public void showLoadingDialog() {
         Log.i(TAG, "showLoadingDialog: ");
-        mLoadingDialogFragment.show(getFragmentManager(), "BaseActivity");
+        mLoadingDialogFragment.show(getSupportFragmentManager(), "BaseActivity");
     }
 
     //  取消LoadingDialog
@@ -177,6 +182,11 @@ public class BaseActivity extends AppCompatActivity {
             }
         });
         builder.create().show();
+    }
+
+    //  显示Toast
+    public void showToast(String msg){
+        mToastU.showToast(msg);
     }
 
 }

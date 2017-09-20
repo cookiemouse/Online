@@ -34,7 +34,7 @@ public class Data {
     public static final String CHECK_USER_CONTACT_PHONE = "check_user_contact_phone";
     public static final String CHECK_USER_CONTACT_NAME = "check_user_contact_name";
     public static final String CHECK_USER_NAME = "check_user_name";
-    public static final String CHECK_USER_TOKEN = "check_user_name";
+    public static final String CHECK_USER_TOKEN = "check_user_token";
     public static final String CHECK_USER_ACCOUNT = "check_user_account";
     public static final String CHECK_USER_PASSWORD = "check_user_password";
 

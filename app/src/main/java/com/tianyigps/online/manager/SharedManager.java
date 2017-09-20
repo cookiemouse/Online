@@ -2,6 +2,7 @@ package com.tianyigps.online.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.tianyigps.online.data.Data;
 
@@ -10,6 +11,8 @@ import com.tianyigps.online.data.Data;
  */
 
 public class SharedManager {
+
+    private static final String TAG = "SharedManager";
 
     private SharedPreferences mSharedPreferences;
 
@@ -22,6 +25,10 @@ public class SharedManager {
      */
     public void saveUserData(int cid, String path, String contactAddr, String contactName, String contactPhone
             , String name, String token, String account, String password) {
+
+        Log.i(TAG, "saveUserData: name-->" + name);
+        Log.i(TAG, "saveUserData: token-->" + token);
+
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt(Data.CHECK_USER_CID, cid);
         editor.putString(Data.CHECK_USER_PATH, path);
