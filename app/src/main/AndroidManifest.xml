@@ -81,15 +81,29 @@
             android:enabled="true"
             android:process=":remote"/>
 
-        <activity android:name=".activity.WarnActivity">
+        <activity
+            android:name=".activity.WarnActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.FlushTimeActivity">
+        <activity
+            android:name=".activity.FlushTimeActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.OpinionActivity">
+        <activity
+            android:name=".activity.OpinionActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.InstructionActivity">
+        <activity
+            android:name=".activity.InstructionActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.AboutActivity">
+        <activity
+            android:name=".activity.AboutActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".activity.TrackActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

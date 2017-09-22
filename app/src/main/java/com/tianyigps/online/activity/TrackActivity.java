@@ -1,18 +1,14 @@
-package com.tianyigps.online.fragment;
+package com.tianyigps.online.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,184 +26,160 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteLine;
+import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
-import com.tianyigps.online.activity.FragmentContentActivity;
-import com.tianyigps.online.activity.TrackActivity;
+import com.tianyigps.online.base.BaseActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.StatusData;
-import com.tianyigps.online.dialog.ConcernDialogFragment;
 import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.GeoCoderU;
 import com.tianyigps.online.utils.LocateTypeU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.StatusU;
 import com.tianyigps.online.utils.TimeFormatU;
-import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by cookiemouse on 2017/9/5.
- */
+import static com.baidu.mapapi.BMapManager.getContext;
 
-public class MonitorFragment extends Fragment {
+public class TrackActivity extends BaseActivity {
 
-    private static final String TAG = "MonitorFragment";
-
-    private ImageView mImageViewTitle1, mImageViewTitle2, mImageViewTitle3;
-    private ImageView mImageViewLocate, mImageViewLeft, mImageViewRight;
-    private TextView mTextViewNormal, mTextViewSatellite;
+    private static final String TAG = "TrackActivity";
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;
+    private Overlay mOverlayMarker;
+    //  地图路径
+    private Overlay mOverlayLine;
 
-    private LocateManager mLocateManager;
-
-    //  左下角定位，false = 定位手机，true = 定位车辆
-    private boolean mIsLocateCar = false;
-
-    //  已关注Fragment
-    private ConcernDialogFragment mConcernDialogFragment;
-
-    private NetManager mNetManager;
-    private SharedManager mSharedManager;
-    private MyHandler myHandler;
-    private int mCid;
-    private String mToken;
-
-    //  从ChoiceCarFragment中传入的imei
-    private String mChoiceImei;
-
-    private String mStringMessage;
+    private ImageView mImageViewLocate;
+    private TextView mTextViewNormal, mTextViewSatellite, mTextViewAddress;
 
     //  InfoWindow数据
     private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
     private StatusData mStatusData;
     private int mInfoDirection, mModel;
-    private LatLng mInfoLatLng;
+    private LatLng mInfoLatLng, mLatLngSelf;
 
-    //  Marker
-    private List<Overlay> mOverlayList;
-    private Overlay mOverlayMarker;
+    private LocateManager mLocateManager;
+    private boolean mIsToCenter = false;
+    //  左下角定位，false = 定位手机，true = 定位车辆
+    private boolean mIsLocateCar = false;
 
-    private ToastU mToastU;
+    private GeoCoderU mGeoCoderU;
+
+    //  路径规划
+    private RoutePlanSearch mRoutePlanSearch;
+    private boolean isFirst = true;
+
+    private NetManager mNetManager;
+    private SharedManager mSharedManager;
+    private String mToken;
+    private int mCid;
+    private int mFlushInterval;
+
+    private MyHandler myHandler;
+    private String mStringMessage;
+
+    private String mImei;
 
     //  屏幕
     private WindowManager mWindowManager;
     private int mWidth, mHeight;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_monitor, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_track);
 
-        init(view);
+        init();
 
         setEventListener();
-        return view;
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
         mMapView.onResume();
-        Bundle bundle = getArguments();
-        if (null != bundle) {
-            mChoiceImei = bundle.getString(Data.KEY_IMEI);
-            Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
-            showPointNew(mChoiceImei);
-        }
-
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         mWidth = mWindowManager.getDefaultDisplay().getWidth();
         mHeight = mWindowManager.getDefaultDisplay().getHeight();
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         mMapView.onPause();
+        myHandler.removeMessages(Data.MSG_2);
         super.onPause();
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         mMapView.onDestroy();
+        mRoutePlanSearch.destroy();
         mLocateManager.stopLocate();
         super.onDestroy();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            Bundle bundle = getArguments();
-            if (null != bundle) {
-                mChoiceImei = bundle.getString(Data.KEY_IMEI);
-                Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
-                showPointNew(mChoiceImei);
-            }
-        }
-    }
+    private void init() {
+        this.setTitleText("车辆跟踪");
 
-    private void init(View view) {
-        mMapView = view.findViewById(R.id.mv_fragment_monitor);
+        mMapView = (MapView) findViewById(R.id.mv_activity_track);
         mBaiduMap = mMapView.getMap();
         //  开启地位图层
         mBaiduMap.setMyLocationEnabled(true);
 
-        mImageViewTitle1 = view.findViewById(R.id.iv_fragment_monitor_1);
-        mImageViewTitle2 = view.findViewById(R.id.iv_fragment_monitor_2);
-        mImageViewTitle3 = view.findViewById(R.id.iv_fragment_monitor_3);
+        mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_track_locate);
+        mTextViewNormal = (TextView) findViewById(R.id.tv_activity_track_normal);
+        mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_track_satellite);
+        mTextViewAddress = (TextView) findViewById(R.id.tv_activity_track_address);
 
-        mImageViewLocate = view.findViewById(R.id.iv_layout_map_control_locate);
-        mImageViewLeft = view.findViewById(R.id.iv_layout_map_control_left);
-        mImageViewRight = view.findViewById(R.id.iv_layout_map_control_right);
-
-        mTextViewNormal = view.findViewById(R.id.tv_layout_map_control_normal);
-        mTextViewSatellite = view.findViewById(R.id.tv_layout_map_control_satellite);
-
-        mLocateManager = new LocateManager(getContext());
-
-        mOverlayList = new ArrayList<>();
-
-        mToastU = new ToastU(getContext());
-
-        mConcernDialogFragment = new ConcernDialogFragment();
+        Intent intent = getIntent();
+        mImei = intent.getStringExtra(Data.KEY_IMEI);
+        if (RegularU.isEmpty(mImei)) {
+            mImei = "";
+            Log.i(TAG, "init: imei号为空");
+        }
 
         mNetManager = new NetManager();
-        mSharedManager = new SharedManager(getContext());
-        mCid = mSharedManager.getCid();
+        mSharedManager = new SharedManager(this);
         mToken = mSharedManager.getToken();
+        mCid = mSharedManager.getCid();
+        mFlushInterval = mSharedManager.getFlushTime();
+
+        mGeoCoderU = new GeoCoderU();
+
+        mRoutePlanSearch = RoutePlanSearch.newInstance();
 
         myHandler = new MyHandler();
+
+        mLocateManager = new LocateManager(this);
+        mIsToCenter = false;
+        mLocateManager.startLocate();
+
+        showPointNew();
     }
 
     private void setEventListener() {
-        mImageViewTitle1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Activity activity = getActivity();
-                FragmentContentActivity fragmentContentActivity = (FragmentContentActivity) activity;
-                fragmentContentActivity.showChoiceCar();
-            }
-        });
-        mImageViewTitle2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-        mImageViewTitle3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mConcernDialogFragment.show(getChildFragmentManager(), "关注列表");
-            }
-        });
         mImageViewLocate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -220,19 +192,19 @@ public class MonitorFragment extends Fragment {
                     mIsLocateCar = false;
                     return;
                 }
-                mLocateManager.startLocate();
+                if (null != mLatLngSelf) {
+                    moveToCenter(mLatLngSelf);
+                    mIsToCenter = false;
+                    mLocateManager.startLocate();
+                } else {
+                    mIsToCenter = true;
+                    mLocateManager.startLocate();
+                }
+                mIsLocateCar = true;
+                mImageViewLocate.setImageResource(R.drawable.ic_location_car);
             }
         });
-        mImageViewLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-        mImageViewRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
+
         mTextViewNormal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -241,6 +213,7 @@ public class MonitorFragment extends Fragment {
                 mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
             }
         });
+
         mTextViewSatellite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -250,11 +223,20 @@ public class MonitorFragment extends Fragment {
             }
         });
 
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                showPointNew();
+                return false;
+            }
+        });
+
         mLocateManager.setOnReceiveLocationListener(new LocateManager.OnReceiveLocationListener() {
             @Override
             public void onReceive(LatLng latLng) {
                 Log.i(TAG, "onReceive: latitude-->" + latLng.latitude + ", longitude-->" + latLng.longitude);
 
+                mLatLngSelf = latLng;
                 MyLocationData locData = new MyLocationData.Builder()
                         .accuracy(0)
                         // 此处设置开发者获取到的方向信息，顺时针0-360
@@ -265,22 +247,96 @@ public class MonitorFragment extends Fragment {
                 // 设置定位数据
                 mBaiduMap.setMyLocationData(locData);
 
-                moveToCenter(latLng);
-                mImageViewLocate.setImageResource(R.drawable.ic_location_car);
-                mIsLocateCar = true;
+                if (mIsToCenter) {
+                    moveToCenter(latLng);
+                }
+                if (null != mLatLngSelf && isFirst) {
+                    isFirst = false;
+                    searchDriving(mLatLngSelf, mInfoLatLng);
+                }
             }
         });
 
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+        mGeoCoderU.setOnGetGeoGodeListener(new GeoCoderU.OnGetGeoCodeListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                Bundle bundle = marker.getExtraInfo();
-                String imei = bundle.getString(Data.KEY_IMEI, "");
-                if (RegularU.isEmpty(imei)) {
-                    return false;
+            public void onGetLatlng(double lat, double lng) {
+            }
+
+            @Override
+            public void onGetAddress(String address) {
+                Log.i(TAG, "onGetAddress: address-->" + address);
+                mTextViewAddress.setText(address);
+            }
+        });
+
+        mRoutePlanSearch.setOnGetRoutePlanResultListener(new OnGetRoutePlanResultListener() {
+            @Override
+            public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 1");
+                mRoutePlanSearch.destroy();
+            }
+
+            @Override
+            public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 2");
+                mRoutePlanSearch.destroy();
+            }
+
+            @Override
+            public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 3");
+                mRoutePlanSearch.destroy();
+            }
+
+            @Override
+            public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 4");
+                if (null == drivingRouteResult || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                    //  未找到路线
+                    Log.i(TAG, "onGetDrivingRouteResult: 未找到路线");
+                    return;
                 }
-                showPointNew(imei);
-                return false;
+
+                List<LatLng> latLngList = new ArrayList<>();
+                if (null != drivingRouteResult.getRouteLines()) {
+                    DrivingRouteLine drivingRouteLine = drivingRouteResult.getRouteLines().get(0);
+                    Log.i(TAG, "onGetDrivingRouteResult: drivingRouteLine-->" + drivingRouteLine);
+                    if (null != drivingRouteLine) {
+                        if (null != drivingRouteLine.getAllStep()) {
+                            for (DrivingRouteLine.DrivingStep drivingStep : drivingRouteLine.getAllStep()) {
+                                Log.i(TAG, "onGetDrivingRouteResult: routeNode-->" + drivingStep);
+                                if (null != drivingStep) {
+                                    for (LatLng latlng : drivingStep.getWayPoints()) {
+                                        latLngList.add(latlng);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (null != mOverlayLine) {
+                    mOverlayLine.remove();
+                }
+                if (latLngList.size() > 2) {
+                    PolylineOptions polylineOptions = new PolylineOptions();
+                    polylineOptions.color(getResources().getColor(R.color.colorBlueTheme));
+                    polylineOptions.width(8);
+                    polylineOptions.points(latLngList);
+                    mOverlayLine = mBaiduMap.addOverlay(polylineOptions);
+                }
+            }
+
+            @Override
+            public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 5");
+                mRoutePlanSearch.destroy();
+            }
+
+            @Override
+            public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+                Log.i(TAG, "onGetDrivingRouteResult: 6");
+                mRoutePlanSearch.destroy();
             }
         });
 
@@ -296,7 +352,7 @@ public class MonitorFragment extends Fragment {
                     return;
                 }
                 for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
-                    if (objBean.getImei().equals(mChoiceImei)) {
+                    if (objBean.getImei().equals(mImei)) {
                         InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
                         Log.i(TAG, "onSuccess: name-->" + objBean.getName());
                         Log.i(TAG, "onSuccess: speed-->" + redisobjBean.getSpeed());
@@ -306,11 +362,7 @@ public class MonitorFragment extends Fragment {
                         Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
 
                         mInfoName = objBean.getName();
-                        String locateType = redisobjBean.getLocate_type();
-                        if (null == locateType){
-                            locateType = "2";
-                        }
-                        if (locateType.equals("1")) {
+                        if (redisobjBean.getLocate_type().equals("1")) {
                             int speedT = Integer.valueOf(redisobjBean.getSpeed());
                             if (speedT < 0) {
                                 mInfoSpeed = "0km/h";
@@ -373,8 +425,37 @@ public class MonitorFragment extends Fragment {
         });
     }
 
+    //  地图移动到目标点
+    private void moveToCenter(LatLng latLng) {
+        MapStatus.Builder builder = new MapStatus.Builder();
+        builder.target(latLng);
+        MapStatus status = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        mBaiduMap.animateMapStatus(update);
+    }
+
+    //  地图移动到目标点
+    private void moveToInfoCenter(LatLng latLng) {
+        MapStatus.Builder builder = new MapStatus.Builder();
+        Point point = new Point(mWidth / 2, mHeight / 2);
+        builder.target(latLng).targetScreen(point);
+        MapStatus status = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        mBaiduMap.animateMapStatus(update);
+    }
+
+    //  搜索路径
+    private void searchDriving(LatLng from, LatLng to) {
+        PlanNode planNodeFrom = PlanNode.withLocation(from);
+        PlanNode planNodeTo = PlanNode.withLocation(to);
+        mRoutePlanSearch.drivingSearch(new DrivingRoutePlanOption()
+                .from(planNodeFrom)
+                .to(planNodeTo)
+                .policy(DrivingRoutePlanOption.DrivingPolicy.ECAR_DIS_FIRST));
+    }
+
     //  添加marker
-    private void addMarker(LatLng latLng, int type, int direction, String imei) {
+    private void addMarker(LatLng latLng, int type, int direction) {
         //定义Maker坐标点
         if (null == latLng) {
             return;
@@ -404,54 +485,28 @@ public class MonitorFragment extends Fragment {
         }
         BitmapDescriptor bitmap = BitmapDescriptorFactory.fromView(viewMarker);
         //构建MarkerOption，用于在地图上添加Marker
-        Bundle bundle = new Bundle();
-        bundle.putString(Data.KEY_IMEI, imei);
         OverlayOptions option = new MarkerOptions()
                 .position(latLng)
                 .icon(bitmap)
                 .rotate(direction)
-                .anchor(0.5f, 0.5f)
-                .extraInfo(bundle);
+                .anchor(0.5f, 0.5f);
         //在地图上添加Marker，并显示
         mOverlayMarker = mBaiduMap.addOverlay(option);
     }
 
-    //  地图移动到目标点
-    private void moveToCenter(LatLng latLng) {
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.target(latLng);
-        MapStatus status = builder.build();
-        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-        mBaiduMap.animateMapStatus(update);
-    }
-
-    //  地图移动到目标点
-    private void moveToInfoCenter(LatLng latLng) {
-        MapStatus.Builder builder = new MapStatus.Builder();
-        Point point = new Point(mWidth / 2, mHeight / 2);
-        builder.target(latLng).targetScreen(point);
-        MapStatus status = builder.build();
-        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-        mBaiduMap.animateMapStatus(update);
-    }
-
     //  显示infoWindow
     private void showInfoWindow(LatLng latLng) {
-        View viewInfo = LayoutInflater.from(getContext()).inflate(R.layout.view_map_info_window_monitor, null);
+        View viewInfo = LayoutInflater.from(getContext()).inflate(R.layout.view_map_info_window_track, null);
 
-        TextView tvName = viewInfo.findViewById(R.id.tv_view_info_window_monitor_title);
-        TextView tvStatus = viewInfo.findViewById(R.id.tv_view_info_window_monitor_status_content);
-        TextView tvSpeed = viewInfo.findViewById(R.id.tv_view_info_window_monitor_speed_content);
-        TextView tvLocateType = viewInfo.findViewById(R.id.tv_view_info_window_monitor_type_content);
-        TextView tvCurrentTime = viewInfo.findViewById(R.id.tv_view_info_window_monitor_current_time_content);
-        TextView tvLocateTime = viewInfo.findViewById(R.id.tv_view_info_window_monitor_locate_time_content);
-        TextView tvElectricity = viewInfo.findViewById(R.id.tv_view_info_window_monitor_electricity);
-        TextView tvTrack = viewInfo.findViewById(R.id.tv_view_info_window_monitor_track);
-        TextView tvPath = viewInfo.findViewById(R.id.tv_view_info_window_monitor_path);
-        TextView tvNavigation = viewInfo.findViewById(R.id.tv_view_info_window_monitor_navigation);
-        TextView tvMore = viewInfo.findViewById(R.id.tv_view_info_window_monitor_more);
-        ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_monitor_close);
-        ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_monitor_electricity);
+        TextView tvName = viewInfo.findViewById(R.id.tv_view_info_window_track_title);
+        TextView tvStatus = viewInfo.findViewById(R.id.tv_view_info_window_track_status_content);
+        TextView tvSpeed = viewInfo.findViewById(R.id.tv_view_info_window_track_speed_content);
+        TextView tvLocateType = viewInfo.findViewById(R.id.tv_view_info_window_track_type_content);
+        TextView tvCurrentTime = viewInfo.findViewById(R.id.tv_view_info_window_track_current_time_content);
+        TextView tvLocateTime = viewInfo.findViewById(R.id.tv_view_info_window_track_locate_time_content);
+        TextView tvElectricity = viewInfo.findViewById(R.id.tv_view_info_window_track_electricity);
+        ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_track_close);
+        ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_track_electricity);
 
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
@@ -476,50 +531,17 @@ public class MonitorFragment extends Fragment {
             }
         });
 
-        tvTrack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toTrackActivity(mInfoImei);
-            }
-        });
-
-        tvPath.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-
-        tvNavigation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-
-        tvMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-
         InfoWindow mInfoWindow = new InfoWindow(viewInfo, latLng, 0);
         //显示InfoWindow
         mBaiduMap.showInfoWindow(mInfoWindow);
 
-        addMarker(latLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei);
+        addMarker(latLng, mStatusData.getStatu(), mInfoDirection);
         moveToInfoCenter(latLng);
     }
 
-    //  获取某台设备的信息，并显示infowindow，公开给外部使用
-    public void showPointNew(String imeiStr) {
-//        boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNew(mToken, mCid, "", imeiStr, false);
-    }
-
-    //  跳转到跟踪页面
-    private void toTrackActivity(String imei) {
-        Intent intent = new Intent(getContext(), TrackActivity.class);
-        intent.putExtra(Data.KEY_IMEI, imei);
-        startActivity(intent);
+    //  获取某台设备的信息，并显示infowindow
+    private void showPointNew() {
+        mNetManager.showPointNew(mToken, mCid, "", mImei, false);
     }
 
     private class MyHandler extends Handler {
@@ -527,19 +549,30 @@ public class MonitorFragment extends Fragment {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case Data.MSG_MSG: {
+                    TrackActivity.this.showToast(mStringMessage);
+                    break;
+                }
                 case Data.MSG_ERO: {
                     break;
                 }
                 case Data.MSG_NOTHING: {
                     break;
                 }
-                case Data.MSG_MSG: {
-                    mToastU.showToast(mStringMessage);
+                case Data.MSG_1: {
+                    //  获取到设备信息
+                    showInfoWindow(mInfoLatLng);
+                    mGeoCoderU.searchAddress(mInfoLatLng.latitude, mInfoLatLng.longitude);
+                    if (null != mLatLngSelf) {
+                        searchDriving(mLatLngSelf, mInfoLatLng);
+                    }
+                    Log.i(TAG, "handleMessage: mFlushInterval-->" + mFlushInterval);
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval * 1000);
                     break;
                 }
-                case Data.MSG_1: {
-                    showInfoWindow(mInfoLatLng);
-                    break;
+                case Data.MSG_2: {
+                    //  刷新
+                    showPointNew();
                 }
             }
         }
