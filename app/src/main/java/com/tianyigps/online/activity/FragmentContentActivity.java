@@ -191,6 +191,15 @@ public class FragmentContentActivity extends AppCompatActivity {
         showFragment(mMonitorFragment);
     }
 
+    //  显示监控，给外部使用
+    public void showMonitor(Bundle bundle) {
+        setDefault();
+        mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
+        mMonitorFragment.setArguments(bundle);
+        showFragment(mMonitorFragment);
+    }
+
     //  显示报警
     private void showWarn() {
         setDefault();

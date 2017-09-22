@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="@dimen/dp_240"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/dp_12">
+
+    <LinearLayout
+        android:layout_width="@dimen/dp_240"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_title"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:lines="1"
+                android:text="Title"
+                android:textColor="@color/colorBlueHeavy"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_electricity"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_32"
+                android:gravity="center"
+                android:textSize="@dimen/sp_12"/>
+
+            <ImageView
+                android:id="@+id/iv_view_info_window_monitor_electricity"
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_4"
+                android:src="@drawable/ic_electricity"/>
+
+            <ImageView
+                android:id="@+id/iv_view_info_window_monitor_close"
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:layout_gravity="end"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/ic_delete"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px_1"
+            android:background="@color/colorGray"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="状态："/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_status_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/tv_view_info_window_monitor_status"
+                android:layout_toRightOf="@+id/tv_view_info_window_monitor_status"
+                android:ellipsize="end"
+                android:lines="1"/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_view_info_window_monitor_status"
+                android:layout_marginTop="@dimen/dp_4"
+                android:text="速度："/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_speed_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_view_info_window_monitor_speed"
+                android:layout_toEndOf="@+id/tv_view_info_window_monitor_speed"
+                android:layout_toRightOf="@+id/tv_view_info_window_monitor_speed"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_view_info_window_monitor_speed"
+                android:layout_marginTop="@dimen/dp_4"
+                android:text="定位类型："/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_type_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_view_info_window_monitor_type"
+                android:layout_toEndOf="@+id/tv_view_info_window_monitor_type"
+                android:layout_toRightOf="@+id/tv_view_info_window_monitor_type"/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_view_info_window_monitor_type"
+                android:layout_marginTop="@dimen/dp_4"
+                android:text="信号时间："/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_current_time_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_view_info_window_monitor_current_time"
+                android:layout_toEndOf="@+id/tv_view_info_window_monitor_current_time"
+                android:layout_toRightOf="@+id/tv_view_info_window_monitor_current_time"/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_locate_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_view_info_window_monitor_current_time"
+                android:layout_marginTop="@dimen/dp_4"
+                android:text="定位时间："/>
+
+            <TextView
+                android:id="@+id/tv_view_info_window_monitor_locate_time_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_view_info_window_monitor_locate_time"
+                android:layout_toEndOf="@+id/tv_view_info_window_monitor_locate_time"
+                android:layout_toRightOf="@+id/tv_view_info_window_monitor_locate_time"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px_1"
+            android:layout_marginTop="@dimen/dp_4"
+            android:background="@color/colorGray"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_4"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="跟踪"
+                android:textColor="@color/colorBlueTheme"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="回放"
+                android:textColor="@color/colorBlueTheme"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="导航"
+                android:textColor="@color/colorBlueTheme"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="更多"
+                android:textColor="@color/colorBlueTheme"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/dp_12"
+        android:layout_marginStart="@dimen/dp_12"
+        android:src="@drawable/ic_info_part"/>
+
+</LinearLayout>

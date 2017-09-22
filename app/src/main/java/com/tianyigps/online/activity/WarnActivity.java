@@ -118,7 +118,7 @@ public class WarnActivity extends BaseActivity {
 
             @Override
             public void onGetAddress(String address) {
-                mAddress = "位置：" + address + "\n\n";
+                mAddress = "位置：" + address;
                 LatLng latLng = new LatLng(mLatidude, mLongitude);
                 showInfoWindow(latLng, mTitle, WarnTypeU.getType(mType), mDate, mAddress);
             }
@@ -137,7 +137,7 @@ public class WarnActivity extends BaseActivity {
 
     //  显示InfoWindow
     private void showInfoWindow(LatLng latLng, String title, String type, String date, String address) {
-        View viewInfo = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_info_window, null);
+        View viewInfo = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_info_window_warn, null);
 
         ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_close);
         TextView textViewTitle = viewInfo.findViewById(R.id.tv_view_info_window_title);
@@ -176,7 +176,7 @@ public class WarnActivity extends BaseActivity {
 
     //  添加marker
     private void addMarker(LatLng latLng) {
-//定义Maker坐标点
+        //定义Maker坐标点
         if (null == latLng) {
             return;
         }
@@ -184,10 +184,11 @@ public class WarnActivity extends BaseActivity {
             mOverlayMarker.remove();
         }
         //构建Marker图标
-        View viewMarker = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_marker_car, null);
+        View viewMarker = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_marker_car_red, null);
         BitmapDescriptor bitmap = BitmapDescriptorFactory.fromView(viewMarker);
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions().position(latLng).icon(bitmap).anchor(0.5f, 0.5f);
         //在地图上添加Marker，并显示
-        mOverlayMarker = mBaiduMap.addOverlay(option);    }
+        mOverlayMarker = mBaiduMap.addOverlay(option);
+    }
 }

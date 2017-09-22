@@ -6,6 +6,6 @@
     <ImageView
         android:layout_width="@dimen/dp_32"
         android:layout_height="@dimen/dp_32"
-        android:src="@drawable/ic_choice_car_blue"/>
+        android:src="@drawable/ic_car_green"/>
 
 </FrameLayout>

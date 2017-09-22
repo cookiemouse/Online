@@ -67,4 +67,18 @@ public class Data {
     public final static String INTENT_NAME = "intent_name";
     public final static String INTENT_LATITUDE = "intent_latitude";
     public final static String INTENT_LONGITUDE = "intent_longitude";
+
+    //  BundleKey
+    public final static String KEY_CID = "key_cid";
+    public final static String KEY_IMEI = "key_imei";
+
+    //  定位类型
+    public final static int LOCATE_BASE = 0;
+    public final static int LOCATE_GPS = 1;
+    public final static int LOCATE_NO = 2;
+
+    //  设备状态
+    public final static int STATUS_OTHER = 0;
+    public final static int STATUS_ON = 1;
+    public final static int STATUS_OFF = 2;
 }

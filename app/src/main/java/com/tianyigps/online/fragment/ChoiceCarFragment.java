@@ -22,6 +22,7 @@ import com.tianyigps.grouplistlibrary.GroupAdapter;
 import com.tianyigps.grouplistlibrary.GroupData;
 import com.tianyigps.grouplistlibrary.GroupListView;
 import com.tianyigps.online.R;
+import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.adapter.TerminalBaseExpandableListAdapter;
 import com.tianyigps.online.bean.AddAttentionBean;
 import com.tianyigps.online.bean.CompanyBean;
@@ -90,6 +91,9 @@ public class ChoiceCarFragment extends Fragment {
     //  Loading
     private LoadingDialogFragment mLoadingDialogFragment;
 
+    //  ContentActivity
+    private FragmentContentActivity mFragmentContentActivity;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -123,6 +127,8 @@ public class ChoiceCarFragment extends Fragment {
         mExpandableListView.setAdapter(mTerminalBaseExpandableListAdapter);
 
         mToastU = new ToastU(getContext());
+
+        mFragmentContentActivity = (FragmentContentActivity) getActivity();
 
         mLoadingDialogFragment = new LoadingDialogFragment();
 
@@ -171,6 +177,8 @@ public class ChoiceCarFragment extends Fragment {
                 mStatuSelected = 0;
                 mTextViewAll.setTextColor(getResources().getColor(R.color.colorBlueTheme));
                 mViewAll.setVisibility(View.VISIBLE);
+                isFirstExpand = true;
+                getDevices();
             }
         });
 
@@ -182,6 +190,8 @@ public class ChoiceCarFragment extends Fragment {
                 mStatuSelected = 1;
                 mTextViewOnline.setTextColor(getResources().getColor(R.color.colorBlueTheme));
                 mViewOnline.setVisibility(View.VISIBLE);
+                isFirstExpand = true;
+                getDevices();
             }
         });
 
@@ -193,6 +203,8 @@ public class ChoiceCarFragment extends Fragment {
                 mStatuSelected = 2;
                 mTextViewOffline.setTextColor(getResources().getColor(R.color.colorBlueTheme));
                 mViewOffline.setVisibility(View.VISIBLE);
+                isFirstExpand = true;
+                getDevices();
             }
         });
 
@@ -226,6 +238,20 @@ public class ChoiceCarFragment extends Fragment {
             public void onChildClick(int parentPosition, int childPosition) {
                 mParentPosition = parentPosition;
                 mChildPosition = childPosition;
+                AdapterExpandableChildData childData = mAdapterExpandableGroupDataList.get(parentPosition)
+                        .getExpandableChildDatalist().get(childPosition);
+                Bundle bundle = new Bundle();
+                bundle.putString(Data.KEY_IMEI, childData.getImei());
+                mFragmentContentActivity.showMonitor(bundle);
+            }
+        });
+
+        mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+                AdapterExpandableGroupData groupData = mAdapterExpandableGroupDataList.get(i);
+                mGroupSelected = groupData.getId();
+                return false;
             }
         });
 
@@ -241,9 +267,8 @@ public class ChoiceCarFragment extends Fragment {
             public void onGroupExpand(int i) {
                 AdapterExpandableGroupData groupData = mAdapterExpandableGroupDataList.get(i);
                 groupData.setExhibit(true);
-                mGroupSelected = groupData.getId();
                 if (groupData.getExpandableChildDatalist().size() == 0) {
-                    getDevices(mCidSelected, mGroupSelected, mStatuSelected);
+                    getDevices();
                 }
             }
         });
@@ -439,6 +464,11 @@ public class ChoiceCarFragment extends Fragment {
         mNetManager.getNumWithStatus(mToken, mCid, cid);
     }
 
+    //  获取各状态下的设备
+    private void getDevices() {
+        mNetManager.getTerminalByGroup(mToken, mCid, mCidSelected, mGroupSelected, mStatuSelected);
+    }
+
     //  添加、取消关注
     private void attention(boolean isAttend, String imei) {
         if (isAttend) {
@@ -468,11 +498,6 @@ public class ChoiceCarFragment extends Fragment {
         dialog.show();
     }
 
-    //  获取各状态下的设备
-    private void getDevices(int cid, int gid, int status) {
-        mNetManager.getTerminalByGroup(mToken, mCid, cid, gid, status);
-    }
-
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -497,8 +522,8 @@ public class ChoiceCarFragment extends Fragment {
                     break;
                 }
                 case Data.MSG_2: {
-                    getDevices(mCidSelected, mGroupSelected, mStatuSelected);
                     //  组
+                    getDevices();
                     break;
                 }
                 case Data.MSG_3: {

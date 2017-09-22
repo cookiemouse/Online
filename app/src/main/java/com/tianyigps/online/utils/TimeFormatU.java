@@ -1,7 +1,10 @@
 package com.tianyigps.online.utils;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -9,6 +12,8 @@ import java.util.Date;
  */
 
 public class TimeFormatU {
+
+    private static final String TAG = "TimeFormatU";
 
     public static String millisToDate(long mills) {
         Date date = new Date(mills);
@@ -22,7 +27,41 @@ public class TimeFormatU {
         return simpleDateFormat.format(date);
     }
 
-    public static String millisToColock(long mills) {
+    public static String millisToClock(long mills) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mills);
+        int hour = calendar.get(Calendar.HOUR);
+        int min = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        Log.i(TAG, "millisToClock: hour-->" + hour);
+        Log.i(TAG, "millisToClock: min-->" + min);
+        Log.i(TAG, "millisToClock: second-->" + second);
+//        int hour = (int) (mills / 1000 / 3600);
+//        int min = (int) (mills / 1000 % 3600 / 60);
+//        int second = (int) (mills / 1000 % 3600 % 60);
+        String time = "";
+        if (hour < 10) {
+            time = "0" + hour;
+        } else {
+            time = "" + hour;
+        }
+        time += "小时";
+        if (min < 10) {
+            time += "0" + min;
+        } else {
+            time += min;
+        }
+        time += "分钟";
+        if (second < 10) {
+            time += "0" + second;
+        } else {
+            time += second;
+        }
+        time += "秒";
+        return time;
+    }
+
+    public static String millsToMinSec(long mills) {
 //        int hour = (int) (mills / 1000 / 3600);
 //        int min = (int) (mills / 1000 % 3600 / 60);
         int min = (int) (mills / 1000 / 60);
