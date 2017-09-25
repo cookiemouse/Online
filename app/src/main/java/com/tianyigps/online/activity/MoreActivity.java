@@ -75,7 +75,8 @@ public class MoreActivity extends BaseActivity {
         mTableRowDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2017/9/25 设备详情
+                // 2017/9/25 设备详情
+                toDetailsActivity();
             }
         });
 
@@ -148,6 +149,13 @@ public class MoreActivity extends BaseActivity {
             s = 2;
         }
         mNetManager.unifenceOpr(mImei, s);
+    }
+
+    //  跳转到设备详情页面
+    private void toDetailsActivity(){
+        Intent intent = new Intent(MoreActivity.this, DetailsActivity.class);
+        intent.putExtra(Data.INTENT_IMEI, mImei);
+        startActivity(intent);
     }
 
     private class MyHandler extends Handler {
