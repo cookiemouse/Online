@@ -767,7 +767,7 @@ public class NetManager {
     public void unifenceOpr(String imei, int opr) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.UNIFENCE_OPR + "imei=" + imei
-                + "opr" + opr);
+                + "&opr=" + opr);
         mRequest = builder.build();
         Log.i(TAG, "unifenceOpr: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

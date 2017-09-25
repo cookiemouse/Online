@@ -105,6 +105,8 @@
             android:name=".activity.TrackActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activity.MoreActivity">
+        </activity>
     </application>
 
 </manifest>

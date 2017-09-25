@@ -294,17 +294,16 @@ public class TrackActivity extends BaseActivity {
                 if (null == drivingRouteResult || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     //  未找到路线
                     Log.i(TAG, "onGetDrivingRouteResult: 未找到路线");
+                    showToast("未找到路线");
                     return;
                 }
 
                 List<LatLng> latLngList = new ArrayList<>();
                 if (null != drivingRouteResult.getRouteLines()) {
                     DrivingRouteLine drivingRouteLine = drivingRouteResult.getRouteLines().get(0);
-                    Log.i(TAG, "onGetDrivingRouteResult: drivingRouteLine-->" + drivingRouteLine);
                     if (null != drivingRouteLine) {
                         if (null != drivingRouteLine.getAllStep()) {
                             for (DrivingRouteLine.DrivingStep drivingStep : drivingRouteLine.getAllStep()) {
-                                Log.i(TAG, "onGetDrivingRouteResult: routeNode-->" + drivingStep);
                                 if (null != drivingStep) {
                                     for (LatLng latlng : drivingStep.getWayPoints()) {
                                         latLngList.add(latlng);

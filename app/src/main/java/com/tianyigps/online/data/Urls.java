@@ -7,7 +7,7 @@ package com.tianyigps.online.data;
 public class Urls {
 
     private static final String IP = "http://sit.tianyigps.cn/app-service/app";
-//    private static final String IP = "http://www.tianyigps.cn/app";
+    private static final String IP_2 = "http://sit.tianyigps.cn";
 
     public static final String CHECK_USER = IP + "/loginController.do?checkuser&";
     public static final String CHECK_VERSION = IP + "/loginController.do?checkVersion&";
@@ -27,8 +27,8 @@ public class Urls {
     public static final String SHOW_TERMINAL_INFO_FOR_MAP = IP + "/terminalController.do?showTerminalInfo4mapNew&";
     public static final String GET_WARN_LIST = IP + "/warnController.do?queryWarnList&";
 
-    public static final String UNIFENCE_STATUS = IP + "/geofenceapi/unifencestatus?";
-    public static final String UNIFENCE_OPR = IP + "/geofenceapi/unifenceopr?";
-    public static final String UNIFENCE_INFO= IP + "/geofenceapi/unifenceinfo?";
-    public static final String UNIFENCE_UPSERT= IP + "/geofenceapi/unifenceupsert?";
+    public static final String UNIFENCE_STATUS = IP_2 + "/geofenceapi/unifencestatus?";
+    public static final String UNIFENCE_OPR = IP_2 + "/geofenceapi/unifenceopr?";
+    public static final String UNIFENCE_INFO= IP_2 + "/geofenceapi/unifenceinfo?";
+    public static final String UNIFENCE_UPSERT= IP_2 + "/geofenceapi/unifenceupsert?";
 }

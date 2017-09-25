@@ -34,6 +34,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
+import com.tianyigps.online.activity.MoreActivity;
 import com.tianyigps.online.activity.TrackActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.data.Data;
@@ -307,7 +308,7 @@ public class MonitorFragment extends Fragment {
 
                         mInfoName = objBean.getName();
                         String locateType = redisobjBean.getLocate_type();
-                        if (null == locateType){
+                        if (null == locateType) {
                             locateType = "2";
                         }
                         if (locateType.equals("1")) {
@@ -498,6 +499,7 @@ public class MonitorFragment extends Fragment {
         tvMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                toMoreActivity(mInfoImei, mInfoName);
             }
         });
 
@@ -519,6 +521,14 @@ public class MonitorFragment extends Fragment {
     private void toTrackActivity(String imei) {
         Intent intent = new Intent(getContext(), TrackActivity.class);
         intent.putExtra(Data.KEY_IMEI, imei);
+        startActivity(intent);
+    }
+
+    //  跳转到更多页面
+    private void toMoreActivity(String imei, String name) {
+        Intent intent = new Intent(getContext(), MoreActivity.class);
+        intent.putExtra(Data.INTENT_IMEI, imei);
+        intent.putExtra(Data.INTENT_NAME, name);
         startActivity(intent);
     }
 
