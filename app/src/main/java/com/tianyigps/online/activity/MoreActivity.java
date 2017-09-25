@@ -83,7 +83,8 @@ public class MoreActivity extends BaseActivity {
         mTableRowSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2017/9/25 围栏设置
+                // 2017/9/25 围栏设置
+                toEnclosureActivity();
             }
         });
 
@@ -154,6 +155,13 @@ public class MoreActivity extends BaseActivity {
     //  跳转到设备详情页面
     private void toDetailsActivity(){
         Intent intent = new Intent(MoreActivity.this, DetailsActivity.class);
+        intent.putExtra(Data.INTENT_IMEI, mImei);
+        startActivity(intent);
+    }
+
+    //  跳转到设备详情页面
+    private void toEnclosureActivity(){
+        Intent intent = new Intent(MoreActivity.this, EnclosureActivity.class);
         intent.putExtra(Data.INTENT_IMEI, mImei);
         startActivity(intent);
     }

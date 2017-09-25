@@ -163,7 +163,7 @@ public class TerminalInfo4MapBean {
             private String gps_time;
             private int speed;
             private String station_code;
-            private int direction;
+            private String direction;
             private String imei;
             private String current_time;
             private boolean defaultLocZJB;
@@ -207,11 +207,11 @@ public class TerminalInfo4MapBean {
                 this.station_code = station_code;
             }
 
-            public int getDirection() {
+            public String getDirection() {
                 return direction;
             }
 
-            public void setDirection(int direction) {
+            public void setDirection(String direction) {
                 this.direction = direction;
             }
 

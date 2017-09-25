@@ -837,13 +837,13 @@ public class NetManager {
      * @param radius    半径，多边形传null
      * @param points    围栏点，首尾相连
      */
-    public void unifenceUpsert(String imei, int type, String[] point, int radius, String points) {
+    public void unifenceUpsert(String imei, int type, String point, int radius, String points) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.UNIFENCE_UPSERT + "imei=" + imei
-                + "type" + type
-                + "point" + point
-                + "radius" + radius
-                + "points" + points);
+                + "&type=" + type
+                + "&point=" + point
+                + "&radius=" + radius
+                + "&points=" + points);
         mRequest = builder.build();
         Log.i(TAG, "unifenceUpsert: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

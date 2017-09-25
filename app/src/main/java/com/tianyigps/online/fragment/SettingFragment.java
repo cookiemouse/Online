@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TableRow;
 
 import com.tianyigps.online.R;
@@ -14,6 +15,7 @@ import com.tianyigps.online.activity.AboutActivity;
 import com.tianyigps.online.activity.FlushTimeActivity;
 import com.tianyigps.online.activity.InstructionActivity;
 import com.tianyigps.online.activity.OpinionActivity;
+import com.tianyigps.online.manager.SharedManager;
 
 /**
  * Created by cookiemouse on 2017/9/5.
@@ -22,6 +24,9 @@ import com.tianyigps.online.activity.OpinionActivity;
 public class SettingFragment extends Fragment {
 
     private TableRow mTableRowFlushTime, mTableRowOpinion, mTableRowInstruction, mTableRowAbout;
+    private Button mButtonExit;
+
+    private SharedManager mSharedManager;
 
     @Nullable
     @Override
@@ -40,6 +45,10 @@ public class SettingFragment extends Fragment {
         mTableRowOpinion = view.findViewById(R.id.tr_fragment_opinion);
         mTableRowInstruction = view.findViewById(R.id.tr_fragment_instructions);
         mTableRowAbout = view.findViewById(R.id.tr_fragment_about);
+
+        mButtonExit = view.findViewById(R.id.btn_fragment_setting);
+
+        mSharedManager = new SharedManager(getContext());
     }
 
     private void setEventListener() {
@@ -72,6 +81,14 @@ public class SettingFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), AboutActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        mButtonExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSharedManager.saveAutoLogin(false);
+                getActivity().finish();
             }
         });
     }

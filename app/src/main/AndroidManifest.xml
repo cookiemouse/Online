@@ -109,6 +109,8 @@
         </activity>
         <activity android:name=".activity.DetailsActivity">
         </activity>
+        <activity android:name=".activity.EnclosureActivity">
+        </activity>
     </application>
 
 </manifest>
