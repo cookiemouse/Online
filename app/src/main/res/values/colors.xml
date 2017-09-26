@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3cabfa</color>
     <color name="colorPrimaryDark">#3cabfa</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#3cabfa</color>
 
     <color name="colorNull">#00000000</color>
     <color name="colorBlueTheme">#3cabfa</color>

@@ -99,11 +99,14 @@ public class MoreActivity extends BaseActivity {
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                if ("1".equals(unifenceStatusBean.getObj().getStatus())) {
-                    mStatus = true;
+                String status;
+                UnifenceStatusBean.ObjBean objBean = unifenceStatusBean.getObj();
+                if (null == objBean) {
+                    status = "2";
                 } else {
-                    mStatus = false;
+                    status = unifenceStatusBean.getObj().getStatus();
                 }
+                mStatus = "1".equals(status);
                 myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
@@ -121,7 +124,7 @@ public class MoreActivity extends BaseActivity {
                 UnifenceOprBean unifenceOprBean = gson.fromJson(result, UnifenceOprBean.class);
                 if (unifenceOprBean.isSuccess()) {
                     mOpr = mStatus;
-                }else {
+                } else {
                     mOpr = !mStatus;
 
                 }
@@ -153,14 +156,14 @@ public class MoreActivity extends BaseActivity {
     }
 
     //  跳转到设备详情页面
-    private void toDetailsActivity(){
+    private void toDetailsActivity() {
         Intent intent = new Intent(MoreActivity.this, DetailsActivity.class);
         intent.putExtra(Data.INTENT_IMEI, mImei);
         startActivity(intent);
     }
 
     //  跳转到设备详情页面
-    private void toEnclosureActivity(){
+    private void toEnclosureActivity() {
         Intent intent = new Intent(MoreActivity.this, EnclosureActivity.class);
         intent.putExtra(Data.INTENT_IMEI, mImei);
         startActivity(intent);

@@ -24,6 +24,7 @@ import com.tianyigps.online.interfaces.OnCheckUserListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
+import com.xsj.crasheye.Crasheye;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.permission.Rationale;
@@ -56,6 +57,9 @@ public class GuideActivity extends Activity {
 
         //  百度地图初始化
         SDKInitializer.initialize(getApplicationContext());
+
+        //  Crasheye
+        Crasheye.init(this, Data.CRASH_KEY);
 
         init();
 
@@ -130,6 +134,7 @@ public class GuideActivity extends Activity {
                 .requestCode(100)
                 .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE
                         , Manifest.permission.ACCESS_FINE_LOCATION
+                        , Manifest.permission.READ_PHONE_STATE
                         , Manifest.permission.CAMERA)
                 .rationale(new RationaleListener() {
                     @Override

@@ -7,6 +7,7 @@ package com.tianyigps.online.data;
 public class Urls {
 
     private static final String IP = "http://sit.tianyigps.cn/app-service/app";
+//    private static final String IP = "http://www.tianyigps.cn/app";
     private static final String IP_2 = "http://sit.tianyigps.cn";
 
     public static final String CHECK_USER = IP + "/loginController.do?checkuser&";

@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -55,12 +57,17 @@ public class EnclosureActivity extends AppCompatActivity {
 
     private TextView mTextViewSatellite, mTextViewNomal;
     private ImageView mImageViewLocate;
+    private LinearLayout mLinearLayoutCycle, mLinearLayoutPolygon;
+    private ImageView mImageViewCycleReduce, mImageViewCyclePlus;
+    private SeekBar mSeekBar;
+    private Button mButtonCycleSet, mButtonPolygonReset, mButtonPolygonSet;
+    private int mRadius = 0;
 
     private LocateManager mLocateManager;
     private boolean mIsToCenter = false;
     //  左下角定位，false = 定位手机，true = 定位车辆
     private boolean mIsLocateCar = false;
-    private LatLng mLatLngSelf, mLatLngCar, mLatLngEnclosure;
+    private LatLng mLatLngSelf, mLatLngCar;
 
     private NetManager mNetManager;
     private SharedManager mSharedManager;
@@ -71,9 +78,6 @@ public class EnclosureActivity extends AppCompatActivity {
     private List<LatLng> mLatLngPolygon;
 
     private MyHandler myHandler;
-
-    //  测试
-    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +130,15 @@ public class EnclosureActivity extends AppCompatActivity {
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_enclosure_satellite);
         mTextViewNomal = (TextView) findViewById(R.id.tv_activity_enclosure_normal);
         mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_enclosure_locate);
+        mLinearLayoutCycle = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_cycle);
+        mLinearLayoutPolygon = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_polygon);
 
-        mButton = (Button) findViewById(R.id.btn_test);
+        mImageViewCycleReduce = (ImageView) findViewById(R.id.iv_layout_enclosure_bottom_cycle_reduce);
+        mImageViewCyclePlus = (ImageView) findViewById(R.id.iv_layout_enclosure_bottom_cycle_plus);
+        mSeekBar = (SeekBar) findViewById(R.id.sb_layout_enclosure_bottom_cycle);
+        mButtonCycleSet = (Button) findViewById(R.id.btn_layout_enclosure_bottom_cycle);
+        mButtonPolygonSet = (Button) findViewById(R.id.btn_layout_enclosure_bottom_polygon_set);
+        mButtonPolygonReset = (Button) findViewById(R.id.btn_layout_enclosure_bottom_polygon_reset);
 
         myHandler = new MyHandler();
 
@@ -158,7 +169,9 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mImageViewCycle.setSelected(true);
+                mLinearLayoutCycle.setVisibility(View.VISIBLE);
                 mImageViewPolygon.setSelected(false);
+                mLinearLayoutPolygon.setVisibility(View.GONE);
             }
         });
 
@@ -166,7 +179,9 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mImageViewCycle.setSelected(false);
+                mLinearLayoutCycle.setVisibility(View.GONE);
                 mImageViewPolygon.setSelected(true);
+                mLinearLayoutPolygon.setVisibility(View.VISIBLE);
             }
         });
 
@@ -210,6 +225,62 @@ public class EnclosureActivity extends AppCompatActivity {
                 }
                 mIsLocateCar = true;
                 mImageViewLocate.setImageResource(R.drawable.ic_location_car);
+            }
+        });
+
+        mImageViewCycleReduce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mRadius > 0) {
+                    mRadius--;
+                }
+                mSeekBar.setProgress(mRadius);
+            }
+        });
+
+        mImageViewCyclePlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mRadius < mSeekBar.getMax()){
+                    mRadius++;
+                }
+                mSeekBar.setProgress(mRadius);
+            }
+        });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mRadius = i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        mButtonCycleSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/9/26 设置圆形围栏
+            }
+        });
+
+        mButtonPolygonReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/9/26 重置多边形围栏
+            }
+        });
+
+        mButtonPolygonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/9/26 设置多边形围栏
             }
         });
 
@@ -301,13 +372,6 @@ public class EnclosureActivity extends AppCompatActivity {
             public void onFailure() {
                 mStringMessage = Data.DEFAULT_MESSAGE;
                 myHandler.sendEmptyMessage(Data.MSG_MSG);
-            }
-        });
-
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setEnclosure();
             }
         });
     }
@@ -420,6 +484,11 @@ public class EnclosureActivity extends AppCompatActivity {
                     //  获取围栏信息
                     if (2 == mEnclosureType) {
                         showPolygon();
+                        mLinearLayoutPolygon.setVisibility(View.VISIBLE);
+                        mLinearLayoutCycle.setVisibility(View.GONE);
+                    } else {
+                        mLinearLayoutPolygon.setVisibility(View.GONE);
+                        mLinearLayoutCycle.setVisibility(View.VISIBLE);
                     }
                     break;
                 }

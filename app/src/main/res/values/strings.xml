@@ -30,4 +30,8 @@
     <string name="not_receive">不接收车辆报警</string>
     <string name="submit">提交</string>
     <string name="hint_opinion">请留下您宝贵的意见......</string>
+    <string name="enclosure_info_cycle">拖动地图调整围栏中心，拖动进度条控制围栏范围大小</string>
+    <string name="enclosure_info_polygon">单击添加选点，三个及以上选点构成围栏区域。</string>
+    <string name="set_enclosure">设置围栏</string>
+    <string name="reset_enclosure">重置围栏</string>
 </resources>

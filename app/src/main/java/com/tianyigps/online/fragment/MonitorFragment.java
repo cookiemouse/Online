@@ -480,6 +480,7 @@ public class MonitorFragment extends Fragment {
         tvTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
                 toTrackActivity(mInfoImei);
             }
         });
@@ -487,18 +488,21 @@ public class MonitorFragment extends Fragment {
         tvPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
             }
         });
 
         tvNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
             }
         });
 
         tvMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
                 toMoreActivity(mInfoImei, mInfoName);
             }
         });

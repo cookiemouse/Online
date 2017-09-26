@@ -81,4 +81,7 @@ public class Data {
     public final static int STATUS_OTHER = 0;
     public final static int STATUS_ON = 1;
     public final static int STATUS_OFF = 2;
+
+    //  CrashKey
+    public static final String CRASH_KEY = "acaed6b0";
 }
