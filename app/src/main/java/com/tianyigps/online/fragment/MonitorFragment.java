@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.MoreActivity;
+import com.tianyigps.online.activity.PathActivity;
 import com.tianyigps.online.activity.TrackActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.data.Data;
@@ -489,6 +490,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
+                toPathActivity(mInfoImei, mInfoName);
             }
         });
 
@@ -525,6 +527,14 @@ public class MonitorFragment extends Fragment {
     private void toTrackActivity(String imei) {
         Intent intent = new Intent(getContext(), TrackActivity.class);
         intent.putExtra(Data.KEY_IMEI, imei);
+        startActivity(intent);
+    }
+
+    //  跳转到回放页面
+    private void toPathActivity(String imei, String name) {
+        Intent intent = new Intent(getContext(), PathActivity.class);
+        intent.putExtra(Data.INTENT_IMEI, imei);
+        intent.putExtra(Data.INTENT_NAME, name);
         startActivity(intent);
     }
 

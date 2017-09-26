@@ -59,7 +59,7 @@ public class GuideActivity extends Activity {
         SDKInitializer.initialize(getApplicationContext());
 
         //  Crasheye
-        Crasheye.init(this, Data.CRASH_KEY);
+        Crasheye.init(this, "acaed6b0");
 
         init();
 

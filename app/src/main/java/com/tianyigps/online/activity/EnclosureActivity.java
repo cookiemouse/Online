@@ -55,7 +55,7 @@ public class EnclosureActivity extends AppCompatActivity {
     private BaiduMap mBaiduMap;
     private Overlay mOverlayMarker, mOverlayPolygon;
 
-    private TextView mTextViewSatellite, mTextViewNomal;
+    private TextView mTextViewSatellite, mTextViewNormal;
     private ImageView mImageViewLocate;
     private LinearLayout mLinearLayoutCycle, mLinearLayoutPolygon;
     private ImageView mImageViewCycleReduce, mImageViewCyclePlus;
@@ -128,7 +128,7 @@ public class EnclosureActivity extends AppCompatActivity {
         mLatLngPolygon = new ArrayList<>();
 
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_enclosure_satellite);
-        mTextViewNomal = (TextView) findViewById(R.id.tv_activity_enclosure_normal);
+        mTextViewNormal = (TextView) findViewById(R.id.tv_activity_enclosure_normal);
         mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_enclosure_locate);
         mLinearLayoutCycle = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_cycle);
         mLinearLayoutPolygon = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_polygon);
@@ -190,15 +190,15 @@ public class EnclosureActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
                 mTextViewSatellite.setBackgroundResource(R.drawable.bg_map_control_select);
-                mTextViewNomal.setBackgroundResource(R.drawable.bg_map_control);
+                mTextViewNormal.setBackgroundResource(R.drawable.bg_map_control);
             }
         });
 
-        mTextViewNomal.setOnClickListener(new View.OnClickListener() {
+        mTextViewNormal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
-                mTextViewNomal.setBackgroundResource(R.drawable.bg_map_control_select);
+                mTextViewNormal.setBackgroundResource(R.drawable.bg_map_control_select);
                 mTextViewSatellite.setBackgroundResource(R.drawable.bg_map_control);
             }
         });

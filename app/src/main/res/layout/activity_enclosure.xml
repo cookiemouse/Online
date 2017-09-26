@@ -43,7 +43,7 @@
             android:layout_marginRight="@dimen/dp_2"
             android:layout_toLeftOf="@+id/iv_activity_enclosure_3"
             android:layout_toStartOf="@+id/iv_activity_enclosure_3"
-            android:padding="@dimen/dp_8"
+            android:padding="@dimen/dp_4"
             android:src="@drawable/bg_enclosure_cycle"/>
 
         <ImageView
@@ -53,7 +53,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
+            android:padding="@dimen/dp_4"
             android:src="@drawable/bg_enclosure_polygon"/>
     </RelativeLayout>
 
