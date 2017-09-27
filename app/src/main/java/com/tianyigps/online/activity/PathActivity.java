@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -17,6 +17,7 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapView;
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.dialog.DatePickerDialogFragment;
 import com.tianyigps.online.interfaces.OnFindHisPointsListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
@@ -106,6 +107,7 @@ public class PathActivity extends AppCompatActivity {
         mImageViewDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showDatePickerDialog();
             }
         });
 
@@ -137,7 +139,6 @@ public class PathActivity extends AppCompatActivity {
         mNetManager.setOnFindHisPointsListener(new OnFindHisPointsListener() {
             @Override
             public void onSuccess(String result) {
-
             }
 
             @Override
@@ -149,30 +150,36 @@ public class PathActivity extends AppCompatActivity {
     }
 
     //  显示速度选择PopupWindow
-    private void showPopup(){
+    private void showPopup() {
         View viewPop = LayoutInflater.from(this).inflate(R.layout.view_popup_window, null);
 
+        LinearLayout linearLayout = viewPop.findViewById(R.id.ll_view_popup_window);
+
         final PopupWindow popupWindow = new PopupWindow(viewPop
-                , ViewGroup.LayoutParams.WRAP_CONTENT
-                , ViewGroup.LayoutParams.WRAP_CONTENT
+                , ViewGroup.LayoutParams.MATCH_PARENT
+                , ViewGroup.LayoutParams.MATCH_PARENT
                 , true);
+
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupWindow.dismiss();
+            }
+        });
 
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                setBackgroundAlpha(1.0f);
             }
         });
 
-        setBackgroundAlpha(0.5f);
-        popupWindow.showAsDropDown(mImageViewSpeed, -40, 0);
+        popupWindow.showAsDropDown(mTextViewNormal, 0, 0);
     }
 
-    //  显示popup时背景的改变
-    private void setBackgroundAlpha(float alpha) {
-        WindowManager.LayoutParams lp = this.getWindow().getAttributes();
-        lp.alpha = alpha;
-        this.getWindow().setAttributes(lp);
+    //  显示选择时间对话框
+    private void showDatePickerDialog() {
+        DatePickerDialogFragment datePickerDialogFragment = new DatePickerDialogFragment();
+        datePickerDialogFragment.show(getSupportFragmentManager(), "");
     }
 
     //  获取轨迹数据
