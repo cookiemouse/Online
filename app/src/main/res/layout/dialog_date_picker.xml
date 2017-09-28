@@ -60,7 +60,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/bg_text"
                 android:gravity="center"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
                 android:text="2017-09-27 09:00"/>
         </LinearLayout>
 
@@ -81,7 +84,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/bg_text"
                 android:gravity="center"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
                 android:text="2017-09-27 10:00"/>
         </LinearLayout>
 

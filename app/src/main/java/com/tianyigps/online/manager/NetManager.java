@@ -378,8 +378,8 @@ public class NetManager {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.FIND_HIS_POINTS + "token=" + token
                 + "&imei=" + imei
-                + "&startData=" + startData
-                + "&endData=" + endData);
+                + "&startDate=" + startData
+                + "&endDate=" + endData);
         mRequest = builder.build();
         Log.i(TAG, "findHisPoints: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

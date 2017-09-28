@@ -247,7 +247,7 @@ public class DatePickerDialogFragment extends DialogFragment {
                 if (isStart) {
                     mStart = calendar.getTimeInMillis();
                     mStartTime = TimeFormatU.millisToDate2(mStart);
-                    if (mStart > mNow){
+                    if (mStart > mNow) {
                         mToastU.showToast("开始时间大于当前时间");
                         return;
                     }
@@ -255,7 +255,7 @@ public class DatePickerDialogFragment extends DialogFragment {
                 } else {
                     mEnd = calendar.getTimeInMillis();
                     mEndTime = TimeFormatU.millisToDate2(mEnd);
-                    if (mEnd > mNow){
+                    if (mEnd > mNow) {
                         mToastU.showToast("结束时间大于当前时间");
                         return;
                     }
