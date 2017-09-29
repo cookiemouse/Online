@@ -2,6 +2,7 @@ package com.tianyigps.online.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.tianyigps.online.R;
+import com.tianyigps.online.data.DatePickerData;
 import com.tianyigps.online.utils.TimeFormatU;
 import com.tianyigps.online.utils.ToastU;
 import com.yundian.bottomdialog.v4.BottomDialog;
@@ -29,9 +31,10 @@ import java.util.Calendar;
 
 public class DatePickerDialogFragment extends DialogFragment {
 
-    private static final String TAG = "DatePickerDialogFragment";
+    private static final String TAG = "DatePicker";
 
-    private static final long DAY = 60 * 60 * 1000;
+    private static final long HOUR = 60 * 60 * 1000;
+    private static final long DAY_5 = 5 * 24 * 60 * 60 * 1000;
 
     private View mView;
 
@@ -50,6 +53,8 @@ public class DatePickerDialogFragment extends DialogFragment {
     private TimePicker mTimePicker;
 
     private ToastU mToastU;
+
+    private OnChoiceDateListener mOnChoiceDateListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,11 +105,13 @@ public class DatePickerDialogFragment extends DialogFragment {
 
         Calendar calendar = Calendar.getInstance();
         mNow = calendar.getTimeInMillis();
-        mEndTime = TimeFormatU.millisToDate2(calendar.getTimeInMillis());
+        mEnd = calendar.getTimeInMillis();
+        mEndTime = TimeFormatU.millisToDate2(mEnd);
         mTextViewEnd.setText(mEndTime);
 
-        calendar.setTimeInMillis(mNow - DAY);
-        mStartTime = TimeFormatU.millisToDate2(calendar.getTimeInMillis());
+        calendar.setTimeInMillis(mNow - HOUR);
+        mStart = calendar.getTimeInMillis();
+        mStartTime = TimeFormatU.millisToDate2(mStart);
         mTextViewStart.setText(mStartTime);
 
         mToastU = new ToastU(getContext());
@@ -118,6 +125,16 @@ public class DatePickerDialogFragment extends DialogFragment {
                 mTextViewStart.setEnabled(true);
                 mTextViewEnd.setEnabled(true);
                 mRadioButtonCustom.setChecked(true);
+
+                Calendar calendar = Calendar.getInstance();
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
+                mTextViewEnd.setText(mEndTime);
+
+                calendar.setTimeInMillis(mNow - HOUR);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+                mTextViewStart.setText(mStartTime);
             }
         });
 
@@ -126,6 +143,18 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonToday.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                calendar.set(year, month, day, 0, 0, 0);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+
+                calendar.setTimeInMillis(day - 1);
+                calendar.set(year, month, day, 23, 59, 59);
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
             }
         });
 
@@ -134,6 +163,18 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonYesterday.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH) - 1;
+                calendar.set(year, month, day, 0, 0, 0);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+
+                calendar.setTimeInMillis(day - 1);
+                calendar.set(year, month, day, 23, 59, 59);
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
             }
         });
 
@@ -142,6 +183,13 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonHour.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
+
+                calendar.setTimeInMillis(mNow - HOUR);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
             }
         });
 
@@ -152,6 +200,16 @@ public class DatePickerDialogFragment extends DialogFragment {
                 mTextViewStart.setEnabled(true);
                 mTextViewEnd.setEnabled(true);
                 mRadioButtonCustom.setChecked(true);
+
+                Calendar calendar = Calendar.getInstance();
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
+                mTextViewEnd.setText(mEndTime);
+
+                calendar.setTimeInMillis(mNow - HOUR);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+                mTextViewStart.setText(mStartTime);
             }
         });
 
@@ -160,6 +218,18 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonToday.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                calendar.set(year, month, day, 0, 0, 0);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+
+                calendar.setTimeInMillis(day - 1);
+                calendar.set(year, month, day, 23, 59, 59);
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
             }
         });
 
@@ -168,6 +238,18 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonYesterday.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH) - 1;
+                calendar.set(year, month, day, 0, 0, 0);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
+
+                calendar.setTimeInMillis(day - 1);
+                calendar.set(year, month, day, 23, 59, 59);
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
             }
         });
 
@@ -176,6 +258,13 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mRadioButtonHour.setChecked(true);
+                Calendar calendar = Calendar.getInstance();
+                mEnd = calendar.getTimeInMillis();
+                mEndTime = TimeFormatU.millisToDate2(mEnd);
+
+                calendar.setTimeInMillis(mNow - HOUR);
+                mStart = calendar.getTimeInMillis();
+                mStartTime = TimeFormatU.millisToDate2(mStart);
             }
         });
 
@@ -206,6 +295,15 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/27 确定
+                if (null == mOnChoiceDateListener) {
+                    throw new NullPointerException("OnChoiceDateListener is null");
+                }
+                if (mEnd - mStart > DAY_5) {
+                    show5DayDialog();
+                    return;
+                }
+                mOnChoiceDateListener.onChoice(new DatePickerData(TimeFormatU.millisToDate(mStart), TimeFormatU.millisToDate(mEnd)));
+                dismiss();
             }
         });
     }
@@ -276,5 +374,28 @@ public class DatePickerDialogFragment extends DialogFragment {
         mBottomDialog.setContentView(view);
         mBottomDialog.setCancelable(false);
         mBottomDialog.show(getChildFragmentManager(), "");
+    }
+
+    //  显示超过5天对话框
+    private void show5DayDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("一次性查询最多离开的放 5天的轨迹，请重新选择。");
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public interface OnChoiceDateListener {
+        void onChoice(DatePickerData datePickerData);
+    }
+
+    public void setOnChoiceDateListener(OnChoiceDateListener listener) {
+        this.mOnChoiceDateListener = listener;
     }
 }

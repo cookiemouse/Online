@@ -34,4 +34,8 @@
     <string name="enclosure_info_polygon">单击添加选点，三个及以上选点构成围栏区域。</string>
     <string name="set_enclosure">设置围栏</string>
     <string name="reset_enclosure">重置围栏</string>
+    <string name="stop_time">停留时间：</string>
+    <string name="start">起：</string>
+    <string name="end">止：</string>
+    <string name="address">位置：</string>
 </resources>

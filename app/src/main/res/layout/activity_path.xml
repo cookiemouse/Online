@@ -114,15 +114,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/colorWhite"
-                    android:text="回放结束"/>
+                    android:textColor="@color/colorWhite"/>
 
                 <TextView
                     android:id="@+id/tv_activity_path_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:text="10km/h"/>
+                    android:textColor="@color/colorWhite"/>
             </LinearLayout>
 
             <LinearLayout
@@ -135,21 +133,22 @@
                     android:id="@+id/tv_activity_path_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:text="00:00"/>
+                    android:text="00:00"
+                    android:textColor="@color/colorWhite"/>
 
                 <SeekBar
                     android:id="@+id/sb_activity_path"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:thumb="@drawable/bg_thumb"/>
 
                 <TextView
                     android:id="@+id/tv_activity_path_end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:text="00:00"/>
+                    android:text="00:00"
+                    android:textColor="@color/colorWhite"/>
 
                 <ImageView
                     android:id="@+id/iv_activity_path_play"

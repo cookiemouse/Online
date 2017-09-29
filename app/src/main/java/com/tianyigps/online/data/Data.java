@@ -71,6 +71,7 @@ public class Data {
     //  BundleKey
     public final static String KEY_CID = "key_cid";
     public final static String KEY_IMEI = "key_imei";
+    public final static String KEY_SPEED = "key_speed";
 
     //  定位类型
     public final static int LOCATE_BASE = 0;
@@ -81,4 +82,11 @@ public class Data {
     public final static int STATUS_OTHER = 0;
     public final static int STATUS_ON = 1;
     public final static int STATUS_OFF = 2;
+
+    //  轨迹回放速度
+    public final static int SPEED_10 = 5000 / 250;  //  5000 / 250
+    public final static int SPEED_50 = 5000 / 200;  //  5000 / 200
+    public final static int SPEED_100 = 5000 / 150; //  5000 / 150
+    public final static int SPEED_200 = 5000 / 100; //  5000 / 100
+    public final static int SPEED_400 = 5000 / 50;  //  5000 / 50
 }

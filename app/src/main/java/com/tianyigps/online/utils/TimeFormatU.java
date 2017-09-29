@@ -105,6 +105,15 @@ public class TimeFormatU {
         return time;
     }
 
+    //  转为分钟秒
+    public static String millsToMinSec2(long mills) {
+        String time;
+        int min = (int) (mills / 1000 / 60);
+        int second = (int) (mills / 1000 % 3600 % 60);
+        time = min + "分钟" + second + "秒";
+        return time;
+    }
+
     public static String millsToMothDay(long mills) {
         Date date = new Date(mills);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M月dd日");

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -34,11 +35,14 @@ import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.bean.PathBean;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.data.DatePickerData;
 import com.tianyigps.online.dialog.DatePickerDialogFragment;
 import com.tianyigps.online.dialog.SpeedPickerDialogFragment;
 import com.tianyigps.online.interfaces.OnFindHisPointsListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.GeoCoderU;
+import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.TimeFormatU;
 
 import java.util.ArrayList;
@@ -54,6 +58,12 @@ public class PathActivity extends AppCompatActivity {
     private static final int MARKER_END = 4;
 
     private static final long PAUSE_TIME = 6 * 60 * 1000;
+
+    private static final String KEY_STOP_TIME = "stop";
+    private static final String KEY_START_TIME = "start";
+    private static final String KEY_END_TIME = "end";
+    private static final String KEY_LAT = "lat";
+    private static final String KEY_LNG = "lng";
 
     private TextView mTextViewTitle;
     private ImageView mImageViewBack, mImageViewDate, mImageViewSpeed;
@@ -75,6 +85,7 @@ public class PathActivity extends AppCompatActivity {
     private String mStringMessage;
 
     //  轨迹点
+    private int mSpeedLimit = 999;
     private List<PathBean.ObjBean.MaplistBean> mMapListBeanList;
     private Overlay mOverlayLine;
     private Marker mMarkerStart, mMarkerEnd, mMarkerRun;
@@ -82,11 +93,29 @@ public class PathActivity extends AppCompatActivity {
 
     private int mProgress = 0;
 
+    private int mSpeed = Data.SPEED_100;
+
     private boolean isPlaying = false, isPause = false;
+
+    private GeoCoderU mGeoCoderU;
+
+    //  停留点InfoWindow数据
+    private String mInfoStopTime, mInfoStartTime, mInfoEndTime, mInfoAddress;
+    private LatLng mLatLngInfo;
+
+    //  超速线
+    private List<LatLng> mLatLngOverSpeedList;
+    private List<Overlay> mOverlaySpeedLineList;
 
     //  屏幕
     private WindowManager mWindowManager;
     private int mWidth, mHeight;
+
+    //  速度选择
+    SpeedPickerDialogFragment mSpeedPickerDialogFragment;
+
+    //  日期选择
+    DatePickerDialogFragment mDatePickerDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,12 +187,17 @@ public class PathActivity extends AppCompatActivity {
 
         mMapListBeanList = new ArrayList<>();
         mMarkerPauseList = new ArrayList<>();
+        mLatLngOverSpeedList = new ArrayList<>();
+        mOverlaySpeedLineList = new ArrayList<>();
 
         myHandler = new MyHandler();
 
-        showDatePickerDialog();
+        mGeoCoderU = new GeoCoderU();
 
-        getPath("2017-09-26 13:51:00", "2017-09-28 14:51:00");
+        mSpeedPickerDialogFragment = new SpeedPickerDialogFragment();
+        mDatePickerDialogFragment = new DatePickerDialogFragment();
+
+        showDatePickerDialog();
     }
 
     private void setEventListener() {
@@ -219,18 +253,64 @@ public class PathActivity extends AppCompatActivity {
                     mImageViewPlay.setSelected(isPause);
                     isPause = !isPause;
                 } else {
-                    //  消除停留点Marker
-                    if (mMarkerPauseList.size() > 0) {
-                        for (Overlay overlay : mMarkerPauseList) {
-                            overlay.remove();
-                        }
-                    }
+                    //  消除停留点
+                    removeStopMarker();
+                    //  消除InfoWindow
+                    mBaiduMap.hideInfoWindow();
                     mProgress = 0;
                     isPause = false;
                     isPlaying = true;
                     mImageViewPlay.setSelected(true);
                     myHandler.sendEmptyMessage(Data.MSG_2);
                 }
+            }
+        });
+
+        mSpeedPickerDialogFragment.setOnChoiceSpeedListener(new SpeedPickerDialogFragment.OnChoiceSpeedListener() {
+            @Override
+            public void onChoice(int speed) {
+                mSpeed = speed;
+            }
+        });
+
+        mDatePickerDialogFragment.setOnChoiceDateListener(new DatePickerDialogFragment.OnChoiceDateListener() {
+            @Override
+            public void onChoice(DatePickerData datePickerData) {
+                Log.i(TAG, "onChoice: start-->" + datePickerData.getStart());
+                Log.i(TAG, "onChoice: end-->" + datePickerData.getEnd());
+                getPath(datePickerData.getStart(), datePickerData.getEnd());
+            }
+        });
+
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Bundle bundle = marker.getExtraInfo();
+                if (null != bundle) {
+                    mInfoStopTime = bundle.getString(KEY_STOP_TIME);
+                    mInfoStartTime = bundle.getString(KEY_START_TIME);
+                    mInfoEndTime = bundle.getString(KEY_END_TIME);
+                    double lat = bundle.getDouble(KEY_LAT);
+                    double lng = bundle.getDouble(KEY_LNG);
+
+                    mLatLngInfo = marker.getPosition();
+
+                    mGeoCoderU.searchAddress(lat, lng);
+                }
+                return false;
+            }
+        });
+
+        mGeoCoderU.setOnGetGeoGodeListener(new GeoCoderU.OnGetGeoCodeListener() {
+            @Override
+            public void onGetLatlng(double lat, double lng) {
+            }
+
+            @Override
+            public void onGetAddress(String address) {
+                Log.i(TAG, "onGetAddress: address-->" + address);
+                mInfoAddress = address;
+                showInfoWindow();
             }
         });
 
@@ -245,8 +325,15 @@ public class PathActivity extends AppCompatActivity {
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
+                //  清除播放handler
+                myHandler.removeMessages(Data.MSG_2);
+
+                //  清除轨迹点
                 mMapListBeanList.clear();
                 PathBean.ObjBean objBean = pathBean.getObj();
+                if (!RegularU.isEmpty(objBean.getSpeedAlam())) {
+                    mSpeedLimit = Integer.valueOf(objBean.getSpeedAlam());
+                }
                 if (objBean.getMaplist().size() > 1) {
                     for (PathBean.ObjBean.MaplistBean maplistBean : objBean.getMaplist()) {
                         mMapListBeanList.add(maplistBean);
@@ -292,14 +379,15 @@ public class PathActivity extends AppCompatActivity {
 
     //  显示选择时间对话框
     private void showDatePickerDialog() {
-        DatePickerDialogFragment datePickerDialogFragment = new DatePickerDialogFragment();
-        datePickerDialogFragment.show(getSupportFragmentManager(), "");
+        mDatePickerDialogFragment.show(getSupportFragmentManager(), "");
     }
 
     //  显示速度选择对话框
     private void showSpeedPickerDialog() {
-        SpeedPickerDialogFragment speedPickerDialogFragment = new SpeedPickerDialogFragment();
-        speedPickerDialogFragment.show(getSupportFragmentManager(), "");
+        Bundle bundle = new Bundle();
+        bundle.putInt(Data.KEY_SPEED, mSpeed);
+        mSpeedPickerDialogFragment.setArguments(bundle);
+        mSpeedPickerDialogFragment.show(getSupportFragmentManager(), "speed_picker");
     }
 
     //  获取轨迹数据
@@ -314,6 +402,17 @@ public class PathActivity extends AppCompatActivity {
             long time2 = TimeFormatU.dateToMillis(mMapListBeanList.get(position + 1).getLocate_time());
 
             return time2 - time1 > PAUSE_TIME;
+        }
+        return false;
+    }
+
+    //  计算超速
+    private boolean isOverSpeed(int position) {
+        if (position < mMapListBeanList.size() - 1) {
+//            int speed1 = mMapListBeanList.get(position).getSpeed();
+            int speed2 = mMapListBeanList.get(position + 1).getSpeed();
+
+            return speed2 > mSpeedLimit;
         }
         return false;
     }
@@ -334,8 +433,18 @@ public class PathActivity extends AppCompatActivity {
         mOverlayLine = mBaiduMap.addOverlay(polylineOptions);
     }
 
+    //  绘制超速线
+    private void addOverSpeedLine() {
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.width(8);
+        polylineOptions.color(0xffff0000);
+        polylineOptions.points(mLatLngOverSpeedList);
+        mOverlaySpeedLineList.add(mBaiduMap.addOverlay(polylineOptions));
+        mLatLngOverSpeedList.clear();
+    }
+
     //  添加Marker
-    private void addMaker(LatLng latLng, int type) {
+    private void addMaker(LatLng latLng, int type, Bundle bundle) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.anchor(0.5f, 1);
         markerOptions.position(latLng);
@@ -361,6 +470,7 @@ public class PathActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(this).inflate(R.layout.view_map_marker_pause, null);
                 BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromView(view);
                 markerOptions.icon(bitmapDescriptor);
+                markerOptions.extraInfo(bundle);
                 mMarkerPauseList.add((Marker) mBaiduMap.addOverlay(markerOptions));
                 break;
             }
@@ -380,10 +490,57 @@ public class PathActivity extends AppCompatActivity {
         }
     }
 
+    //  消除停留点
+    private void removeStopMarker() {
+        //  消除停留点Marker
+        if (mMarkerPauseList.size() > 0) {
+            for (Overlay overlay : mMarkerPauseList) {
+                overlay.remove();
+            }
+        }
+    }
+
+    //  清除超速线
+    private void removeOverSpeedLine() {
+        if (mOverlaySpeedLineList.size() > 0) {
+            for (Overlay overlay : mOverlaySpeedLineList) {
+                overlay.remove();
+            }
+        }
+    }
+
+    //  InfoWindow停留点
+    private void showInfoWindow() {
+        View viewInfo = LayoutInflater.from(PathActivity.this).inflate(R.layout.view_map_info_window_path, null);
+
+        TextView tvStopTime = viewInfo.findViewById(R.id.tv_view_info_window_path_stop);
+        TextView tvStartTime = viewInfo.findViewById(R.id.tv_view_info_window_path_start);
+        TextView tvEndTime = viewInfo.findViewById(R.id.tv_view_info_window_path_end);
+        TextView tvAddress = viewInfo.findViewById(R.id.tv_view_info_window_path_address);
+
+        tvStopTime.setText(mInfoStopTime);
+        tvStartTime.setText(mInfoStartTime);
+        tvEndTime.setText(mInfoEndTime);
+        tvAddress.setText(mInfoAddress);
+
+        ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_path_close);
+        imageViewClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBaiduMap.hideInfoWindow();
+            }
+        });
+
+        InfoWindow mInfoWindow = new InfoWindow(viewInfo, mLatLngInfo, -30);
+        //显示InfoWindow
+        mBaiduMap.showInfoWindow(mInfoWindow);
+        animToCenter(mLatLngInfo);
+    }
+
     //  播放运动点
     private void moveRunMarker(LatLng latLng) {
         if (null == mMarkerRun) {
-            addMaker(latLng, MARKER_RUN);
+            addMaker(latLng, MARKER_RUN, null);
             return;
         }
         mMarkerRun.setPosition(latLng);
@@ -429,45 +586,104 @@ public class PathActivity extends AppCompatActivity {
                 }
                 case Data.MSG_1: {
                     //  获取轨迹数据
+
+                    //  清除停留点marker
+                    removeStopMarker();
+                    //  清除停留点
+                    mMarkerPauseList.clear();
+                    //  清除开始点
+                    if (null != mMarkerStart) {
+                        mMarkerStart.remove();
+                    }
+                    //  清除停止点
+                    if (null != mMarkerEnd) {
+                        mMarkerEnd.remove();
+                    }
+                    //  清除运动点
+                    if (null != mMarkerRun) {
+                        mMarkerRun.remove();
+                        mMarkerRun = null;
+                    }
+                    //  清除超速线
+                    removeOverSpeedLine();
+                    //  清除轨迹线
+                    if (null != mOverlayLine) {
+                        mOverlayLine.remove();
+                    }
+                    //  播放状态置空
+                    mImageViewPlay.setSelected(false);
+                    isPlaying = false;
+                    isPause = false;
+                    mTextViewTime.setText("");
+                    mTextViewSpeed.setText("");
+
                     int size = mMapListBeanList.size();
                     mSeekBar.setMax(size);
                     if (size > 1) {
                         PathBean.ObjBean.MaplistBean maplistBeanStart = mMapListBeanList.get(0);
                         if (null != maplistBeanStart) {
                             LatLng latLng = new LatLng(maplistBeanStart.getLatitudeF(), maplistBeanStart.getLongitudeF());
-                            addMaker(latLng, MARKER_START);
+                            addMaker(latLng, MARKER_START, null);
                         }
                         PathBean.ObjBean.MaplistBean maplistBeanEnd = mMapListBeanList.get(size - 1);
                         if (null != maplistBeanEnd) {
                             LatLng latLng = new LatLng(maplistBeanEnd.getLatitudeF(), maplistBeanEnd.getLongitudeF());
-                            addMaker(latLng, MARKER_END);
+                            addMaker(latLng, MARKER_END, null);
                         }
+                        //  绘制轨迹
                         addLine();
+
+                        //  绘制超速线
+                        for (int i = 0; i < size; i++) {
+                            PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(i);
+                            LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
+                            if (isOverSpeed(i)) {
+                                mLatLngOverSpeedList.add(latLng);
+                            } else if (mLatLngOverSpeedList.size() > 0) {
+                                mLatLngOverSpeedList.add(latLng);
+                                //  绘制
+                                addOverSpeedLine();
+                            }
+                        }
                     }
                     break;
                 }
                 case Data.MSG_2: {
                     //  播放路径
                     if (mProgress < mMapListBeanList.size()) {
-                        PathBean.ObjBean.MaplistBean maplistBeanStart = mMapListBeanList.get(mProgress);
-                        String time = "时间：" + maplistBeanStart.getLocate_time();
-                        String speed = maplistBeanStart.getSpeed() + " km/h";
+                        PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(mProgress);
+                        String time = "时间：" + maplistBean.getLocate_time();
+                        String speed = maplistBean.getSpeed() + " km/h";
                         mTextViewTime.setText(time);
                         mTextViewSpeed.setText(speed);
-                        LatLng latLng = new LatLng(maplistBeanStart.getLatitudeF(), maplistBeanStart.getLongitudeF());
+                        LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
                         moveRunMarker(latLng);
                         if (isOutScreen(latLng)) {
                             moveToCenter(latLng);
                         }
                         if (isPause(mProgress)) {
-                            addMaker(latLng, MARKER_PAUSU);
+                            PathBean.ObjBean.MaplistBean maplistBeanNext = mMapListBeanList.get(mProgress + 1);
+                            long start = TimeFormatU.dateToMillis(maplistBean.getLocate_time());
+                            long end = TimeFormatU.dateToMillis(maplistBeanNext.getLocate_time());
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString(KEY_STOP_TIME, TimeFormatU.millsToMinSec2(end - start));
+                            bundle.putString(KEY_START_TIME, maplistBean.getLocate_time());
+                            bundle.putString(KEY_END_TIME, maplistBeanNext.getLocate_time());
+                            bundle.putDouble(KEY_LAT, latLng.latitude);
+                            bundle.putDouble(KEY_LNG, latLng.longitude);
+                            addMaker(latLng, MARKER_PAUSU, bundle);
                         }
                         mSeekBar.setProgress(mProgress);
                         mProgress++;
-                        myHandler.sendEmptyMessageDelayed(Data.MSG_2, 100);
+                        myHandler.sendEmptyMessageDelayed(Data.MSG_2, mSpeed);
                     } else {
                         isPlaying = false;
                         mImageViewPlay.setSelected(false);
+                        if (mMapListBeanList.size() > 0) {
+                            mTextViewTime.setText("回放结束");
+                            mTextViewSpeed.setText("");
+                        }
                     }
                     break;
                 }
