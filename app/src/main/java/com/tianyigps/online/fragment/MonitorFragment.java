@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.MoreActivity;
+import com.tianyigps.online.activity.NavigationActivity;
 import com.tianyigps.online.activity.PathActivity;
 import com.tianyigps.online.activity.TrackActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
@@ -45,6 +46,7 @@ import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.CoordinateConverterU;
 import com.tianyigps.online.utils.LocateTypeU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.StatusU;
@@ -498,6 +500,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
+                toNaviActivity();
             }
         });
 
@@ -535,6 +538,15 @@ public class MonitorFragment extends Fragment {
         Intent intent = new Intent(getContext(), PathActivity.class);
         intent.putExtra(Data.INTENT_IMEI, imei);
         intent.putExtra(Data.INTENT_NAME, name);
+        startActivity(intent);
+    }
+
+    //  跳转到导航页面
+    private void toNaviActivity() {
+        Intent intent = new Intent(getContext(), NavigationActivity.class);
+        com.amap.api.maps.model.LatLng latLng = CoordinateConverterU.baiduToGaodeLatlng(getContext(), mInfoLatLng);
+        intent.putExtra(Data.INTENT_LATITUDE, latLng.latitude);
+        intent.putExtra(Data.INTENT_LONGITUDE, latLng.longitude);
         startActivity(intent);
     }
 

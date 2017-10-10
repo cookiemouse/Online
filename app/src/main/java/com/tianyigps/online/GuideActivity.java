@@ -32,6 +32,8 @@ import com.yanzhenjie.permission.RationaleListener;
 
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class GuideActivity extends Activity {
 
     private static final String TAG = "GuideActivity";
@@ -57,6 +59,10 @@ public class GuideActivity extends Activity {
 
         //  百度地图初始化
         SDKInitializer.initialize(getApplicationContext());
+
+        //  初始化极光推送
+        JPushInterface.init(getApplicationContext());
+        JPushInterface.setDebugMode(true);
 
         //  Crasheye
         Crasheye.init(this, "acaed6b0");

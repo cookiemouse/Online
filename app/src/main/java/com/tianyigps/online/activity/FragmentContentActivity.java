@@ -19,6 +19,8 @@ import com.tianyigps.online.fragment.WarnFragment;
 import com.tianyigps.online.utils.TimerU;
 import com.tianyigps.online.utils.ToastU;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class FragmentContentActivity extends AppCompatActivity {
 
     private FrameLayout mFrameLayout;
@@ -98,6 +100,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mFragmentManager = getSupportFragmentManager();
 
         showChoiceCar();
+
+        JPushInterface.setAlias(FragmentContentActivity.this, 0, "2223");
     }
 
     private void setEventListener() {
