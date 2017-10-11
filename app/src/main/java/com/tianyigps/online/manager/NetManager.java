@@ -610,16 +610,17 @@ public class NetManager {
      * @param token
      * @param cid
      * @param condition 搜索条件
-     * @param pageNum   页码，可不填
-     * @param pageSize  每页数量，可不填
+//     * @param pageNum   页码，可不填
+//     * @param pageSize  每页数量，可不填
      */
-    public void searchTerminalWithStatus(String token, int cid, String condition, int pageNum, int pageSize) {
+//    public void searchTerminalWithStatus(String token, int cid, String condition, int pageNum, int pageSize) {
+    public void searchTerminalWithStatus(String token, int cid, String condition) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.SEARCH_TERMINAL_WITH_STATUS + "token=" + token
                 + "&cid=" + cid
                 + "&condition=" + condition
-                + "&pageNum=" + pageNum
-                + "&pageSize=" + pageSize);
+                + "&pageNum="
+                + "&pageSize=");
         mRequest = builder.build();
         Log.i(TAG, "searchTerminalWithStatus: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

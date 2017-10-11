@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,15 +27,18 @@ import com.tianyigps.grouplistlibrary.GroupData;
 import com.tianyigps.grouplistlibrary.GroupListView;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
+import com.tianyigps.online.adapter.SearchDevicesAdapter;
 import com.tianyigps.online.adapter.TerminalBaseExpandableListAdapter;
 import com.tianyigps.online.bean.AddAttentionBean;
 import com.tianyigps.online.bean.CompanyBean;
 import com.tianyigps.online.bean.DelAttentionBean;
 import com.tianyigps.online.bean.GroupBean;
 import com.tianyigps.online.bean.NumberBean;
+import com.tianyigps.online.bean.SearchDevicesBean;
 import com.tianyigps.online.bean.TerminalListBean;
 import com.tianyigps.online.data.AdapterExpandableChildData;
 import com.tianyigps.online.data.AdapterExpandableGroupData;
+import com.tianyigps.online.data.AdapterSearchDevicesData;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.dialog.LoadingDialogFragment;
 import com.tianyigps.online.interfaces.OnAddAttentionListener;
@@ -39,6 +46,7 @@ import com.tianyigps.online.interfaces.OnDelAttentionListener;
 import com.tianyigps.online.interfaces.OnGetGroupListener;
 import com.tianyigps.online.interfaces.OnGetNumWithStatusListener;
 import com.tianyigps.online.interfaces.OnGetTerminalByGroupListener;
+import com.tianyigps.online.interfaces.OnSearchTerminalWithStatusListener;
 import com.tianyigps.online.interfaces.OnShowCustomersListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
@@ -55,6 +63,8 @@ public class ChoiceCarFragment extends Fragment {
 
     private static final String TAG = "ChoiceCarFragment";
 
+    private static final int DELEY_1200 = 1200;
+
     //  top
     private RelativeLayout mRelativeLayoutTop;
     private GroupListView mListView;
@@ -69,12 +79,18 @@ public class ChoiceCarFragment extends Fragment {
     private TextView mTextViewAll, mTextViewOnline, mTextViewOffline;
     private View mViewAll, mViewOnline, mViewOffline;
     private ExpandableListView mExpandableListView;
+    private LinearLayout mLinearLayoutExpand;
+    private ListView mListViewSearch;
     private int mOffline, mOnline;
     private int mCidSelected, mGroupSelected, mStatuSelected = 0;
     private List<AdapterExpandableGroupData> mAdapterExpandableGroupDataList;
+    private List<AdapterSearchDevicesData> mAdapterSearchDevicesDataList;
     private TerminalBaseExpandableListAdapter mTerminalBaseExpandableListAdapter;
+    private SearchDevicesAdapter mSearchDevicesAdapter;
     private boolean isFirstExpand = true;
     private int mParentPosition, mChildPosition;
+    private int mSearchPosition;
+    private String mSearchKey;
 
     //  data
     private NetManager mNetManager;
@@ -106,6 +122,12 @@ public class ChoiceCarFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        myHandler.removeMessages(Data.MSG_7);
+        super.onStop();
+    }
+
     private void init(View view) {
         mRelativeLayoutTop = view.findViewById(R.id.rl_fragment_choice_car_accounts);
         mListView = view.findViewById(R.id.lv_fragment_choice_car);
@@ -121,10 +143,15 @@ public class ChoiceCarFragment extends Fragment {
         mViewOffline = view.findViewById(R.id.view_fragment_choice_car_offline);
 
         mExpandableListView = view.findViewById(R.id.elv_fragment_choice_car);
+        mLinearLayoutExpand = view.findViewById(R.id.ll_fragment_choice_car_expand);
+        mListViewSearch = view.findViewById(R.id.lv_fragment_choice_car_search);
 
         mAdapterExpandableGroupDataList = new ArrayList<>();
+        mAdapterSearchDevicesDataList = new ArrayList<>();
         mTerminalBaseExpandableListAdapter = new TerminalBaseExpandableListAdapter(getContext(), mAdapterExpandableGroupDataList);
+        mSearchDevicesAdapter = new SearchDevicesAdapter(getContext(), mAdapterSearchDevicesDataList);
         mExpandableListView.setAdapter(mTerminalBaseExpandableListAdapter);
+        mListViewSearch.setAdapter(mSearchDevicesAdapter);
 
         mToastU = new ToastU(getContext());
 
@@ -166,6 +193,23 @@ public class ChoiceCarFragment extends Fragment {
                     mRelativeLayoutTop.setVisibility(View.VISIBLE);
                     mImageViewDivision.setSelected(false);
                 }
+            }
+        });
+
+        mEditTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                myHandler.removeMessages(Data.MSG_7);
+                mSearchKey = editable.toString();
+                myHandler.sendEmptyMessageDelayed(Data.MSG_7, DELEY_1200);
             }
         });
 
@@ -221,8 +265,35 @@ public class ChoiceCarFragment extends Fragment {
                 getNumber(cid);
                 isFirstExpand = true;
             }
+
+            @Override
+            public void onBaseClick(int i) {
+                mEditTextSearch.clearFocus();
+                if (mLinearLayoutExpand.getVisibility() == View.GONE) {
+                    mLinearLayoutExpand.setVisibility(View.VISIBLE);
+                    mListViewSearch.setVisibility(View.GONE);
+                    mEditTextSearch.setText(null);
+                }
+            }
         });
 
+        mSearchDevicesAdapter.setOnItemListener(new SearchDevicesAdapter.OnItemListener() {
+            @Override
+            public void onConcernClick(int position) {
+                // 2017/10/10 关注
+                AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(position);
+                attention(data.isAttention(), data.getImei());
+            }
+
+            @Override
+            public void onItemClick(int position) {
+                // 2017/10/10 item
+                AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(position);
+                Bundle bundle = new Bundle();
+                bundle.putString(Data.KEY_IMEI, data.getImei());
+                mFragmentContentActivity.showMonitor(bundle);
+            }
+        });
 
         mTerminalBaseExpandableListAdapter.setOnGroupClick(new TerminalBaseExpandableListAdapter.OnItemListener() {
             @Override
@@ -427,6 +498,36 @@ public class ChoiceCarFragment extends Fragment {
                 myHandler.sendEmptyMessage(Data.MSG_MSG);
             }
         });
+
+        mNetManager.setOnSearchTerminalWithStatusListener(new OnSearchTerminalWithStatusListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                SearchDevicesBean searchDevicesBean = gson.fromJson(result, SearchDevicesBean.class);
+                mStringMessage = searchDevicesBean.getMsg();
+                if (!searchDevicesBean.isSuccess()) {
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
+                mAdapterSearchDevicesDataList.clear();
+                for (SearchDevicesBean.ObjBean objBean : searchDevicesBean.getObj()) {
+                    mAdapterSearchDevicesDataList.add(new AdapterSearchDevicesData(objBean.getName()
+                            , objBean.getTerminalStatus()
+                            , objBean.getImei()
+                            , 0
+                            , objBean.isIsAttention()
+                            , objBean.getAttention_id()));
+                }
+                myHandler.sendEmptyMessage(Data.MSG_8);
+            }
+
+            @Override
+            public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
     }
 
     //  all、online、offline置零
@@ -476,6 +577,11 @@ public class ChoiceCarFragment extends Fragment {
             return;
         }
         mNetManager.addAttention(mToken, mCid, imei);
+    }
+
+    //  搜索
+    private void searchDevices(String key) {
+        mNetManager.searchTerminalWithStatus(mToken, mCidSelected, key);
     }
 
     //  取消关注确认对话框
@@ -546,19 +652,54 @@ public class ChoiceCarFragment extends Fragment {
                 case Data.MSG_5: {
                     //  添加关注成功
                     mToastU.showToast(mStringMessage);
-                    AdapterExpandableChildData childData = mAdapterExpandableGroupDataList.get(mParentPosition)
-                            .getExpandableChildDatalist().get(mChildPosition);
-                    childData.setAttention(true);
-                    mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
+                    if (mLinearLayoutExpand.getVisibility() == View.VISIBLE) {
+                        AdapterExpandableChildData childData = mAdapterExpandableGroupDataList.get(mParentPosition)
+                                .getExpandableChildDatalist().get(mChildPosition);
+                        childData.setAttention(true);
+                        mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
+                    } else {
+                        AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(mSearchPosition);
+                        data.setAttention(true);
+                        mSearchDevicesAdapter.notifyDataSetChanged();
+                    }
                     break;
                 }
                 case Data.MSG_6: {
                     //  删除关注成功
                     mToastU.showToast(mStringMessage);
-                    AdapterExpandableChildData childData = mAdapterExpandableGroupDataList.get(mParentPosition)
-                            .getExpandableChildDatalist().get(mChildPosition);
-                    childData.setAttention(false);
-                    mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
+                    if (mLinearLayoutExpand.getVisibility() == View.VISIBLE) {
+                        AdapterExpandableChildData childData = mAdapterExpandableGroupDataList.get(mParentPosition)
+                                .getExpandableChildDatalist().get(mChildPosition);
+                        childData.setAttention(false);
+                        mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
+                    } else {
+                        AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(mSearchPosition);
+                        data.setAttention(false);
+                        mSearchDevicesAdapter.notifyDataSetChanged();
+                    }
+                    break;
+                }
+                case Data.MSG_7: {
+                    //  搜索框内容变更，延时一秒搜索
+                    int size = mSearchKey.length();
+                    if (size > 0) {
+                        // TODO: 2017/10/10 搜索
+                        mLinearLayoutExpand.setVisibility(View.GONE);
+                        mListViewSearch.setVisibility(View.VISIBLE);
+
+                        searchDevices(mSearchKey);
+                    } else {
+                        mLinearLayoutExpand.setVisibility(View.VISIBLE);
+                        mListViewSearch.setVisibility(View.GONE);
+                    }
+                    break;
+                }
+                case Data.MSG_8: {
+                    //  搜索结果
+                    if (mAdapterSearchDevicesDataList.size() == 0) {
+                        mToastU.showToast("搜索数据不存在");
+                    }
+                    mSearchDevicesAdapter.notifyDataSetChanged();
                     break;
                 }
             }

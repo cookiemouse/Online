@@ -62,7 +62,7 @@ public class GuideActivity extends Activity {
 
         //  初始化极光推送
         JPushInterface.init(getApplicationContext());
-        JPushInterface.setDebugMode(true);
+//        JPushInterface.setDebugMode(true);
 
         //  Crasheye
         Crasheye.init(this, "acaed6b0");
