@@ -2,6 +2,7 @@ package com.tianyigps.online.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,13 +20,18 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.adapter.ConcernAdapter;
+import com.tianyigps.online.bean.AddAttentionBean;
 import com.tianyigps.online.bean.AttentionBean;
+import com.tianyigps.online.bean.DelAttentionBean;
 import com.tianyigps.online.data.AdapterConcernData;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.MonitorFragment;
+import com.tianyigps.online.interfaces.OnAddAttentionListener;
 import com.tianyigps.online.interfaces.OnAttentionListListener;
+import com.tianyigps.online.interfaces.OnDelAttentionListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +55,15 @@ public class ConcernDialogFragment extends DialogFragment {
     private ListView mListView;
     private List<AdapterConcernData> mAdapterConcernDataList;
     private ConcernAdapter mConcernAdapter;
+    private int mPosition;
 
     private View mView;
 
     //  MonitorFragment
     private MonitorFragment mMonitorFragment;
+
+    private String mStringMessage;
+    private ToastU mToastU;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +116,8 @@ public class ConcernDialogFragment extends DialogFragment {
         mSharedManager = new SharedManager(getContext());
         myHandler = new MyHandler();
 
+        mToastU = new ToastU(getContext());
+
         mCid = mSharedManager.getCid();
         mToken = mSharedManager.getToken();
 
@@ -125,7 +137,10 @@ public class ConcernDialogFragment extends DialogFragment {
         mConcernAdapter.setOnAdapterListener(new ConcernAdapter.OnAdapterListener() {
             @Override
             public void onConcern(int position) {
-                // TODO: 2017/9/13 取消关注
+                // 2017/9/13 取消关注
+                mPosition = position;
+                AdapterConcernData data = mAdapterConcernDataList.get(position);
+                attention(data.isOpen(), data.getImei());
             }
         });
 
@@ -133,6 +148,10 @@ public class ConcernDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // TODO: 2017/9/13 item点击
+                mPosition = i;
+                AdapterConcernData data = mAdapterConcernDataList.get(i);
+                mMonitorFragment.showDevices(data.getImei());
+                ConcernDialogFragment.this.dismiss();
             }
         });
 
@@ -157,6 +176,48 @@ public class ConcernDialogFragment extends DialogFragment {
                 Log.i(TAG, "onFailure: ");
             }
         });
+
+        mNetManager.setOnAddAttentionListener(new OnAddAttentionListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                AddAttentionBean addAttentionBean = gson.fromJson(result, AddAttentionBean.class);
+                mStringMessage = addAttentionBean.getMsg();
+                if (!addAttentionBean.isSuccess()) {
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
+                myHandler.sendEmptyMessage(Data.MSG_2);
+            }
+
+            @Override
+            public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
+
+        mNetManager.setOnDelAttentionListener(new OnDelAttentionListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                DelAttentionBean delAttentionBean = gson.fromJson(result, DelAttentionBean.class);
+                mStringMessage = delAttentionBean.getMsg();
+                if (!delAttentionBean.isSuccess()) {
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
+                myHandler.sendEmptyMessage(Data.MSG_3);
+            }
+
+            @Override
+            public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
     }
 
     //  获取关注列表
@@ -164,8 +225,33 @@ public class ConcernDialogFragment extends DialogFragment {
         mNetManager.getAttentionList(mToken, mCid);
     }
 
-    //  取消关注
-    private void cancelAttention() {
+    //  添加、取消关注
+    private void attention(boolean isAttend, String imei) {
+        if (isAttend) {
+            showDelAttentionDialog(imei);
+            return;
+        }
+        mNetManager.addAttention(mToken, mCid, imei);
+    }
+
+    //  取消关注确认对话框
+    private void showDelAttentionDialog(final String imei) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("取消关注后，将无法收到该车报警推送。");
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mNetManager.delAttention(mToken, mCid, imei);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class MyHandler extends Handler {
@@ -174,10 +260,25 @@ public class ConcernDialogFragment extends DialogFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case Data.MSG_1: {
+                    //  获取关注列表
                     mConcernAdapter.notifyDataSetChanged();
                     break;
                 }
                 case Data.MSG_2: {
+                    //  添加关注
+                    AdapterConcernData data = mAdapterConcernDataList.get(mPosition);
+                    data.setOpen(true);
+                    mConcernAdapter.notifyDataSetChanged();
+                    mToastU.showToast(mStringMessage);
+                    break;
+                }
+                case Data.MSG_3: {
+//                    AdapterConcernData data = mAdapterConcernDataList.get(mPosition);
+//                    data.setOpen(false);
+                    mAdapterConcernDataList.remove(mPosition);
+                    mConcernAdapter.notifyDataSetChanged();
+                    mToastU.showToast(mStringMessage);
+                    //  取消关注
                     break;
                 }
                 default: {

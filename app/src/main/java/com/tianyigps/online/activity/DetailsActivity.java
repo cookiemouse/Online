@@ -17,6 +17,7 @@ import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.TimeFormatU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +88,8 @@ public class DetailsActivity extends BaseActivity {
                 mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" + objBean.getCar_no()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("型号：" + objBean.getModel_name()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("车型：" + objBean.getCar_type()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期：" + objBean.getSale_time()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期：" + objBean.getEnd_date()));
+                mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期：" + TimeFormatU.millisToDate3(objBean.getSale_time())));
+                mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期：" + TimeFormatU.millisToDate3(objBean.getEnd_date())));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("联系人：" + objBean.getContact_name()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("联系电话：" + objBean.getContact_phone()));
                 myHandler.sendEmptyMessage(Data.MSG_1);

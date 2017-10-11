@@ -42,6 +42,7 @@ import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.StatusData;
 import com.tianyigps.online.dialog.ConcernDialogFragment;
+import com.tianyigps.online.dialog.OverviewDialogFragment;
 import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
@@ -64,6 +65,11 @@ public class MonitorFragment extends Fragment {
 
     private static final String TAG = "MonitorFragment";
 
+    private static final int FROM_CHOICE = 0;
+    private static final int FROM_CONCERN = 1;
+
+    private int mFrom = 0;
+
     private ImageView mImageViewTitle1, mImageViewTitle2, mImageViewTitle3;
     private ImageView mImageViewLocate, mImageViewLeft, mImageViewRight;
     private TextView mTextViewNormal, mTextViewSatellite;
@@ -78,6 +84,8 @@ public class MonitorFragment extends Fragment {
 
     //  已关注Fragment
     private ConcernDialogFragment mConcernDialogFragment;
+    //  车辆概览Fragment
+    private OverviewDialogFragment mOverviewDialogFragment;
 
     private NetManager mNetManager;
     private SharedManager mSharedManager;
@@ -87,6 +95,9 @@ public class MonitorFragment extends Fragment {
 
     //  从ChoiceCarFragment中传入的imei
     private String mChoiceImei;
+
+    //  从ConcernDialogFragment传入的imei号，需存列表
+    private List<String> mImeiList;
 
     private String mStringMessage;
 
@@ -106,6 +117,9 @@ public class MonitorFragment extends Fragment {
     private WindowManager mWindowManager;
     private int mWidth, mHeight;
 
+    //  轮播
+    private int mCarousel = 0;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -123,6 +137,7 @@ public class MonitorFragment extends Fragment {
         mMapView.onResume();
         Bundle bundle = getArguments();
         if (null != bundle) {
+            mFrom = FROM_CHOICE;
             mChoiceImei = bundle.getString(Data.KEY_IMEI);
             Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
             showPointNew(mChoiceImei);
@@ -136,6 +151,9 @@ public class MonitorFragment extends Fragment {
     @Override
     public void onPause() {
         mMapView.onPause();
+        if (null != mInfoLatLng) {
+            moveToCenter(mInfoLatLng);
+        }
         super.onPause();
     }
 
@@ -155,6 +173,15 @@ public class MonitorFragment extends Fragment {
                 mChoiceImei = bundle.getString(Data.KEY_IMEI);
                 Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
                 showPointNew(mChoiceImei);
+            }
+        } else {
+            if (null != mInfoLatLng) {
+                moveToCenter(mInfoLatLng);
+            }
+            if (mFrom == FROM_CONCERN) {
+                mBaiduMap.hideInfoWindow();
+                removeAllMarker();
+                mImeiList.clear();
             }
         }
     }
@@ -180,9 +207,12 @@ public class MonitorFragment extends Fragment {
 
         mOverlayList = new ArrayList<>();
 
+        mImeiList = new ArrayList<>();
+
         mToastU = new ToastU(getContext());
 
         mConcernDialogFragment = new ConcernDialogFragment();
+        mOverviewDialogFragment = new OverviewDialogFragment();
 
         mNetManager = new NetManager();
         mSharedManager = new SharedManager(getContext());
@@ -204,6 +234,7 @@ public class MonitorFragment extends Fragment {
         mImageViewTitle2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mOverviewDialogFragment.show(getChildFragmentManager(), "车辆概览");
             }
         });
         mImageViewTitle3.setOnClickListener(new View.OnClickListener() {
@@ -230,11 +261,33 @@ public class MonitorFragment extends Fragment {
         mImageViewLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int size = mImeiList.size();
+                if (size > 0) {
+                    if (mCarousel <= 0) {
+                        mCarousel = size;
+                    } else {
+                        mCarousel--;
+                    }
+                    String imei = mImeiList.get(mCarousel);
+                    mChoiceImei = imei;
+                    showPointNew(imei);
+                }
             }
         });
         mImageViewRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int size = mImeiList.size();
+                if (size > 0) {
+                    if (mCarousel >= size - 1) {
+                        mCarousel = 0;
+                    } else {
+                        mCarousel++;
+                    }
+                    String imei = mImeiList.get(mCarousel);
+                    mChoiceImei = imei;
+                    showPointNew(imei);
+                }
             }
         });
         mTextViewNormal.setOnClickListener(new View.OnClickListener() {
@@ -283,6 +336,7 @@ public class MonitorFragment extends Fragment {
                 if (RegularU.isEmpty(imei)) {
                     return false;
                 }
+                mChoiceImei = imei;
                 showPointNew(imei);
                 return false;
             }
@@ -383,7 +437,7 @@ public class MonitorFragment extends Fragment {
         if (null == latLng) {
             return;
         }
-        if (null != mOverlayMarker) {
+        if (null != mOverlayMarker && mFrom == FROM_CHOICE) {
             mOverlayMarker.remove();
         }
         //构建Marker图标
@@ -418,6 +472,14 @@ public class MonitorFragment extends Fragment {
                 .extraInfo(bundle);
         //在地图上添加Marker，并显示
         mOverlayMarker = mBaiduMap.addOverlay(option);
+        mOverlayList.add(mOverlayMarker);
+    }
+
+    //  清除Marker
+    private void removeAllMarker() {
+        for (Overlay overlay : mOverlayList) {
+            overlay.remove();
+        }
     }
 
     //  地图移动到目标点
@@ -467,6 +529,9 @@ public class MonitorFragment extends Fragment {
         }
 
         tvName.setText(mInfoName);
+        Log.i(TAG, "showInfoWindow: mStatusData-->" + mStatusData);
+        Log.i(TAG, "showInfoWindow: mStatusData.getStatus-->" + mStatusData.getStatus());
+        Log.i(TAG, "showInfoWindow: mStatusData.getStatu-->" + mStatusData.getStatu());
         tvStatus.setText(mStatusData.getStatus());
         tvSpeed.setText(mInfoSpeed);
         tvLocateType.setText(mInfoLocateType);
@@ -516,7 +581,6 @@ public class MonitorFragment extends Fragment {
         //显示InfoWindow
         mBaiduMap.showInfoWindow(mInfoWindow);
 
-        addMarker(latLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei);
         moveToInfoCenter(latLng);
     }
 
@@ -558,6 +622,24 @@ public class MonitorFragment extends Fragment {
         startActivity(intent);
     }
 
+    //  从ConcernDialogFragment传入imei，并存入数组
+    public void showDevices(String imei) {
+        mFrom = FROM_CONCERN;
+        mChoiceImei = imei;
+        boolean added = false;
+        for (String str : mImeiList) {
+            if (str.equals(imei)) {
+                added = true;
+                break;
+            }
+        }
+        showPointNew(mChoiceImei);
+        if (added) {
+            return;
+        }
+        mImeiList.add(imei);
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -574,6 +656,7 @@ public class MonitorFragment extends Fragment {
                     break;
                 }
                 case Data.MSG_1: {
+                    addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei);
                     showInfoWindow(mInfoLatLng);
                     break;
                 }

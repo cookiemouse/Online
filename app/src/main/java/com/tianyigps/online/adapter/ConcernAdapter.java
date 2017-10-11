@@ -67,8 +67,6 @@ public class ConcernAdapter extends BaseAdapter {
         viewHolder.ivConcern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                data.setOpen(false);
-                notifyDataSetChanged();
                 if (null == mOnAdapterListener) {
                     throw new NullPointerException("OnAdapterListener is null");
                 }

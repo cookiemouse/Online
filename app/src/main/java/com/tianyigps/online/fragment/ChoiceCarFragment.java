@@ -698,6 +698,7 @@ public class ChoiceCarFragment extends Fragment {
                     //  搜索结果
                     if (mAdapterSearchDevicesDataList.size() == 0) {
                         mToastU.showToast("搜索数据不存在");
+                        mEditTextSearch.clearFocus();
                     }
                     mSearchDevicesAdapter.notifyDataSetChanged();
                     break;

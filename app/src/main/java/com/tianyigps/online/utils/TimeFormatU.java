@@ -27,6 +27,12 @@ public class TimeFormatU {
         return simpleDateFormat.format(date);
     }
 
+    public static String millisToDate3(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return simpleDateFormat.format(date);
+    }
+
     public static String millisToClock(long mills) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(mills);
