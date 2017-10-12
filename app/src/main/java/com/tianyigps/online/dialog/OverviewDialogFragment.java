@@ -36,6 +36,9 @@ public class OverviewDialogFragment extends DialogFragment {
     private String mToken;
 
     private ImageView mImageViewClose;
+    private ImageView mImageViewSwitch;
+
+    private boolean mSwitch = false;
 
     private View mView;
 
@@ -83,6 +86,7 @@ public class OverviewDialogFragment extends DialogFragment {
 
     private void init(View view) {
         mImageViewClose = view.findViewById(R.id.iv_dialog_fragment_overview_close);
+        mImageViewSwitch = view.findViewById(R.id.switch_dialog_fragment_overview);
 
         mNetManager = new NetManager();
         mSharedManager = new SharedManager(getContext());
@@ -90,6 +94,8 @@ public class OverviewDialogFragment extends DialogFragment {
 
         mCid = mSharedManager.getCid();
         mToken = mSharedManager.getToken();
+        mSwitch = mSharedManager.getShowAttention();
+        mImageViewSwitch.setSelected(mSwitch);
 
         mMonitorFragment = (MonitorFragment) getParentFragment();
     }
@@ -99,6 +105,17 @@ public class OverviewDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 OverviewDialogFragment.this.dismiss();
+            }
+        });
+
+        mImageViewSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSwitch = !mSwitch;
+                mImageViewSwitch.setSelected(mSwitch);
+
+                mSharedManager.saveShowAttention(mSwitch);
+                mMonitorFragment.showAttentionDevices();
             }
         });
     }

@@ -16,6 +16,7 @@ import com.tianyigps.online.fragment.ChoiceCarFragment;
 import com.tianyigps.online.fragment.MonitorFragment;
 import com.tianyigps.online.fragment.SettingFragment;
 import com.tianyigps.online.fragment.WarnFragment;
+import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.TimerU;
 import com.tianyigps.online.utils.ToastU;
 
@@ -42,6 +43,8 @@ public class FragmentContentActivity extends AppCompatActivity {
     private TimerU mTimerU;
     private boolean exitAble = false;
 
+    private SharedManager mSharedManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +63,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        if (exitAble){
+        if (exitAble) {
             this.finish();
             return;
         }
@@ -99,7 +102,12 @@ public class FragmentContentActivity extends AppCompatActivity {
 
         mFragmentManager = getSupportFragmentManager();
 
-        showChoiceCar();
+        mSharedManager = new SharedManager(this);
+        if (mSharedManager.getMainPage()) {
+            showMonitor();
+        } else {
+            showChoiceCar();
+        }
 
         JPushInterface.setAlias(FragmentContentActivity.this, 0, "2223");
     }

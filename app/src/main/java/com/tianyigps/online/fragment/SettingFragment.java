@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 
 import com.tianyigps.online.R;
@@ -24,7 +26,11 @@ import com.tianyigps.online.manager.SharedManager;
 public class SettingFragment extends Fragment {
 
     private TableRow mTableRowFlushTime, mTableRowOpinion, mTableRowInstruction, mTableRowAbout;
+    private TableRow mTableRowPage;
+    private ImageView mImageViewMonitor, mImageViewCarList;
     private Button mButtonExit;
+    private LinearLayout mLinearLayoutPage;
+    private ImageView mImageViewPage;
 
     private SharedManager mSharedManager;
 
@@ -45,10 +51,20 @@ public class SettingFragment extends Fragment {
         mTableRowOpinion = view.findViewById(R.id.tr_fragment_opinion);
         mTableRowInstruction = view.findViewById(R.id.tr_fragment_instructions);
         mTableRowAbout = view.findViewById(R.id.tr_fragment_about);
+        mTableRowPage = view.findViewById(R.id.tr_fragment_set_main_page);
+        mImageViewMonitor = view.findViewById(R.id.iv_fragment_set_monitor);
+        mImageViewCarList = view.findViewById(R.id.iv_fragment_set_car_list);
+
+        mImageViewPage = view.findViewById(R.id.iv_fragment_setting_page);
+        mLinearLayoutPage = view.findViewById(R.id.ll_fragment_setting);
 
         mButtonExit = view.findViewById(R.id.btn_fragment_setting);
 
         mSharedManager = new SharedManager(getContext());
+
+        boolean mainPage = mSharedManager.getMainPage();
+        mImageViewMonitor.setSelected(mainPage);
+        mImageViewCarList.setSelected(!mainPage);
     }
 
     private void setEventListener() {
@@ -57,6 +73,37 @@ public class SettingFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), FlushTimeActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        mTableRowPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mLinearLayoutPage.getVisibility() == View.VISIBLE) {
+                    mImageViewPage.setSelected(false);
+                    mLinearLayoutPage.setVisibility(View.GONE);
+                } else {
+                    mImageViewPage.setSelected(true);
+                    mLinearLayoutPage.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        mImageViewMonitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSharedManager.saveMainPage(true);
+                mImageViewMonitor.setSelected(true);
+                mImageViewCarList.setSelected(false);
+            }
+        });
+
+        mImageViewCarList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSharedManager.saveMainPage(false);
+                mImageViewMonitor.setSelected(false);
+                mImageViewCarList.setSelected(true);
             }
         });
 

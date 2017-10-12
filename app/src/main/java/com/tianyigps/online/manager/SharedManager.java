@@ -201,4 +201,18 @@ public class SharedManager {
     public boolean getShowAttention() {
         return mSharedPreferences.getBoolean(Data.SHOW_ATTENTION, false);
     }
+
+    /**
+     * 保存登陆主页
+     * false = 车辆列表，true = 监控页面
+     */
+    public void saveMainPage(boolean page) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Data.MAIN_PAGE, page);
+        editor.apply();
+    }
+
+    public boolean getMainPage() {
+        return mSharedPreferences.getBoolean(Data.MAIN_PAGE, false);
+    }
 }
