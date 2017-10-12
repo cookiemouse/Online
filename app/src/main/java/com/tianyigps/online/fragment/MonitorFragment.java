@@ -185,9 +185,17 @@ public class MonitorFragment extends Fragment {
         if (!hidden) {
             Bundle bundle = getArguments();
             if (null != bundle) {
+                mFrom = FROM_CHOICE;
                 mChoiceImei = bundle.getString(Data.KEY_IMEI);
                 Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
                 showPointNew(mChoiceImei);
+
+                mImeiList.clear();
+                mMarkerDataList.clear();
+                mSharedManager.saveShowAttention(false);
+                removeAllMarker();
+                mBaiduMap.hideInfoWindow();
+                mImeiList.add(mChoiceImei);
             }
         } else {
             if (null != mInfoLatLng) {
