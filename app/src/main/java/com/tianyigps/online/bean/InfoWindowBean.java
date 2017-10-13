@@ -142,6 +142,7 @@ public class InfoWindowBean {
              * speed : -1
              * direction : 316
              * imei : 863014530145837
+             * station_code : 01CC000018C9000213
              * current_time : 2017/09/20 09:14:04
              * expire_time : 2018/09/20 09:13:43
              * terminal_type : GT220
@@ -161,6 +162,7 @@ public class InfoWindowBean {
             private String speed;
             private String direction;
             private String imei;
+            private String station_code;
             private String current_time;
             private String expire_time;
             private String terminal_type;
@@ -318,6 +320,14 @@ public class InfoWindowBean {
 
             public void setDianliang(int dianliang) {
                 this.dianliang = dianliang;
+            }
+
+            public String getStation_code() {
+                return station_code;
+            }
+
+            public void setStation_code(String station_code) {
+                this.station_code = station_code;
             }
         }
     }

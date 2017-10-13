@@ -308,7 +308,7 @@ public class MonitorFragment extends Fragment {
                 int size = mImeiList.size();
                 if (size > 0) {
                     if (mCarousel <= 0) {
-                        mCarousel = size;
+                        mCarousel = size - 1;
                     } else {
                         mCarousel--;
                     }

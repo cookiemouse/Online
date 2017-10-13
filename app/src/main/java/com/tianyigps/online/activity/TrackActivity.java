@@ -46,6 +46,7 @@ import com.tianyigps.online.base.BaseActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.StatusData;
+import com.tianyigps.online.interfaces.OnGetStationInfoListener;
 import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
@@ -77,6 +78,7 @@ public class TrackActivity extends BaseActivity {
     //  InfoWindow数据
     private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
     private StatusData mStatusData;
+    private String mInfoStationCode = "";
     private int mInfoDirection, mModel;
     private LatLng mInfoLatLng, mLatLngSelf;
 
@@ -359,6 +361,8 @@ public class TrackActivity extends BaseActivity {
                         Log.i(TAG, "onSuccess: locateTime-->" + redisobjBean.getLocate_time());
                         Log.i(TAG, "onSuccess: locateType-->" + redisobjBean.getLocate_type());
                         Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
+                        Log.i(TAG, "onSuccess: stationCode-->" + redisobjBean.getStation_code());
+                        mInfoStationCode = redisobjBean.getStation_code();
 
                         mInfoName = objBean.getName();
                         if (redisobjBean.getLocate_type().equals("1")) {
@@ -414,6 +418,19 @@ public class TrackActivity extends BaseActivity {
                     }
                 }
                 myHandler.sendEmptyMessage(Data.MSG_1);
+            }
+
+            @Override
+            public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
+
+        mNetManager.setOnGetStationInfoListener(new OnGetStationInfoListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
             }
 
             @Override
@@ -504,12 +521,16 @@ public class TrackActivity extends BaseActivity {
         TextView tvCurrentTime = viewInfo.findViewById(R.id.tv_view_info_window_track_current_time_content);
         TextView tvLocateTime = viewInfo.findViewById(R.id.tv_view_info_window_track_locate_time_content);
         TextView tvElectricity = viewInfo.findViewById(R.id.tv_view_info_window_track_electricity);
+        TextView tvGetStation = viewInfo.findViewById(R.id.tv_view_info_window_track_get_station);
         ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_track_close);
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_track_electricity);
 
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
             ivElectricity.setVisibility(View.GONE);
+            if (!RegularU.isEmpty(mInfoStationCode)) {
+                tvGetStation.setVisibility(View.VISIBLE);
+            }
         } else {
             tvElectricity.setText(mInfoElectricity);
             tvElectricity.setVisibility(View.VISIBLE);
@@ -527,6 +548,15 @@ public class TrackActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 mBaiduMap.hideInfoWindow();
+            }
+        });
+
+        tvGetStation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/10/13 获取基站
+                Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
+                mNetManager.getStationInfo(mInfoStationCode);
             }
         });
 

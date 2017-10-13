@@ -12,6 +12,7 @@ import com.tianyigps.online.interfaces.OnFeedbackListener;
 import com.tianyigps.online.interfaces.OnFindHisPointsListener;
 import com.tianyigps.online.interfaces.OnGetGroupListener;
 import com.tianyigps.online.interfaces.OnGetNumWithStatusListener;
+import com.tianyigps.online.interfaces.OnGetStationInfoListener;
 import com.tianyigps.online.interfaces.OnGetTerminalByGroupListener;
 import com.tianyigps.online.interfaces.OnGetUnifenceStatusListener;
 import com.tianyigps.online.interfaces.OnGetWarnListListener;
@@ -24,6 +25,7 @@ import com.tianyigps.online.interfaces.OnShowTerminalInfoListener;
 import com.tianyigps.online.interfaces.OnUnifenceInfoListener;
 import com.tianyigps.online.interfaces.OnUnifenceOprListener;
 import com.tianyigps.online.interfaces.OnUnifenceUpsertListener;
+import com.tianyigps.online.utils.StringU;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +67,7 @@ public class NetManager {
     private OnUnifenceOprListener mOnUnifenceOprListener;
     private OnUnifenceInfoListener mOnUnifenceInfoListener;
     private OnUnifenceUpsertListener mOnUnifenceUpsertListener;
+    private OnGetStationInfoListener mOnGetStationInfoListener;
 
     public NetManager() {
         mOkHttpClient = new OkHttpClient
@@ -610,8 +613,8 @@ public class NetManager {
      * @param token
      * @param cid
      * @param condition 搜索条件
-//     * @param pageNum   页码，可不填
-//     * @param pageSize  每页数量，可不填
+     *                  //     * @param pageNum   页码，可不填
+     *                  //     * @param pageSize  每页数量，可不填
      */
 //    public void searchTerminalWithStatus(String token, int cid, String condition, int pageNum, int pageSize) {
     public void searchTerminalWithStatus(String token, int cid, String condition) {
@@ -833,10 +836,10 @@ public class NetManager {
      * 新增围栏
      *
      * @param imei
-     * @param type  围栏类型，1 圆形， 2 多边形
-     * @param point 圆心，数组[lng,lat],多边形传[]
-     * @param radius    半径，多边形传null
-     * @param points    围栏点，首尾相连
+     * @param type   围栏类型，1 圆形， 2 多边形
+     * @param point  圆心，数组[lng,lat],多边形传[]
+     * @param radius 半径，多边形传null
+     * @param points 围栏点，首尾相连
      */
     public void unifenceUpsert(String imei, int type, String point, int radius, String points) {
         Request.Builder builder = new Request.Builder();
@@ -869,5 +872,51 @@ public class NetManager {
 
     public void setOnUnifenceUpsertListener(OnUnifenceUpsertListener listener) {
         this.mOnUnifenceUpsertListener = listener;
+    }
+
+    /**
+     * 获取基站
+     */
+    public void getStationInfo(String stationCode) {
+        String lac = stationCode.substring(8, 12);
+        String cell_id = stationCode.substring(12);
+        String lacNum = StringU.str2HexStr(lac);
+        String cellIdNum = StringU.str2HexStr(cell_id);
+
+        Log.i(TAG, "getStationInfo: lac-->" + lac);
+        Log.i(TAG, "getStationInfo: cell_id-->" + cell_id);
+        Log.i(TAG, "getStationInfo: lacNum-->" + lacNum);
+        Log.i(TAG, "getStationInfo: cellIdNum-->" + cellIdNum);
+
+        Request.Builder builder = new Request.Builder();
+        builder.url("http://vipapiproxy.haoservice.com/api/getlbs?mcc=460&mnc=0&key=128ade83cb924eb5bdd02ba9bc6e151f&type=1"
+                + "&cell_id=" + cell_id
+                + "&cellIdNum=" + cellIdNum
+                + "&lac=" + lac
+                + "&lacNum=" + lacNum);
+        mRequest = builder.build();
+        Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (null == mOnGetStationInfoListener) {
+                    throw new NullPointerException("OnGetStationInfoListener is null");
+                }
+                mOnGetStationInfoListener.onFailure();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (null == mOnGetStationInfoListener) {
+                    throw new NullPointerException("OnGetStationInfoListener is null");
+                }
+                mOnGetStationInfoListener.onSuccess(response.body().string());
+            }
+        });
+    }
+
+    public void setOnGetStationInfoListener(OnGetStationInfoListener listener) {
+        this.mOnGetStationInfoListener = listener;
     }
 }

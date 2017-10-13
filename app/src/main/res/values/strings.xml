@@ -40,4 +40,5 @@
     <string name="start">起：</string>
     <string name="end">止：</string>
     <string name="address">位置：</string>
+    <string name="get_station">获取基站</string>
 </resources>
