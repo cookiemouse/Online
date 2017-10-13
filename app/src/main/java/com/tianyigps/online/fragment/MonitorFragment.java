@@ -30,6 +30,7 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
@@ -39,6 +40,8 @@ import com.tianyigps.online.activity.NavigationActivity;
 import com.tianyigps.online.activity.PathActivity;
 import com.tianyigps.online.activity.TrackActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
+import com.tianyigps.online.cluster.BaiduPoint;
+import com.tianyigps.online.cluster.CookieCluster;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.MarkerData;
 import com.tianyigps.online.data.StatusData;
@@ -128,6 +131,10 @@ public class MonitorFragment extends Fragment {
     //  地址反编码
     private GeoCoderU mGeoCoderU;
 
+    //  Cluster
+    private List<BaiduPoint> mBaiduPointList, mBaiduPointListShow;
+    private CookieCluster mCookieCluster;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -202,9 +209,11 @@ public class MonitorFragment extends Fragment {
                 moveToCenter(mInfoLatLng);
             }
             if (mFrom == FROM_CONCERN) {
-                mBaiduMap.hideInfoWindow();
-                removeAllMarker();
-                mImeiList.clear();
+                if (mSharedManager.getShowAttention()) {
+                    mBaiduMap.hideInfoWindow();
+                    removeAllMarker();
+                    mImeiList.clear();
+                }
             }
         }
     }
@@ -245,6 +254,10 @@ public class MonitorFragment extends Fragment {
         mToken = mSharedManager.getToken();
 
         mGeoCoderU = new GeoCoderU();
+
+        mBaiduPointList = new ArrayList<>();
+        mBaiduPointListShow = new ArrayList<>();
+        mCookieCluster = new CookieCluster(mBaiduPointList);
 
         if (mSharedManager.getShowAttention()) {
             showAttentionDevices();
@@ -378,12 +391,45 @@ public class MonitorFragment extends Fragment {
                 mOnlyInfo = true;
                 Bundle bundle = marker.getExtraInfo();
                 String imei = bundle.getString(Data.KEY_IMEI, "");
+                int type = bundle.getInt(Data.KEY_TYPE, Data.STATUS_OTHER);
                 if (RegularU.isEmpty(imei)) {
+                    return false;
+                }
+                if (Data.MARKER_CLUSTER == type) {
+                    mToastU.showToast("Cluster Point");
                     return false;
                 }
                 mChoiceImei = imei;
                 showPointNew(imei);
                 return false;
+            }
+        });
+
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+                Log.e("Tag", "zoom-->" + (int) mapStatus.zoom);
+                int zoom = (int) mapStatus.zoom;
+                Point point1 = new Point(-(mWidth / 5), -(mHeight / 5));
+                Point point2 = new Point(mWidth * 6 / 5, mHeight * 6 / 5);
+                Projection mProjection = mBaiduMap.getProjection();
+                LatLng one = mProjection.fromScreenLocation(point1);
+                LatLng two = mProjection.fromScreenLocation(point2);
+                mBaiduPointListShow = mCookieCluster.getClusterList(zoom, one, two);
+                Log.i(TAG, "onMapStatusChangeFinish: size-->" + mBaiduPointListShow.size());
+                removeAllMarker();
+                for (BaiduPoint baiduPoint : mBaiduPointListShow) {
+                    Log.i(TAG, "onMapStatusChangeFinish: addMaker");
+                    addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
+                }
             }
         });
 
@@ -593,7 +639,7 @@ public class MonitorFragment extends Fragment {
     }
 
     //  添加marker
-    private void addMarker(LatLng latLng, int type, int direction, String imei) {
+    private void addMarker(LatLng latLng, int type, int direction, String imei, int count) {
         //定义Maker坐标点
         if (null == latLng) {
             return;
@@ -616,6 +662,12 @@ public class MonitorFragment extends Fragment {
                 viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_gray, null);
                 break;
             }
+            case Data.MARKER_CLUSTER: {
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_cluster, null);
+                TextView tvCount = viewMarker.findViewById(R.id.tv_view_map_marker_cluster_count);
+                tvCount.setText("" + count);
+                break;
+            }
             default: {
                 viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
                 Log.i(TAG, "addMarker: locate_type.default-->" + type);
@@ -625,6 +677,7 @@ public class MonitorFragment extends Fragment {
         //构建MarkerOption，用于在地图上添加Marker
         Bundle bundle = new Bundle();
         bundle.putString(Data.KEY_IMEI, imei);
+        bundle.putInt(Data.KEY_TYPE, type);
         OverlayOptions option = new MarkerOptions()
                 .position(latLng)
                 .icon(bitmap)
@@ -638,6 +691,7 @@ public class MonitorFragment extends Fragment {
 
     //  清除Marker
     private void removeAllMarker() {
+//        mTextViewAddress.setText(null);
         for (Overlay overlay : mOverlayList) {
             overlay.remove();
         }
@@ -844,7 +898,7 @@ public class MonitorFragment extends Fragment {
                 }
                 case Data.MSG_1: {
                     //  showPointNew单个
-                    addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei);
+                    addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei, 1);
                     showInfoWindow(mInfoLatLng);
                     break;
                 }
@@ -853,7 +907,16 @@ public class MonitorFragment extends Fragment {
                     if (null != mMarkerDataList) {
                         for (MarkerData markerData : mMarkerDataList) {
                             mImeiList.add(markerData.getImei());
-                            addMarker(markerData.getLatLng(), markerData.getType(), markerData.getDirection(), markerData.getImei());
+                            mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
+                                    , false
+                                    , markerData.getImei()
+                                    , markerData.getType()
+                                    , markerData.getDirection()));
+                        }
+                        removeAllMarker();
+                        for (BaiduPoint baiduPoint : mBaiduPointListShow) {
+                            Log.i(TAG, "handleMessage: addMaker");
+                            addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
                         }
                     }
                     break;

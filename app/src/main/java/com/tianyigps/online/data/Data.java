@@ -74,6 +74,7 @@ public class Data {
     public final static String KEY_CID = "key_cid";
     public final static String KEY_IMEI = "key_imei";
     public final static String KEY_SPEED = "key_speed";
+    public final static String KEY_TYPE = "key_type";
 
     //  定位类型
     public final static int LOCATE_BASE = 0;
@@ -84,6 +85,7 @@ public class Data {
     public final static int STATUS_OTHER = 0;
     public final static int STATUS_ON = 1;
     public final static int STATUS_OFF = 2;
+    public final static int MARKER_CLUSTER = 3;
 
     //  轨迹回放速度
     public final static int SPEED_10 = 5000 / 250;  //  5000 / 250
