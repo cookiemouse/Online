@@ -116,7 +116,6 @@ public class OverviewDialogFragment extends DialogFragment {
         mGroupDataList.add(new GroupData2("" + mCid, "根目录", true));
         GroupData2 groupData = mGroupDataList.get(0);
         groupData.setExhibited(true);
-        groupData.setSelected(true);
         mGroupAdapter = new GroupAdapter2(getContext(), mGroupDataList);
         mGroupListView.setAdapter(mGroupAdapter);
 
@@ -174,6 +173,13 @@ public class OverviewDialogFragment extends DialogFragment {
                 groupData.setSelected(!groupData.isSelected());
                 mGroupListView.notifyDataSetSwitchChanged();
                 // TODO: 2017/10/16 选中与取消
+                String cidStr = "";
+                for (GroupData2 groupData2 : mGroupDataList) {
+                    if (groupData2.isSelected()) {
+                        cidStr += groupData2.getId() + ",";
+                    }
+                }
+                mMonitorFragment.showCompleteDevices(cidStr);
             }
         });
 

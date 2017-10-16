@@ -820,6 +820,11 @@ public class MonitorFragment extends Fragment {
         mNetManager.showPointNew(mToken, mCid, "", "", true);
     }
 
+    //  获取帐户下的设备信息，并添加Marker
+    public void showPointNew(String cidStr, boolean attention) {
+        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
+    }
+
     //  跳转到跟踪页面
     private void toTrackActivity(String imei) {
         Intent intent = new Intent(getContext(), TrackActivity.class);
@@ -880,7 +885,16 @@ public class MonitorFragment extends Fragment {
             mImeiList.clear();
             mMarkerDataList.clear();
             mBaiduMap.hideInfoWindow();
+            mBaiduPointList.clear();
+            mBaiduPointListShow.clear();
         }
+    }
+
+    //  由OverviewDialogFragment调用，显示帐户下的车辆
+    public void showCompleteDevices(String cidStr) {
+        mFrom = FROM_OVERVIEW;
+        Log.i(TAG, "showCompleteDevices: cidStr-->" + cidStr);
+        showPointNew(cidStr, mSharedManager.getShowAttention());
     }
 
     //  反编码地址
