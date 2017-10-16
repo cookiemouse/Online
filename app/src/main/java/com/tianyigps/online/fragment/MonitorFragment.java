@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -111,7 +112,7 @@ public class MonitorFragment extends Fragment {
     //  InfoWindow数据
     private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
     private StatusData mStatusData;
-    private int mInfoDirection, mModel;
+    private int mInfoDirection, mModel, mElectricity;
     private LatLng mInfoLatLng;
 
     //  Marker
@@ -475,6 +476,7 @@ public class MonitorFragment extends Fragment {
                             mInfoLocateTime = redisobjBean.getLocate_time();
                             mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
                             mInfoElectricity = redisobjBean.getDianliang() + "%";
+                            mElectricity = redisobjBean.getDianliang();
                             mInfoImei = objBean.getImei();
 
                             mModel = Integer.valueOf(objBean.getModel());
@@ -586,6 +588,7 @@ public class MonitorFragment extends Fragment {
                                 mInfoLocateTime = redisobjBean.getLocate_time();
                                 mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
                                 mInfoElectricity = redisobjBean.getDianliang() + "%";
+                                mElectricity = redisobjBean.getDianliang();
                                 mInfoImei = objBean.getImei();
 
                                 mModel = Integer.valueOf(objBean.getModel());
@@ -733,14 +736,17 @@ public class MonitorFragment extends Fragment {
         TextView tvMore = viewInfo.findViewById(R.id.tv_view_info_window_monitor_more);
         ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_monitor_close);
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_monitor_electricity);
+        ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
             ivElectricity.setVisibility(View.GONE);
+            pbElectricity.setVisibility(View.GONE);
         } else {
             tvElectricity.setText(mInfoElectricity);
             tvElectricity.setVisibility(View.VISIBLE);
             ivElectricity.setVisibility(View.VISIBLE);
+            pbElectricity.setVisibility(View.VISIBLE);
         }
 
         tvName.setText(mInfoName);
@@ -752,6 +758,7 @@ public class MonitorFragment extends Fragment {
         tvLocateType.setText(mInfoLocateType);
         tvCurrentTime.setText(mInfoCurrentTime);
         tvLocateTime.setText(mInfoLocateTime);
+        pbElectricity.setProgress(mElectricity);
 
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override

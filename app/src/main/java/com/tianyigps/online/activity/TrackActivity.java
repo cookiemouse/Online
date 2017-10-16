@@ -1,5 +1,6 @@
 package com.tianyigps.online.activity;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -79,7 +81,7 @@ public class TrackActivity extends BaseActivity {
     private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
     private StatusData mStatusData;
     private String mInfoStationCode = "";
-    private int mInfoDirection, mModel;
+    private int mInfoDirection, mModel, mElectricity;
     private LatLng mInfoLatLng, mLatLngSelf;
 
     private LocateManager mLocateManager;
@@ -380,6 +382,7 @@ public class TrackActivity extends BaseActivity {
                         mInfoLocateTime = redisobjBean.getLocate_time();
                         mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
                         mInfoElectricity = redisobjBean.getDianliang() + "%";
+                        mElectricity = redisobjBean.getDianliang();
                         mInfoImei = objBean.getImei();
 
                         mModel = Integer.valueOf(objBean.getModel());
@@ -524,10 +527,12 @@ public class TrackActivity extends BaseActivity {
         TextView tvGetStation = viewInfo.findViewById(R.id.tv_view_info_window_track_get_station);
         ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_track_close);
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_track_electricity);
+        ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_track);
 
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
             ivElectricity.setVisibility(View.GONE);
+            pbElectricity.setVisibility(View.GONE);
             if (!RegularU.isEmpty(mInfoStationCode)) {
                 tvGetStation.setVisibility(View.VISIBLE);
             }
@@ -535,6 +540,7 @@ public class TrackActivity extends BaseActivity {
             tvElectricity.setText(mInfoElectricity);
             tvElectricity.setVisibility(View.VISIBLE);
             ivElectricity.setVisibility(View.VISIBLE);
+            pbElectricity.setVisibility(View.VISIBLE);
         }
 
         tvName.setText(mInfoName);
@@ -543,6 +549,7 @@ public class TrackActivity extends BaseActivity {
         tvLocateType.setText(mInfoLocateType);
         tvCurrentTime.setText(mInfoCurrentTime);
         tvLocateTime.setText(mInfoLocateTime);
+        pbElectricity.setProgress(mElectricity);
 
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override

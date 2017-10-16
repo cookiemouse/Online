@@ -36,12 +36,31 @@
                 android:gravity="center"
                 android:textSize="@dimen/sp_12"/>
 
-            <ImageView
-                android:id="@+id/iv_view_info_window_track_electricity"
-                android:layout_width="@dimen/dp_32"
-                android:layout_height="@dimen/dp_32"
-                android:padding="@dimen/dp_4"
-                android:src="@drawable/ic_electricity"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/pb_view_map_info_window_track"
+                    style="@style/Progress_Horizontal"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_6"
+                    android:layout_gravity="center"
+                    android:max="100"
+                    android:paddingEnd="@dimen/dp_8"
+                    android:paddingLeft="@dimen/dp_6"
+                    android:paddingRight="@dimen/dp_8"
+                    android:paddingStart="@dimen/dp_6"
+                    android:progress="50"/>
+
+                <ImageView
+                    android:id="@+id/iv_view_info_window_track_electricity"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:padding="@dimen/dp_4"
+                    android:src="@drawable/ic_electricity"/>
+            </FrameLayout>
+
 
             <ImageView
                 android:id="@+id/iv_view_info_window_track_close"
@@ -113,16 +132,16 @@
                 android:id="@+id/tv_view_info_window_track_get_station"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/get_station"
+                android:layout_alignBaseline="@+id/tv_view_info_window_track_type_content"
+                android:layout_alignBottom="@+id/tv_view_info_window_track_type_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginEnd="@dimen/dp_8"
                 android:layout_marginRight="@dimen/dp_8"
                 android:background="@drawable/bg_get_station"
+                android:text="@string/get_station"
                 android:textColor="@color/colorWhite"
-                android:layout_alignBaseline="@+id/tv_view_info_window_track_type_content"
-                android:layout_alignBottom="@+id/tv_view_info_window_track_type_content"
-                android:layout_alignParentRight="true"
-                android:visibility="gone"
-                android:layout_alignParentEnd="true"/>
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_view_info_window_track_type_content"
