@@ -1,13 +1,17 @@
 package com.tianyigps.online.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,20 +21,27 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.CircleOptions;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolygonOptions;
+import com.baidu.mapapi.map.Polyline;
+import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.bean.EnclosureBean;
 import com.tianyigps.online.bean.TerminalInfo4MapBean;
+import com.tianyigps.online.bean.UnifenceSetBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoForMapListener;
 import com.tianyigps.online.interfaces.OnUnifenceInfoListener;
@@ -38,6 +49,8 @@ import com.tianyigps.online.interfaces.OnUnifenceUpsertListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.BaiduCircleU;
+import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +61,19 @@ public class EnclosureActivity extends AppCompatActivity {
 
     private static final String TAG = "EnclosureActivity";
 
+    private static final int TYPE_CYCLE = 1;
+    private static final int TYPE_LINE = 2;
+
     private TextView mTextViewTitle;
     private ImageView mImageViewBack, mImageViewCycle, mImageViewPolygon;
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;
-    private Overlay mOverlayMarker, mOverlayPolygon;
+    private Overlay mOverlayMarker, mOverlayPolygon, mOverlayCircleSet;
+    private Polyline mPolylineSet;
+    private List<Marker> mMarkerListSet;
 
-    private TextView mTextViewSatellite, mTextViewNormal;
+    private TextView mTextViewSatellite, mTextViewNormal, mTextViewRadius;
     private ImageView mImageViewLocate;
     private LinearLayout mLinearLayoutCycle, mLinearLayoutPolygon;
     private ImageView mImageViewCycleReduce, mImageViewCyclePlus;
@@ -74,10 +92,23 @@ public class EnclosureActivity extends AppCompatActivity {
     private String mToken, mImei;
     private String mStringMessage;
     private int mIcon;
-    private int mEnclosureType;
-    private List<LatLng> mLatLngPolygon;
+    private int mEnclosureType = 0;
+    private List<LatLng> mLatLngPolygon, mLatLngPolygonListSet;
+
+    private int mEnclosureTypeSet = TYPE_LINE;
 
     private MyHandler myHandler;
+
+    //  计算圆上点
+    private BaiduCircleU mBaiduCircleU;
+
+    //  屏幕
+    private WindowManager mWindowManager;
+    private int mScreenWidth, mScreenHeight;
+    //  地图大小，计算中心
+    private int mWidth, mHeight;
+
+    private ToastU mToastU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +128,10 @@ public class EnclosureActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+
+        mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        mScreenWidth = mWindowManager.getDefaultDisplay().getWidth();
+        mScreenHeight = mWindowManager.getDefaultDisplay().getHeight();
     }
 
     @Override
@@ -126,9 +161,12 @@ public class EnclosureActivity extends AppCompatActivity {
         mBaiduMap.setMyLocationEnabled(true);
 
         mLatLngPolygon = new ArrayList<>();
+        mLatLngPolygonListSet = new ArrayList<>();
+        mMarkerListSet = new ArrayList<>();
 
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_enclosure_satellite);
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_enclosure_normal);
+        mTextViewRadius = (TextView) findViewById(R.id.tv_activity_enclosure_radius);
         mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_enclosure_locate);
         mLinearLayoutCycle = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_cycle);
         mLinearLayoutPolygon = (LinearLayout) findViewById(R.id.ll_layout_enclosure_bottom_polygon);
@@ -139,6 +177,8 @@ public class EnclosureActivity extends AppCompatActivity {
         mButtonCycleSet = (Button) findViewById(R.id.btn_layout_enclosure_bottom_cycle);
         mButtonPolygonSet = (Button) findViewById(R.id.btn_layout_enclosure_bottom_polygon_set);
         mButtonPolygonReset = (Button) findViewById(R.id.btn_layout_enclosure_bottom_polygon_reset);
+
+        mToastU = new ToastU(this);
 
         myHandler = new MyHandler();
 
@@ -152,9 +192,13 @@ public class EnclosureActivity extends AppCompatActivity {
         mIsToCenter = false;
         mLocateManager.startLocate();
 
+
         getTerminalInfo();
 
         getEnclosure();
+
+        mBaiduCircleU = new BaiduCircleU();
+
     }
 
     private void setEventListener() {
@@ -172,6 +216,23 @@ public class EnclosureActivity extends AppCompatActivity {
                 mLinearLayoutCycle.setVisibility(View.VISIBLE);
                 mImageViewPolygon.setSelected(false);
                 mLinearLayoutPolygon.setVisibility(View.GONE);
+                mTextViewRadius.setVisibility(View.VISIBLE);
+
+                mEnclosureTypeSet = TYPE_CYCLE;
+
+                for (Marker marker : mMarkerListSet) {
+                    marker.remove();
+                }
+                mMarkerListSet.clear();
+                if (null != mPolylineSet) {
+                    mPolylineSet.remove();
+                }
+                mLatLngPolygonListSet.clear();
+                if (null != mOverlayPolygon) {
+                    mOverlayPolygon.remove();
+                }
+
+                showSetCircle(mRadius);
             }
         });
 
@@ -182,6 +243,15 @@ public class EnclosureActivity extends AppCompatActivity {
                 mLinearLayoutCycle.setVisibility(View.GONE);
                 mImageViewPolygon.setSelected(true);
                 mLinearLayoutPolygon.setVisibility(View.VISIBLE);
+                mTextViewRadius.setVisibility(View.GONE);
+
+                showPolygon();
+
+                mEnclosureTypeSet = TYPE_LINE;
+
+                if (null != mOverlayCircleSet) {
+                    mOverlayCircleSet.remove();
+                }
             }
         });
 
@@ -241,7 +311,7 @@ public class EnclosureActivity extends AppCompatActivity {
         mImageViewCyclePlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mRadius < mSeekBar.getMax()){
+                if (mRadius < mSeekBar.getMax()) {
                     mRadius++;
                 }
                 mSeekBar.setProgress(mRadius);
@@ -252,6 +322,9 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mRadius = i;
+                String str = "半径" + (mRadius + 2) * 100 + "米";
+                mTextViewRadius.setText(str);
+                showSetCircle(mRadius);
             }
 
             @Override
@@ -267,6 +340,10 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/26 设置圆形围栏
+                List<LatLng> latLngList = mBaiduCircleU.getCircleLatlng(new LatLng(31.978961, 118.78684), 2000);
+                Log.i(TAG, "init: latLngList.size-->" + latLngList.size());
+
+                setEnclosure(TYPE_CYCLE, "2000", new LatLng(31.978961, 118.78684), latLngList);
             }
         });
 
@@ -274,6 +351,12 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/26 重置多边形围栏
+                for (Marker marker : mMarkerListSet) {
+                    marker.remove();
+                }
+                mMarkerListSet.clear();
+                mLatLngPolygonListSet.clear();
+                showSetPolygon();
             }
         });
 
@@ -281,6 +364,50 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/26 设置多边形围栏
+                int size = mLatLngPolygonListSet.size();
+                if (size > 3) {
+                    setEnclosure(TYPE_LINE, "", null, mLatLngPolygonListSet);
+                    return;
+                }
+                mToastU.showToast("请选择三个以上的点设置多边形围栏");
+            }
+        });
+
+        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.i(TAG, "onMapClick:");
+                if (TYPE_LINE == mEnclosureTypeSet) {
+                    int size = mLatLngPolygonListSet.size();
+                    Log.i(TAG, "onMapClick: size-->" + size);
+                    if (size > 1) {
+                        mLatLngPolygonListSet.remove(size - 1);
+                    }
+                    mLatLngPolygonListSet.add(latLng);
+                    showSetPolygon();
+                }
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                return false;
+            }
+        });
+
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+                if (TYPE_CYCLE == mEnclosureTypeSet) {
+                    showSetCircle(mRadius);
+                }
             }
         });
 
@@ -387,8 +514,31 @@ public class EnclosureActivity extends AppCompatActivity {
     }
 
     //  设置围栏
-    private void setEnclosure() {
-        mNetManager.unifenceUpsert(mImei, 1, "[118.77854995271579,31.95968201507062]", 1000, "");
+    private void setEnclosure(int type, String radius, @Nullable LatLng latLngCenter, List<LatLng> latLngList) {
+        UnifenceSetBean unifenceSetBean = new UnifenceSetBean();
+        unifenceSetBean.setImei(mImei);
+        unifenceSetBean.setType(type);
+        unifenceSetBean.setRadius(radius);
+        List<Double> center = new ArrayList<>();
+        if (null != latLngCenter) {
+            center.add(latLngCenter.longitude);
+            center.add(latLngCenter.latitude);
+        }
+        unifenceSetBean.setPoint(center);
+        List<List<Double>> points = new ArrayList<>();
+        for (LatLng latLng : latLngList) {
+            List<Double> point1 = new ArrayList<>();
+            point1.add(latLng.longitude);
+            point1.add(latLng.latitude);
+            points.add(point1);
+        }
+        unifenceSetBean.setPoints(points);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(unifenceSetBean);
+        Log.i(TAG, "setEnclosure: json-->" + json);
+
+        mNetManager.unifenceUpsertPost(json);
     }
 
     //  计算圆上的点
@@ -461,6 +611,64 @@ public class EnclosureActivity extends AppCompatActivity {
         mOverlayPolygon = mBaiduMap.addOverlay(polygonOption);
     }
 
+    //  显示圆形围栏
+    private void showCircle() {
+    }
+
+    //  显示设置多边形围栏
+    private void showSetPolygon() {
+        if (null != mPolylineSet) {
+            mPolylineSet.remove();
+        }
+        Log.i(TAG, "showSetPolygon: ");
+
+        //构建Marker图标
+        View viewMarker;
+        viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_pause, null);
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromView(viewMarker);
+        for (LatLng latLng : mLatLngPolygonListSet) {
+            //构建MarkerOption，用于在地图上添加Marker
+            OverlayOptions option = new MarkerOptions()
+                    .position(latLng)
+                    .icon(bitmap)
+                    .anchor(0.5f, 1.0f);
+            //在地图上添加Marker，并显示
+            mMarkerListSet.add((Marker) mBaiduMap.addOverlay(option));
+        }
+
+        int size = mLatLngPolygonListSet.size();
+        if (size > 1) {
+            mLatLngPolygonListSet.add(mLatLngPolygonListSet.get(0));
+            OverlayOptions overlayOptions = new PolylineOptions().points(mLatLngPolygonListSet).color(0xa03cabfa).width(8);
+            mPolylineSet = (Polyline) mBaiduMap.addOverlay(overlayOptions);
+        }
+    }
+
+    //  显示设置圆形围栏
+    private void showSetCircle(int radius) {
+        if (null != mOverlayCircleSet) {
+            mOverlayCircleSet.remove();
+        }
+        mWidth = mMapView.getWidth();
+        mHeight = mMapView.getHeight();
+        Projection mProjection = mBaiduMap.getProjection();
+        Point point = new Point((mWidth / 2), (mHeight / 2));
+        LatLng latLng = mProjection.fromScreenLocation(point);
+
+        addMarker(latLng, Data.STATUS_OFF, 0);
+        OverlayOptions circleOption = new CircleOptions().center(latLng).radius((radius + 2) * 100).fillColor(0xa03cabfa);
+        mOverlayCircleSet = mBaiduMap.addOverlay(circleOption);
+    }
+
+    //  改变地图zoom
+    private void changeZoom() {
+        MapStatus.Builder builder = new MapStatus.Builder();
+        MapStatus status = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        float zoom = mBaiduMap.getMapStatus().zoom;
+        mBaiduMap.animateMapStatus(update);
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -483,10 +691,14 @@ public class EnclosureActivity extends AppCompatActivity {
                 case Data.MSG_2: {
                     //  获取围栏信息
                     if (2 == mEnclosureType) {
+                        mEnclosureTypeSet = TYPE_LINE;
                         showPolygon();
+                        mTextViewRadius.setVisibility(View.GONE);
                         mLinearLayoutPolygon.setVisibility(View.VISIBLE);
                         mLinearLayoutCycle.setVisibility(View.GONE);
                     } else {
+                        mEnclosureTypeSet = TYPE_CYCLE;
+                        mTextViewRadius.setVisibility(View.VISIBLE);
                         mLinearLayoutPolygon.setVisibility(View.GONE);
                         mLinearLayoutCycle.setVisibility(View.VISIBLE);
                     }

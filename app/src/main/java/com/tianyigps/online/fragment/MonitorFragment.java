@@ -418,18 +418,20 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
                 Log.e("Tag", "zoom-->" + (int) mapStatus.zoom);
-                int zoom = (int) mapStatus.zoom;
-                Point point1 = new Point(-(mWidth / 5), -(mHeight / 5));
-                Point point2 = new Point(mWidth * 6 / 5, mHeight * 6 / 5);
-                Projection mProjection = mBaiduMap.getProjection();
-                LatLng one = mProjection.fromScreenLocation(point1);
-                LatLng two = mProjection.fromScreenLocation(point2);
-                mBaiduPointListShow = mCookieCluster.getClusterList(zoom, one, two);
-                Log.i(TAG, "onMapStatusChangeFinish: size-->" + mBaiduPointListShow.size());
-                removeAllMarker();
-                for (BaiduPoint baiduPoint : mBaiduPointListShow) {
-                    Log.i(TAG, "onMapStatusChangeFinish: addMaker");
-                    addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
+                if (mFrom != FROM_CHOICE) {
+                    int zoom = (int) mapStatus.zoom;
+                    Point point1 = new Point(-(mWidth / 5), -(mHeight / 5));
+                    Point point2 = new Point(mWidth * 6 / 5, mHeight * 6 / 5);
+                    Projection mProjection = mBaiduMap.getProjection();
+                    LatLng one = mProjection.fromScreenLocation(point1);
+                    LatLng two = mProjection.fromScreenLocation(point2);
+                    mBaiduPointListShow = mCookieCluster.getClusterList(zoom, one, two);
+                    Log.i(TAG, "onMapStatusChangeFinish: size-->" + mBaiduPointListShow.size());
+                    removeAllMarker();
+                    for (BaiduPoint baiduPoint : mBaiduPointListShow) {
+                        Log.i(TAG, "onMapStatusChangeFinish: addMaker");
+                        addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
+                    }
                 }
             }
         });

@@ -32,8 +32,10 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -841,7 +843,7 @@ public class NetManager {
      * @param radius 半径，多边形传null
      * @param points 围栏点，首尾相连
      */
-    public void unifenceUpsert(String imei, int type, String point, int radius, String points) {
+    public void unifenceUpsert(String imei, int type, String point, String radius, String points) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.UNIFENCE_UPSERT + "imei=" + imei
                 + "&type=" + type
@@ -850,6 +852,37 @@ public class NetManager {
                 + "&points=" + points);
         mRequest = builder.build();
         Log.i(TAG, "unifenceUpsert: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (null == mOnUnifenceUpsertListener) {
+                    throw new NullPointerException("OnUnifenceUpsertListener is null");
+                }
+                mOnUnifenceUpsertListener.onFailure();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (null == mOnUnifenceUpsertListener) {
+                    throw new NullPointerException("OnUnifenceUpsertListener is null");
+                }
+                mOnUnifenceUpsertListener.onSuccess(response.body().string());
+            }
+        });
+    }
+
+    public void unifenceUpsertPost(String json) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+        RequestBody requestBodyJson = RequestBody.create(JSON, json);
+        mRequest = new Request.Builder()
+                .url(Urls.UNIFENCE_UPSERT)
+                .post(requestBodyJson)
+                .build();
+
+        Log.i(TAG, "uploadPic: url-->" + mRequest.url());
+
         Call call = mOkHttpClient.newCall(mRequest);
         call.enqueue(new Callback() {
             @Override

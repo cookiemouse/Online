@@ -31,5 +31,5 @@ public class Urls {
     public static final String UNIFENCE_STATUS = IP_2 + "/geofenceapi/unifencestatus?";
     public static final String UNIFENCE_OPR = IP_2 + "/geofenceapi/unifenceopr?";
     public static final String UNIFENCE_INFO= IP_2 + "/geofenceapi/unifenceinfo?";
-    public static final String UNIFENCE_UPSERT= IP_2 + "/geofenceapi/unifenceupsert?";
+    public static final String UNIFENCE_UPSERT= IP_2 + "/geofenceapi/unifenceupsert";
 }

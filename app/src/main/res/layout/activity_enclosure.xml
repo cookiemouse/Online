@@ -67,6 +67,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <TextView
+            android:id="@+id/tv_activity_enclosure_radius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/colorBlueThemeAlpha"
+            android:text="半径200米"
+            android:textColor="@color/colorWhite"
+            android:visibility="gone"/>
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">

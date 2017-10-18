@@ -597,6 +597,7 @@ public class TrackActivity extends BaseActivity {
                 }
                 case Data.MSG_1: {
                     //  获取到设备信息
+                    myHandler.removeMessages(Data.MSG_2);
                     showInfoWindow(mInfoLatLng);
                     mGeoCoderU.searchAddress(mInfoLatLng.latitude, mInfoLatLng.longitude);
                     if (null != mLatLngSelf) {

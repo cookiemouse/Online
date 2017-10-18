@@ -6,6 +6,7 @@
 
     <color name="colorNull">#00000000</color>
     <color name="colorBlueTheme">#3cabfa</color>
+    <color name="colorBlueThemeAlpha">#6f3cabfa</color>
     <color name="colorBlueHeavy">#3385ff</color>
     <color name="colorBlueAlpha">#a0c8deff</color>
     <color name="colorBlueHeavyAlpha">#a03385ff</color>
