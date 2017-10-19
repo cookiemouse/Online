@@ -33,7 +33,11 @@
 
     <dimen name="dp_240">240dp</dimen>
 
+    <dimen name="dp_296">296dp</dimen>
     <dimen name="dp_320">320dp</dimen>
+
+    <dimen name="dp_424">424dp</dimen>
+    <dimen name="dp_480">480dp</dimen>
 
     <!--负距离-->
     <dimen name="dp_8_n">-8dp</dimen>
@@ -41,6 +45,7 @@
     <dimen name="dp_16_n">-16dp</dimen>
 
     <dimen name="px_1">1px</dimen>
+    <dimen name="px_2">2px</dimen>
 
 
     <!--字体-->

@@ -13,9 +13,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.adapter.PopupAccountAdapter;
@@ -40,6 +40,9 @@ public class LoginActivity extends BaseActivity {
     private ImageView mImageViewPull;
     private Button mButtonLogin;
     private CheckBox mCheckBoxPassword, mCheckBoxAuto;
+
+    private LinearLayout mLinearLayoutAccount;
+    private View mViewLine;
 
     private MyHandler myHandler;
 
@@ -68,21 +71,26 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         mDataManager.close();
-        super.onStop();
+        super.onDestroy();
     }
 
     /**
      * 初始化
      */
     private void init() {
+        this.setTitleVisibilite(false);
+
         mEditTextAccount = (EditText) findViewById(R.id.et_activity_login_account);
         mEditTextPassword = (EditText) findViewById(R.id.et_activity_login_password);
         mImageViewPull = (ImageView) findViewById(R.id.iv_activity_login_pull);
         mButtonLogin = (Button) findViewById(R.id.btn_activity_login_login);
         mCheckBoxPassword = (CheckBox) findViewById(R.id.cb_activity_login_remember_password);
         mCheckBoxAuto = (CheckBox) findViewById(R.id.cb_activity_login_auto);
+
+        mLinearLayoutAccount = (LinearLayout) findViewById(R.id.ll_activity_login_account);
+        mViewLine = findViewById(R.id.view_activity_login_line_1);
 
         myHandler = new MyHandler();
 
@@ -139,6 +147,13 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
+        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                mLinearLayoutAccount.setBackgroundColor(getResources().getColor(R.color.colorNull));
+            }
+        });
+
         mNetManager.setOnCheckUserListener(new OnCheckUserListener() {
             @Override
             public void onSuccess(String result) {
@@ -180,6 +195,7 @@ public class LoginActivity extends BaseActivity {
             mPopupWindow.dismiss();
         }
         View view = LayoutInflater.from(this).inflate(R.layout.view_popup_account, null);
+        mPopupWindow.setBackgroundDrawable(null);
         ListView listView = view.findViewById(R.id.lv_view_popup_account);
         mAccountList.clear();
         mAccountList.addAll(mDataManager.getAccounts());
@@ -198,7 +214,8 @@ public class LoginActivity extends BaseActivity {
         mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.showAsDropDown(mEditTextAccount);
+        mPopupWindow.showAsDropDown(mViewLine, -30, -30);
+        mLinearLayoutAccount.setBackgroundResource(R.drawable.bg_popup_account);
     }
 
     //  跳转到主页
@@ -218,14 +235,14 @@ public class LoginActivity extends BaseActivity {
             disMissLoadingDialog();
             switch (msg.what) {
                 case Data.MSG_ERO: {
-                    showMessageDialog(mStringMessage);
+                    showToast(mStringMessage);
                     break;
                 }
                 case Data.MSG_NOTHING: {
                     break;
                 }
                 case Data.MSG_MSG: {
-                    showMessageDialog(mStringMessage);
+                    showToast(mStringMessage);
                     break;
                 }
                 case Data.MSG_1: {

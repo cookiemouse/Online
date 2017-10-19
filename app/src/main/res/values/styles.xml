@@ -23,4 +23,8 @@
         <!--<item name="android:maxHeight">20dip</item>-->
     </style>
 
+    <style name="MyCheck">
+        <item name="android:button">@drawable/bg_checkbox</item>
+    </style>
+
 </resources>

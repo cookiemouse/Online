@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <size
+        android:width="@dimen/dp_32"
+        android:height="@dimen/dp_32"/>
+
+    <corners
+        android:topLeftRadius="@dimen/dp_4"
+        android:topRightRadius="@dimen/dp_4"
+        android:bottomRightRadius="0dp"
+        android:bottomLeftRadius="0dp"/>
+
+    <solid android:color="@color/colorBlueLogin"/>
+</shape>

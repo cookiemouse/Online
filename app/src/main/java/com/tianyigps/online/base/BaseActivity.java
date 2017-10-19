@@ -129,6 +129,24 @@ public class BaseActivity extends AppCompatActivity {
         this.mOnTitleBackClickListener = listener;
     }
 
+    //  设置返回按钮是否可见
+    public void setTitleVisibilite(boolean visibilite) {
+        if (visibilite) {
+            mLinearLayoutTitleAll.setVisibility(View.VISIBLE);
+            return;
+        }
+        mLinearLayoutTitleAll.setVisibility(View.GONE);
+    }
+
+    //  设置返回按钮是否可见
+    public void setTitleBackButtonVisibilite(boolean visibilite) {
+        if (visibilite) {
+            mImageViewLeft.setVisibility(View.VISIBLE);
+            return;
+        }
+        mImageViewLeft.setVisibility(View.GONE);
+    }
+
     //  设置标题右按钮是否可见
     public void setTitleRightButtonVisibilite(boolean visibilite) {
         if (visibilite) {
