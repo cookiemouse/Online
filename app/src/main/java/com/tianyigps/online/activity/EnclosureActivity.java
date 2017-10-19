@@ -37,6 +37,7 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.bean.EnclosureBean;
@@ -69,7 +70,7 @@ public class EnclosureActivity extends AppCompatActivity {
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;
-    private Overlay mOverlayMarker, mOverlayPolygon, mOverlayCircleSet;
+    private Overlay mOverlayMarker, mOverlayPolygon, mOverlayCircle, mOverlayCircleSet;
     private Polyline mPolylineSet;
     private List<Marker> mMarkerListSet;
 
@@ -79,13 +80,13 @@ public class EnclosureActivity extends AppCompatActivity {
     private ImageView mImageViewCycleReduce, mImageViewCyclePlus;
     private SeekBar mSeekBar;
     private Button mButtonCycleSet, mButtonPolygonReset, mButtonPolygonSet;
-    private int mRadius = 0;
+    private int mRadius = 0, mCircleRadius = 0;
 
     private LocateManager mLocateManager;
     private boolean mIsToCenter = false;
     //  左下角定位，false = 定位手机，true = 定位车辆
     private boolean mIsLocateCar = false;
-    private LatLng mLatLngSelf, mLatLngCar;
+    private LatLng mLatLngSelf, mLatLngCar, mLatLngCircle;
 
     private NetManager mNetManager;
     private SharedManager mSharedManager;
@@ -233,6 +234,20 @@ public class EnclosureActivity extends AppCompatActivity {
                 }
 
                 showSetCircle(mRadius);
+                showCircle();
+
+                mWidth = mMapView.getWidth();
+                mHeight = mMapView.getHeight();
+                Projection mProjection = mBaiduMap.getProjection();
+                Point point = new Point((mWidth / 2), (mHeight / 2));
+                LatLng latLng = mProjection.fromScreenLocation(point);
+
+                int radius = (mRadius + 2) * 100;
+                LatLng latLng1 = mBaiduCircleU.getDistanceLatlng(latLng, 0, radius);
+                LatLng latLng2 = mBaiduCircleU.getDistanceLatlng(latLng, 180, radius);
+
+                Log.i(TAG, "onClick: ");
+                changeZoom(latLng1, latLng2);
             }
         });
 
@@ -251,6 +266,10 @@ public class EnclosureActivity extends AppCompatActivity {
 
                 if (null != mOverlayCircleSet) {
                     mOverlayCircleSet.remove();
+                }
+
+                if (null != mOverlayCircle) {
+                    mOverlayCircle.remove();
                 }
             }
         });
@@ -322,9 +341,24 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mRadius = i;
-                String str = "半径" + (mRadius + 2) * 100 + "米";
+
+                int radius = (mRadius + 2) * 100;
+
+                String str = "半径" + radius + "米";
                 mTextViewRadius.setText(str);
                 showSetCircle(mRadius);
+
+                mWidth = mMapView.getWidth();
+                mHeight = mMapView.getHeight();
+                Projection mProjection = mBaiduMap.getProjection();
+                Point point = new Point((mWidth / 2), (mHeight / 2));
+                LatLng latLng = mProjection.fromScreenLocation(point);
+
+                LatLng latLng1 = mBaiduCircleU.getDistanceLatlng(latLng, 0, radius);
+                LatLng latLng2 = mBaiduCircleU.getDistanceLatlng(latLng, 180, radius);
+
+                Log.i(TAG, "onProgressChanged: ");
+                changeZoom(latLng1, latLng2);
             }
 
             @Override
@@ -339,18 +373,26 @@ public class EnclosureActivity extends AppCompatActivity {
         mButtonCycleSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2017/9/26 设置圆形围栏
-                List<LatLng> latLngList = mBaiduCircleU.getCircleLatlng(new LatLng(31.978961, 118.78684), 2000);
+                // 2017/9/26 设置圆形围栏
+                int radius = (mRadius + 2) * 100;
+
+                mWidth = mMapView.getWidth();
+                mHeight = mMapView.getHeight();
+                Projection mProjection = mBaiduMap.getProjection();
+                Point point = new Point((mWidth / 2), (mHeight / 2));
+                LatLng latLng = mProjection.fromScreenLocation(point);
+
+                List<LatLng> latLngList = mBaiduCircleU.getCircleLatlng(latLng, radius);
                 Log.i(TAG, "init: latLngList.size-->" + latLngList.size());
 
-                setEnclosure(TYPE_CYCLE, "2000", new LatLng(31.978961, 118.78684), latLngList);
+                setEnclosure(TYPE_CYCLE, "" + radius, latLng, latLngList);
             }
         });
 
         mButtonPolygonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2017/9/26 重置多边形围栏
+                // 2017/9/26 重置多边形围栏
                 for (Marker marker : mMarkerListSet) {
                     marker.remove();
                 }
@@ -363,7 +405,7 @@ public class EnclosureActivity extends AppCompatActivity {
         mButtonPolygonSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2017/9/26 设置多边形围栏
+                // 2017/9/26 设置多边形围栏
                 int size = mLatLngPolygonListSet.size();
                 if (size > 3) {
                     setEnclosure(TYPE_LINE, "", null, mLatLngPolygonListSet);
@@ -408,6 +450,7 @@ public class EnclosureActivity extends AppCompatActivity {
                 if (TYPE_CYCLE == mEnclosureTypeSet) {
                     showSetCircle(mRadius);
                 }
+                Log.i(TAG, "onMapStatusChangeFinish: zoom-->" + mapStatus.zoom);
             }
         });
 
@@ -478,8 +521,11 @@ public class EnclosureActivity extends AppCompatActivity {
                     for (List<Double> doubleList : objBean.getPoints()) {
                         mLatLngPolygon.add(new LatLng(doubleList.get(1), doubleList.get(0)));
                     }
+                } else {
+                    mLatLngCircle = new LatLng(objBean.getPoint().get(1), objBean.getPoint().get(0));
+                    mCircleRadius = objBean.getRadius();
                 }
-                myHandler.sendEmptyMessage(Data.MSG_2);
+                myHandler.sendEmptyMessageDelayed(Data.MSG_2, 100);
             }
 
             @Override
@@ -493,6 +539,7 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 Log.i(TAG, "onSuccess: result-->" + result);
+                myHandler.obtainMessage(Data.MSG_3).sendToTarget();
             }
 
             @Override
@@ -552,6 +599,15 @@ public class EnclosureActivity extends AppCompatActivity {
         mBaiduMap.animateMapStatus(update);
     }
 
+    //  地图移动到目标点
+    private void moveToCenter2(LatLng latLng) {
+        MapStatus.Builder builder = new MapStatus.Builder();
+        builder.target(latLng);
+        MapStatus status = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        mBaiduMap.setMapStatus(update);
+    }
+
     //  添加marker
     private void addMarker(LatLng latLng, int type, int direction) {
         //定义Maker坐标点
@@ -598,21 +654,31 @@ public class EnclosureActivity extends AppCompatActivity {
             mOverlayPolygon.remove();
         }
         Log.i(TAG, "showPolygon: ");
+        Log.i(TAG, "showPolygon: size-->" + mLatLngPolygon.size());
         //  计算中心点
-        double lat = 0, lng = 0;
-        for (LatLng latLng : mLatLngPolygon) {
-            lat += latLng.latitude;
-            lng += latLng.longitude;
+        if (mLatLngPolygon.size() >= 3) {
+            OverlayOptions polygonOption = new PolygonOptions().points(mLatLngPolygon).fillColor(0xa03cabfa);
+            mOverlayPolygon = mBaiduMap.addOverlay(polygonOption);
+            changeZoom(mLatLngPolygon);
         }
-        int size = mLatLngPolygon.size();
-        LatLng latLng = new LatLng(lat / size, lng / size);
-        moveToCenter(latLng);
-        OverlayOptions polygonOption = new PolygonOptions().points(mLatLngPolygon).fillColor(0xa03cabfa);
-        mOverlayPolygon = mBaiduMap.addOverlay(polygonOption);
     }
 
     //  显示圆形围栏
     private void showCircle() {
+        if (null != mOverlayCircle) {
+            mOverlayCircle.remove();
+        }
+        Log.i(TAG, "showCircle: ");
+
+        if (null != mLatLngCircle) {
+            OverlayOptions circleOption = new CircleOptions().center(mLatLngCircle).radius(mCircleRadius).fillColor(0xa03cabfa);
+            mOverlayCircle = mBaiduMap.addOverlay(circleOption);
+        }
+
+//        LatLng latLng1 = mBaiduCircleU.getDistanceLatlng(mLatLngCircle, 0, mCircleRadius);
+//        LatLng latLng2 = mBaiduCircleU.getDistanceLatlng(mLatLngCircle, 180, mCircleRadius);
+//
+//        changeZoom(latLng1, latLng2);
     }
 
     //  显示设置多边形围栏
@@ -655,18 +721,56 @@ public class EnclosureActivity extends AppCompatActivity {
         Point point = new Point((mWidth / 2), (mHeight / 2));
         LatLng latLng = mProjection.fromScreenLocation(point);
 
-        addMarker(latLng, Data.STATUS_OFF, 0);
         OverlayOptions circleOption = new CircleOptions().center(latLng).radius((radius + 2) * 100).fillColor(0xa03cabfa);
         mOverlayCircleSet = mBaiduMap.addOverlay(circleOption);
     }
 
     //  改变地图zoom
-    private void changeZoom() {
+    private void changeZoom(LatLng... latLngList) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngList) {
+            builder.include(latLng);
+        }
+        LatLngBounds latLngBounds = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
+        mBaiduMap.animateMapStatus(update);
+        Log.i(TAG, "changeZoom: --1");
+    }
+
+    //  改变地图zoom
+    private void changeZoom(List<LatLng> latLngList) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngList) {
+            builder.include(latLng);
+        }
+        LatLngBounds latLngBounds = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
+        mBaiduMap.animateMapStatus(update);
+        Log.i(TAG, "changeZoom: --2");
+    }
+
+    //  改变地图zoom
+    private void changeZoom(float zoom) {
         MapStatus.Builder builder = new MapStatus.Builder();
+        builder.zoom(zoom);
         MapStatus status = builder.build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-        float zoom = mBaiduMap.getMapStatus().zoom;
-        mBaiduMap.animateMapStatus(update);
+        mBaiduMap.setMapStatus(update);
+        Log.i(TAG, "changeZoom: --3");
+    }
+
+
+    // 计算多个坐标的中心点
+    private LatLng getCenter(List<LatLng> latLngList) {
+        //  计算中心点
+        double lat = 0, lng = 0;
+        for (LatLng latLng : latLngList) {
+            lat += latLng.latitude;
+            lng += latLng.longitude;
+        }
+        int size = latLngList.size();
+        LatLng latLng = new LatLng(lat / size, lng / size);
+        return latLng;
     }
 
     private class MyHandler extends Handler {
@@ -691,21 +795,33 @@ public class EnclosureActivity extends AppCompatActivity {
                 case Data.MSG_2: {
                     //  获取围栏信息
                     if (2 == mEnclosureType) {
+                        mImageViewCycle.setSelected(false);
+                        mImageViewPolygon.setSelected(true);
                         mEnclosureTypeSet = TYPE_LINE;
-                        showPolygon();
                         mTextViewRadius.setVisibility(View.GONE);
                         mLinearLayoutPolygon.setVisibility(View.VISIBLE);
                         mLinearLayoutCycle.setVisibility(View.GONE);
+                        showPolygon();
                     } else {
+                        mImageViewCycle.setSelected(true);
+                        mImageViewPolygon.setSelected(false);
+                        moveToCenter2(mLatLngCircle);
                         mEnclosureTypeSet = TYPE_CYCLE;
                         mTextViewRadius.setVisibility(View.VISIBLE);
                         mLinearLayoutPolygon.setVisibility(View.GONE);
                         mLinearLayoutCycle.setVisibility(View.VISIBLE);
+                        showCircle();
+                        mRadius = mCircleRadius / 100 - 2;
+                        mSeekBar.setProgress(mRadius);
+                        if (0 == mRadius) {
+                            changeZoom(18);
+                        }
                     }
                     break;
                 }
                 case Data.MSG_3: {
                     //  设置围栏
+                    EnclosureActivity.this.finish();
                     break;
                 }
             }
