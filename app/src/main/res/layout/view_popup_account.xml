@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="@dimen/dp_120"
               android:orientation="vertical"
               android:padding="10dp">
 
     <ListView
         android:id="@+id/lv_view_popup_account"
         android:layout_width="@dimen/dp_296"
-        android:layout_height="@dimen/dp_120"
+        android:layout_height="wrap_content"
         android:dividerHeight="@dimen/px_1"
         android:divider="@color/colorWhite"
         android:background="@drawable/bg_popup_list"

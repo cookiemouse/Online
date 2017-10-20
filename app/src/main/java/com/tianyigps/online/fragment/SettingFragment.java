@@ -1,5 +1,7 @@
 package com.tianyigps.online.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import com.tianyigps.online.R;
 import com.tianyigps.online.activity.AboutActivity;
 import com.tianyigps.online.activity.FlushTimeActivity;
 import com.tianyigps.online.activity.InstructionActivity;
+import com.tianyigps.online.activity.LoginActivity;
 import com.tianyigps.online.activity.OpinionActivity;
 import com.tianyigps.online.manager.SharedManager;
 
@@ -134,9 +137,32 @@ public class SettingFragment extends Fragment {
         mButtonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showChoiceDialog("账号退出后，您将接收不到报警信息的念头，是否退出。");
+            }
+        });
+    }
+
+    //  显示选择对话框
+    public void showChoiceDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(msg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
                 mSharedManager.saveAutoLogin(false);
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
                 getActivity().finish();
             }
         });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        builder.create().show();
     }
 }

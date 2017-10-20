@@ -41,7 +41,7 @@ public class FragmentContentActivity extends AppCompatActivity {
 
     private ToastU mToastU;
     private TimerU mTimerU;
-    private boolean exitAble = false;
+    private boolean mExitAble = false;
 
     private SharedManager mSharedManager;
 
@@ -63,11 +63,11 @@ public class FragmentContentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        if (exitAble) {
+        if (mExitAble) {
             this.finish();
             return;
         }
-        exitAble = true;
+        mExitAble = true;
         mToastU.showToast("再按一次退出");
         mTimerU.start();
     }
@@ -155,7 +155,7 @@ public class FragmentContentActivity extends AppCompatActivity {
 
             @Override
             public void onEnd() {
-                exitAble = false;
+                mExitAble = false;
             }
         });
     }

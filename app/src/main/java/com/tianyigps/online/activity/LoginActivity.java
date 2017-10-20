@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.adapter.PopupAccountAdapter;
@@ -28,6 +29,7 @@ import com.tianyigps.online.manager.DataManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
+import com.tianyigps.online.utils.TimerU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +60,13 @@ public class LoginActivity extends BaseActivity {
     //  popupWindow账户列表
     private PopupWindow mPopupWindow;
     private List<Account> mAccountList;
+    private PopupAccountAdapter mPopupAccountAdapter;
     private Account mAccountData;
+    private boolean isOpened = false;
+
+    //  双击back键退出
+    private boolean mExitAble = false;
+    private TimerU mTimerU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +76,17 @@ public class LoginActivity extends BaseActivity {
         init();
 
         setEventListener();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mExitAble) {
+            this.finish();
+            return;
+        }
+        mExitAble = true;
+        showToast("再按一次退出");
+        mTimerU.start();
     }
 
     @Override
@@ -92,6 +111,8 @@ public class LoginActivity extends BaseActivity {
         mLinearLayoutAccount = (LinearLayout) findViewById(R.id.ll_activity_login_account);
         mViewLine = findViewById(R.id.view_activity_login_line_1);
 
+        mTimerU = new TimerU(2);
+
         myHandler = new MyHandler();
 
         mNetManager = new NetManager();
@@ -101,6 +122,7 @@ public class LoginActivity extends BaseActivity {
         mDataManager = new DataManager(this);
 
         mPopupWindow = new PopupWindow(this);
+        mPopupWindow.setOutsideTouchable(false);
 
         mAccountList = new ArrayList<>();
 
@@ -108,6 +130,8 @@ public class LoginActivity extends BaseActivity {
         mAutoLogin = mSharedManager.getAutoLogin();
         mCheckBoxPassword.setChecked(mRememberPassword);
         mCheckBoxAuto.setChecked(mAutoLogin);
+        mEditTextAccount.setText(mSharedManager.getAccount());
+        mEditTextPassword.setText(mSharedManager.getPassword());
     }
 
     /**
@@ -143,6 +167,10 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 2017/9/4 下拉列表
+                if (isOpened) {
+                    mPopupWindow.dismiss();
+                    return;
+                }
                 showPopupWindow();
             }
         });
@@ -150,7 +178,19 @@ public class LoginActivity extends BaseActivity {
         mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
+                isOpened = false;
                 mLinearLayoutAccount.setBackgroundColor(getResources().getColor(R.color.colorNull));
+            }
+        });
+
+        mTimerU.setOnTickListener(new TimerU.OnTickListener() {
+            @Override
+            public void onTick(int time) {
+            }
+
+            @Override
+            public void onEnd() {
+                mExitAble = false;
             }
         });
 
@@ -200,8 +240,8 @@ public class LoginActivity extends BaseActivity {
         mAccountList.clear();
         mAccountList.addAll(mDataManager.getAccounts());
 
-        PopupAccountAdapter popupAccountAdapter = new PopupAccountAdapter(this, mAccountList);
-        listView.setAdapter(popupAccountAdapter);
+        mPopupAccountAdapter = new PopupAccountAdapter(this, mAccountList);
+        listView.setAdapter(mPopupAccountAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -210,11 +250,22 @@ public class LoginActivity extends BaseActivity {
                 mPopupWindow.dismiss();
             }
         });
+        mPopupAccountAdapter.setOnDeleteListener(new PopupAccountAdapter.OnDeleteListener() {
+            @Override
+            public void onDelete(int position) {
+                // TODO: 2017/10/20 删除帐号
+                String account = mAccountList.get(position).getmAccount();
+                mDataManager.deleteAccount(account);
+                mAccountList.remove(position);
+                mPopupAccountAdapter.notifyDataSetChanged();
+            }
+        });
         mPopupWindow.setContentView(view);
         mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.showAsDropDown(mViewLine, -30, -30);
+        isOpened = true;
+        mEditTextAccount.clearFocus();
         mLinearLayoutAccount.setBackgroundResource(R.drawable.bg_popup_account);
     }
 

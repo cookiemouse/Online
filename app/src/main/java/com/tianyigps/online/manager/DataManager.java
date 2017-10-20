@@ -64,9 +64,10 @@ public class DataManager {
         return accounts;
     }
 
-    @Deprecated
-    public void deleteAccount() {
-        //  未实现
+    public void deleteAccount(String account) {
+        if (isExist(account)) {
+            mSqLiteDatabase.delete(Data.TAB_ACCOUNT, "account=?", new String[]{account});
+        }
     }
 
     @Deprecated
