@@ -2,6 +2,8 @@ package com.tianyigps.online.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -30,6 +32,8 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.manager.NetManager;
+import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
@@ -48,6 +52,12 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
     private NaviLatLng mNaviLatLngEnd;
 
     private ToastU mToastU;
+
+    private NetManager mNetManager;
+    private SharedManager mSharedManager;
+    private MyHandler myHandler;
+
+    private int mFlushTime = 10000;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +85,12 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
         mAMapNaviView.setAMapNaviViewListener(this);
 
         mToastU = new ToastU(this);
+
+        mNetManager = new NetManager();
+        mSharedManager = new SharedManager(this);
+        myHandler = new MyHandler();
+
+        mFlushTime = mSharedManager.getFlushTime();
 
         mAMapNavi = AMapNavi.getInstance(getApplicationContext());
 
@@ -280,6 +296,9 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
     protected void onResume() {
         super.onResume();
         mAMapNaviView.onResume();
+        if (null != myHandler) {
+            myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushTime);
+        }
     }
 
     @Override
@@ -288,6 +307,9 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
         mAMapNaviView.onPause();
         if (null != mSpeechSynthesizer) {
             mSpeechSynthesizer.stopSpeaking();
+        }
+        if (null != myHandler) {
+            myHandler.removeMessages(Data.MSG_2);
         }
     }
 
@@ -346,5 +368,31 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
     @Override
     public void onNaviViewLoaded() {
         Log.i(TAG, "onNaviViewLoaded: ");
+    }
+
+    private class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case Data.MSG_MSG: {
+                    break;
+                }
+                case Data.MSG_NOTHING: {
+                    break;
+                }
+                case Data.MSG_ERO: {
+                    break;
+                }
+                case Data.MSG_1: {
+                    //  重新获取终点成功
+                    break;
+                }
+                case Data.MSG_2: {
+                    //  延时刷新位置
+                    break;
+                }
+            }
+        }
     }
 }

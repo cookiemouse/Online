@@ -47,13 +47,13 @@ public class OpenActivityReceiver extends BroadcastReceiver {
         String token = mSharedManager.getToken();
         Log.i(TAG, "onReceive: token-->" + token);
         if (RegularU.isEmpty(token)) {
-            toSplash();
+            toGuide();
         } else {
             toWarn();
         }
     }
 
-    private void toSplash() {
+    private void toGuide() {
         Intent intent = new Intent(context, GuideActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);

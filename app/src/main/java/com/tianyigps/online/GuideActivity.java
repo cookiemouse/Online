@@ -23,6 +23,7 @@ import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnCheckUserListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.DeviceU;
 import com.tianyigps.online.utils.RegularU;
 import com.xsj.crasheye.Crasheye;
 import com.yanzhenjie.permission.AndPermission;
@@ -83,6 +84,23 @@ public class GuideActivity extends Activity {
         mUserName = mSharedManager.getAccount();
         mPassword = mSharedManager.getPassword();
         mIsAuto = mSharedManager.getAutoLogin();
+
+        Log.i(TAG, "init: VersionName-->" + DeviceU.getVersionName(this));
+        Log.i(TAG, "init: VersionCode-->" + DeviceU.getVersionCode(this));
+        Log.i(TAG, "init: DeviceId-->" + DeviceU.getDeviceId(this));
+        Log.i(TAG, "init: PhoneBrand-->" + DeviceU.getPhoneBrand());
+        Log.i(TAG, "init: PhoneModel-->" + DeviceU.getPhoneModel());
+        Log.i(TAG, "init: BuildLevel-->" + DeviceU.getBuildLevel());
+        Log.i(TAG, "init: BuildVersion-->" + DeviceU.getBuildVersion());
+        Log.i(TAG, "init: DeviceWidth-->" + DeviceU.getDeviceWidth(this));
+        Log.i(TAG, "init: DeviceHeight-->" + DeviceU.getDeviceHeight(this));
+
+        mNetManager.sendUserInfo(DeviceU.getDeviceId(this)
+                , DeviceU.getPhoneBrand() + "  " + DeviceU.getPhoneModel()
+                , DeviceU.getVersionName(this)
+                , "39.989584"
+                , "116.480724"
+                , "", "account", "2");
 
         applyPermiss();
     }

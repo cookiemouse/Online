@@ -952,4 +952,40 @@ public class NetManager {
     public void setOnGetStationInfoListener(OnGetStationInfoListener listener) {
         this.mOnGetStationInfoListener = listener;
     }
+
+    /**
+     * 上传用户信息
+     */
+    public void sendUserInfo(String imei
+            , String phoneModel
+            , String versionCode
+            , String latitude
+            , String longitude
+            , String exception_msg
+            , String loginName
+            , String operateSystem) {
+        Request.Builder builder = new Request.Builder();
+        builder.url("http://10.0.0.18:8080/tyzx/main/postLoginInfo?"
+                + "&mphone_imei=" + imei
+                + "&mphone_mode=" + phoneModel
+                + "&version=" + versionCode
+                + "&latitude=" + latitude
+                + "&longitude=" + longitude
+                + "&exception_msg=" + exception_msg
+                + "&loginName=" + loginName
+                + "&appName=1"
+                + "&operateSystem=" + operateSystem);
+        mRequest = builder.build();
+        Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+        });
+    }
 }
