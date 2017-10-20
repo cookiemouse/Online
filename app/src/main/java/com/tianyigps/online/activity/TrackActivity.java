@@ -30,6 +30,7 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteLine;
@@ -295,6 +296,9 @@ public class TrackActivity extends BaseActivity {
             @Override
             public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
                 Log.i(TAG, "onGetDrivingRouteResult: 4");
+                if (null != mLatLngSelf && null != mInfoLatLng) {
+                    changeZoom(mLatLngSelf, mInfoLatLng);
+                }
                 if (null == drivingRouteResult || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     //  未找到路线
                     Log.i(TAG, "onGetDrivingRouteResult: 未找到路线");
@@ -572,12 +576,24 @@ public class TrackActivity extends BaseActivity {
         mBaiduMap.showInfoWindow(mInfoWindow);
 
         addMarker(latLng, mStatusData.getStatu(), mInfoDirection);
-        moveToInfoCenter(latLng);
+//        moveToInfoCenter(latLng);
     }
 
     //  获取某台设备的信息，并显示infowindow
     private void showPointNew() {
         mNetManager.showPointNew(mToken, mCid, "", mImei, false);
+    }
+
+    //  改变地图zoom
+    private void changeZoom(LatLng... latLngList) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngList) {
+            builder.include(latLng);
+        }
+        LatLngBounds latLngBounds = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
+        mBaiduMap.animateMapStatus(update);
+        Log.i(TAG, "changeZoom:");
     }
 
     private class MyHandler extends Handler {

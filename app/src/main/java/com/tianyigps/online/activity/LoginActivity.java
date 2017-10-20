@@ -131,7 +131,9 @@ public class LoginActivity extends BaseActivity {
         mCheckBoxPassword.setChecked(mRememberPassword);
         mCheckBoxAuto.setChecked(mAutoLogin);
         mEditTextAccount.setText(mSharedManager.getAccount());
-        mEditTextPassword.setText(mSharedManager.getPassword());
+        if (mRememberPassword) {
+            mEditTextPassword.setText(mSharedManager.getPassword());
+        }
     }
 
     /**
@@ -303,6 +305,8 @@ public class LoginActivity extends BaseActivity {
                     mSharedManager.saveAutoLogin(mAutoLogin);
                     if (mRememberPassword) {
                         mDataManager.saveAccount(mAccount, mPassword);
+                    } else {
+                        mDataManager.deleteAccount(mAccount);
                     }
                     toFragmentContent();
                     break;
