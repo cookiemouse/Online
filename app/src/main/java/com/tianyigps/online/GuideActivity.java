@@ -194,6 +194,7 @@ public class GuideActivity extends Activity {
                 }
                 case Data.MSG_2: {
                     //  跳转到主页
+                    JPushInterface.setAlias(GuideActivity.this, 0, mUserName);
                     toFragmentContent();
                     break;
                 }

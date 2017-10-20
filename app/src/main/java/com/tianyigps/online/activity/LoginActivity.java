@@ -34,6 +34,8 @@ import com.tianyigps.online.utils.TimerU;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class LoginActivity extends BaseActivity {
 
     private static final String TAG = "LoginActivity";
@@ -308,6 +310,7 @@ public class LoginActivity extends BaseActivity {
                     } else {
                         mDataManager.deleteAccount(mAccount);
                     }
+                    JPushInterface.setAlias(LoginActivity.this, 0, mAccount);
                     toFragmentContent();
                     break;
                 }

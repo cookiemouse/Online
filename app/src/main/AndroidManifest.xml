@@ -38,8 +38,8 @@
 
     <permission
         android:name="com.tianyigps.online.permission.JPUSH_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="com.tianyigps.online.permission.JPUSH_MESSAGE" />
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.tianyigps.online.permission.JPUSH_MESSAGE"/>
 
     <application
         android:allowBackup="true"
@@ -114,8 +114,8 @@
             </intent-filter>
         </service>
         <provider
-            android:authorities="com.tianyigps.online.DataProvider"
             android:name="cn.jpush.android.service.DataProvider"
+            android:authorities="com.tianyigps.online.DataProvider"
             android:exported="true"
             />
         <!-- Required SDK核心功能-->
@@ -134,6 +134,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
@@ -215,6 +216,28 @@
             android:name=".activity.NavigationActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <receiver
+            android:name=".receiver.GetNotificationReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>
+
+                <category android:name="com.tianyigps.online"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.OpenActivityReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>
+
+                <category android:name="com.tianyigps.online"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

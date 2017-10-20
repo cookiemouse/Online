@@ -65,9 +65,14 @@ public class SettingFragment extends Fragment {
 
         mSharedManager = new SharedManager(getContext());
 
-        boolean mainPage = mSharedManager.getMainPage();
-        mImageViewMonitor.setSelected(mainPage);
-        mImageViewCarList.setSelected(!mainPage);
+        int mainPage = mSharedManager.getMainPage();
+        if (mainPage == 1) {
+            mImageViewMonitor.setSelected(true);
+            mImageViewCarList.setSelected(false);
+        } else {
+            mImageViewMonitor.setSelected(false);
+            mImageViewCarList.setSelected(true);
+        }
     }
 
     private void setEventListener() {
@@ -95,7 +100,7 @@ public class SettingFragment extends Fragment {
         mImageViewMonitor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSharedManager.saveMainPage(true);
+                mSharedManager.saveMainPage(1);
                 mImageViewMonitor.setSelected(true);
                 mImageViewCarList.setSelected(false);
             }
@@ -104,7 +109,7 @@ public class SettingFragment extends Fragment {
         mImageViewCarList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSharedManager.saveMainPage(false);
+                mSharedManager.saveMainPage(0);
                 mImageViewMonitor.setSelected(false);
                 mImageViewCarList.setSelected(true);
             }

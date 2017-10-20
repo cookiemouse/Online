@@ -204,15 +204,15 @@ public class SharedManager {
 
     /**
      * 保存登陆主页
-     * false = 车辆列表，true = 监控页面
+     * 0 = 车辆列表，1 = 监控页面，2 = 监控页面
      */
-    public void saveMainPage(boolean page) {
+    public void saveMainPage(int page) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Data.MAIN_PAGE, page);
+        editor.putInt(Data.MAIN_PAGE, page);
         editor.apply();
     }
 
-    public boolean getMainPage() {
-        return mSharedPreferences.getBoolean(Data.MAIN_PAGE, false);
+    public int getMainPage() {
+        return mSharedPreferences.getInt(Data.MAIN_PAGE, 0);
     }
 }

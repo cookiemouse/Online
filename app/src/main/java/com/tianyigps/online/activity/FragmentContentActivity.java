@@ -1,5 +1,6 @@
 package com.tianyigps.online.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tianyigps.online.R;
+import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.ChoiceCarFragment;
 import com.tianyigps.online.fragment.MonitorFragment;
 import com.tianyigps.online.fragment.SettingFragment;
@@ -19,8 +21,6 @@ import com.tianyigps.online.fragment.WarnFragment;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.TimerU;
 import com.tianyigps.online.utils.ToastU;
-
-import cn.jpush.android.api.JPushInterface;
 
 public class FragmentContentActivity extends AppCompatActivity {
 
@@ -102,14 +102,30 @@ public class FragmentContentActivity extends AppCompatActivity {
 
         mFragmentManager = getSupportFragmentManager();
 
+        Intent intent = getIntent();
         mSharedManager = new SharedManager(this);
-        if (mSharedManager.getMainPage()) {
-            showMonitor();
-        } else {
-            showChoiceCar();
+        int mainPage = mSharedManager.getMainPage();
+        if (null != intent) {
+            mainPage = intent.getIntExtra(Data.MAIN_PAGE, 0);
         }
-
-        JPushInterface.setAlias(FragmentContentActivity.this, 0, "2223");
+        switch (mainPage) {
+            case 0: {
+                showChoiceCar();
+                break;
+            }
+            case 1: {
+                showMonitor();
+                break;
+            }
+            case 2: {
+                showWarn();
+                break;
+            }
+            default: {
+                showChoiceCar();
+                break;
+            }
+        }
     }
 
     private void setEventListener() {
