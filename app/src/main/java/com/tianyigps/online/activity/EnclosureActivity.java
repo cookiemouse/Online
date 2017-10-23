@@ -514,7 +514,13 @@ public class EnclosureActivity extends AppCompatActivity {
                     return;
                 }
                 EnclosureBean.ObjBean objBean = enclosureBean.getObj();
-                mEnclosureType = objBean.getType();
+                if (null == objBean) {
+                    mEnclosureType = TYPE_CYCLE;
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_4, 100);
+                    return;
+                } else {
+                    mEnclosureType = objBean.getType();
+                }
                 if (2 == mEnclosureType) {
                     //  多边形
                     mLatLngPolygon.clear();
@@ -822,6 +828,30 @@ public class EnclosureActivity extends AppCompatActivity {
                 case Data.MSG_3: {
                     //  设置围栏
                     EnclosureActivity.this.finish();
+                    break;
+                }
+                case Data.MSG_4: {
+                    //  获取围栏，但无数据
+                    if (2 == mEnclosureType) {
+                        mImageViewCycle.setSelected(false);
+                        mImageViewPolygon.setSelected(true);
+                        mEnclosureTypeSet = TYPE_LINE;
+                        mTextViewRadius.setVisibility(View.GONE);
+                        mLinearLayoutPolygon.setVisibility(View.VISIBLE);
+                        mLinearLayoutCycle.setVisibility(View.GONE);
+                    } else {
+                        mImageViewCycle.setSelected(true);
+                        mImageViewPolygon.setSelected(false);
+                        mEnclosureTypeSet = TYPE_CYCLE;
+                        mTextViewRadius.setVisibility(View.VISIBLE);
+                        mLinearLayoutPolygon.setVisibility(View.GONE);
+                        mLinearLayoutCycle.setVisibility(View.VISIBLE);
+                        showSetCircle(mRadius);
+                        mSeekBar.setProgress(mRadius);
+                        if (0 == mRadius) {
+                            changeZoom(18);
+                        }
+                    }
                     break;
                 }
             }
