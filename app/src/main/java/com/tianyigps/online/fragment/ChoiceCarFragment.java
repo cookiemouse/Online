@@ -140,10 +140,8 @@ public class ChoiceCarFragment extends Fragment {
     @Override
     public void onPause() {
         Log.i(TAG, "onPause: ");
+        myHandler.removeMessages(Data.MSG_9);
         super.onPause();
-        if (null != myHandler) {
-            myHandler.removeMessages(Data.MSG_9);
-        }
     }
 
     @Override
@@ -154,7 +152,8 @@ public class ChoiceCarFragment extends Fragment {
             myHandler.removeMessages(Data.MSG_9);
         } else {
             //  开始刷新
-            mFlushTime = mSharedManager.getFlushTime();
+            mFlushTime = mSharedManager.getFlushTime() * 1000;
+            Log.i(TAG, "onHiddenChanged: mFlushTime-->" + mFlushTime);
             if (mCidSelected != 0 && mGroupSelected != 0) {
                 myHandler.removeMessages(Data.MSG_9);
                 myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
@@ -206,7 +205,7 @@ public class ChoiceCarFragment extends Fragment {
         mToken = mSharedManager.getToken();
         mName = mSharedManager.getName();
 
-        mFlushTime = mSharedManager.getFlushTime();
+        mFlushTime = mSharedManager.getFlushTime() * 1000;
 
         myHandler = new MyHandler();
 
@@ -261,7 +260,7 @@ public class ChoiceCarFragment extends Fragment {
                 // TODO: 2017/9/18 All
                 setDefault();
                 mStatuSelected = 0;
-                mTextViewAll.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+                mTextViewAll.setTextColor(getResources().getColor(R.color.colorBlue));
                 mViewAll.setVisibility(View.VISIBLE);
                 isFirstExpand = true;
                 getDevices();
@@ -274,7 +273,7 @@ public class ChoiceCarFragment extends Fragment {
                 // TODO: 2017/9/18 online
                 setDefault();
                 mStatuSelected = 1;
-                mTextViewOnline.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+                mTextViewOnline.setTextColor(getResources().getColor(R.color.colorBlue));
                 mViewOnline.setVisibility(View.VISIBLE);
                 isFirstExpand = true;
                 getDevices();
@@ -287,7 +286,7 @@ public class ChoiceCarFragment extends Fragment {
                 // TODO: 2017/9/18 offline
                 setDefault();
                 mStatuSelected = 2;
-                mTextViewOffline.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+                mTextViewOffline.setTextColor(getResources().getColor(R.color.colorBlue));
                 mViewOffline.setVisibility(View.VISIBLE);
                 isFirstExpand = true;
                 getDevices();

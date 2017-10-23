@@ -206,7 +206,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     //  显示选车
     public void showChoiceCar() {
         setDefault();
-        mTextViewChoiceCar.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mTextViewChoiceCar.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewChoiceCar.setImageResource(R.drawable.ic_choice_car_blue);
         showFragment(mChoiceCarFragment);
     }
@@ -214,7 +214,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     //  显示监控
     private void showMonitor() {
         setDefault();
-        mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
         showFragment(mMonitorFragment);
     }
@@ -222,7 +222,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     //  显示监控，给外部使用
     public void showMonitor(Bundle bundle) {
         setDefault();
-        mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
         mMonitorFragment.setArguments(bundle);
         showFragment(mMonitorFragment);
@@ -231,7 +231,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     //  显示报警
     private void showWarn() {
         setDefault();
-        mTextViewWarn.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mTextViewWarn.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewWarn.setImageResource(R.drawable.ic_warn_blue);
         showFragment(mWarnFragment);
     }
@@ -239,7 +239,7 @@ public class FragmentContentActivity extends AppCompatActivity {
     //  显示设置
     private void showSetting() {
         setDefault();
-        mTextViewSetting.setTextColor(getResources().getColor(R.color.colorBlueTheme));
+        mTextViewSetting.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewSetting.setImageResource(R.drawable.ic_setting_blue);
         showFragment(mSettingFragment);
     }

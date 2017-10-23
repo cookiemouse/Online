@@ -11,7 +11,7 @@
         android:bottomRightRadius="@dimen/dp_4"
         android:bottomLeftRadius="@dimen/dp_4"/>
 
-    <solid android:color="@color/colorBlueLogin"/>
+    <solid android:color="@color/colorBlueTheme"/>
 
     <padding
         android:bottom="@dimen/dp_8"

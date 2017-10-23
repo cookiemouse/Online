@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3cabfa</color>
-    <color name="colorPrimaryDark">#3cabfa</color>
-    <color name="colorAccent">#3cabfa</color>
+    <color name="colorPrimary">#3385ff</color>
+    <color name="colorPrimaryDark">#3385ff</color>
+    <color name="colorAccent">#3385ff</color>
 
     <color name="colorNull">#00000000</color>
-    <color name="colorBlueTheme">#3cabfa</color>
+    <color name="colorBlueTheme">#3385ff</color>
     <color name="colorBlueThemeAlpha">#6f3cabfa</color>
     <color name="colorBlueHeavy">#3385ff</color>
-    <color name="colorBlueLogin">#0960FE</color>
+    <color name="colorBlue">#3cabfa</color>
     <color name="colorBlueAlpha">#a0c8deff</color>
     <color name="colorBlueHeavyAlpha">#a03385ff</color>
     <color name="colorWhite">#ffffff</color>

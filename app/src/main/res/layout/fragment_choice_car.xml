@@ -99,7 +99,7 @@
                         android:paddingBottom="@dimen/dp_8"
                         android:paddingTop="@dimen/dp_8"
                         android:text="全部"
-                        android:textColor="@color/colorBlueTheme"/>
+                        android:textColor="@color/colorBlue"/>
 
                     <View
                         android:id="@+id/view_fragment_choice_car_all"
@@ -107,7 +107,7 @@
                         android:layout_height="@dimen/dp_2"
                         android:layout_marginLeft="@dimen/dp_8"
                         android:layout_marginRight="@dimen/dp_8"
-                        android:background="@color/colorBlueTheme"/>
+                        android:background="@color/colorBlue"/>
 
                 </LinearLayout>
 
@@ -133,7 +133,7 @@
                         android:layout_height="@dimen/dp_2"
                         android:layout_marginLeft="@dimen/dp_8"
                         android:layout_marginRight="@dimen/dp_8"
-                        android:background="@color/colorBlueTheme"
+                        android:background="@color/colorBlue"
                         android:visibility="gone"/>
 
                 </LinearLayout>
@@ -160,7 +160,7 @@
                         android:layout_height="@dimen/dp_2"
                         android:layout_marginLeft="@dimen/dp_8"
                         android:layout_marginRight="@dimen/dp_8"
-                        android:background="@color/colorBlueTheme"
+                        android:background="@color/colorBlue"
                         android:visibility="gone"/>
 
                 </LinearLayout>
@@ -170,7 +170,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
-                android:background="@color/colorBlueTheme"/>
+                android:background="@color/colorBlue"/>
 
             <ExpandableListView
                 android:id="@+id/elv_fragment_choice_car"

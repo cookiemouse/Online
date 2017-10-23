@@ -75,6 +75,9 @@ public class TimeFormatU {
         int min = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         String time = "";
+        if (mills == 0) {
+            return time;
+        }
         if (day > 0) {
             time = day + "天";
             return time;

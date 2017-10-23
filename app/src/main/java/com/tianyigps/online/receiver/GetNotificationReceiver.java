@@ -22,6 +22,7 @@ public class GetNotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         mSharedManager = new SharedManager(context);
         String warnTypeLocate = mSharedManager.getWarnType();
+        boolean isReceiveWarn = mSharedManager.isWarn();
         Log.i(TAG, "onReceive: ");
         Bundle bundle = intent.getExtras();
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
@@ -43,7 +44,7 @@ public class GetNotificationReceiver extends BroadcastReceiver {
 
         Log.i(TAG, "onReceive: warnType-->" + warnType);
         Log.i(TAG, "onReceive: warnTypeLocate-->" + warnTypeLocate);
-        if (!warnTypeLocate.contains(warnType)) {
+        if (!warnTypeLocate.contains(warnType) && !isReceiveWarn) {
             JPushInterface.clearNotificationById(context, notificationId);
         }
     }
