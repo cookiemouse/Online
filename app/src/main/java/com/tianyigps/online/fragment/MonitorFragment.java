@@ -114,6 +114,8 @@ public class MonitorFragment extends Fragment {
     private StatusData mStatusData;
     private int mInfoDirection, mModel, mElectricity;
     private LatLng mInfoLatLng;
+    //  设备是否已启用
+    private boolean mIsActivation = true;
 
     //  Marker
     private List<MarkerData> mMarkerDataList;
@@ -451,6 +453,7 @@ public class MonitorFragment extends Fragment {
                     for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                         if (objBean.getImei().equals(mChoiceImei)) {
                             InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
+                            Log.i(TAG, "onSuccess: sence-->" + redisobjBean.getScene());
                             Log.i(TAG, "onSuccess: name-->" + objBean.getName());
                             Log.i(TAG, "onSuccess: speed-->" + redisobjBean.getSpeed());
                             Log.i(TAG, "onSuccess: currentTime-->" + redisobjBean.getCurrent_time());
@@ -459,6 +462,17 @@ public class MonitorFragment extends Fragment {
                             Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
 
                             mInfoName = objBean.getName();
+                            mModel = Integer.valueOf(objBean.getModel());
+                            mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                            if ("3".equals(redisobjBean.getScene())) {
+                                mIsActivation = false;
+                                myHandler.sendEmptyMessage(Data.MSG_4);
+                                return;
+                            } else {
+                                mIsActivation = true;
+                            }
+
                             String locateType = redisobjBean.getLocate_type();
                             if (null == locateType) {
                                 locateType = "2";
@@ -481,8 +495,6 @@ public class MonitorFragment extends Fragment {
                             mElectricity = redisobjBean.getDianliang();
                             mInfoImei = objBean.getImei();
 
-                            mModel = Integer.valueOf(objBean.getModel());
-
                             //  计算状态
                             long currentTime = 0;
                             long locateTime = 0;
@@ -501,7 +513,6 @@ public class MonitorFragment extends Fragment {
                                 speed = Integer.valueOf(redisobjBean.getSpeed());
                             }
 
-                            mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
                             Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
                                     , infoWindowBean.getTime()
                                     , currentTime
@@ -525,34 +536,42 @@ public class MonitorFragment extends Fragment {
                         for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                             InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
                             LatLng latLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
-                            int direction = Integer.valueOf(redisobjBean.getDirection());
                             String imei = objBean.getImei();
 
-                            //  计算状态
-                            long currentTime = 0;
-                            long locateTime = 0;
-                            long parkTime = 0;
-                            int speed = 0;
-                            if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
-                                currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
-                            }
-                            if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
-                                locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
-                            }
-                            if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
-                                parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
-                            }
-                            if (!RegularU.isEmpty(redisobjBean.getSpeed())) {
-                                speed = Integer.valueOf(redisobjBean.getSpeed());
-                            }
-                            StatusData statusData = StatusU.getStatus(Integer.valueOf(objBean.getModel())
-                                    , infoWindowBean.getTime()
-                                    , currentTime
-                                    , locateTime
-                                    , parkTime
-                                    , speed);
+                            if ("3".equals(redisobjBean.getScene())) {
+                                mIsActivation = false;
+                                mMarkerDataList.add(new MarkerData(latLng, Data.STATUS_OTHER, 0, imei));
+                            } else {
+                                mIsActivation = true;
 
-                            mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), direction, imei));
+                                int direction = Integer.valueOf(redisobjBean.getDirection());
+
+                                //  计算状态
+                                long currentTime = 0;
+                                long locateTime = 0;
+                                long parkTime = 0;
+                                int speed = 0;
+                                if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
+                                    currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
+                                    locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
+                                    parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getSpeed())) {
+                                    speed = Integer.valueOf(redisobjBean.getSpeed());
+                                }
+                                StatusData statusData = StatusU.getStatus(Integer.valueOf(objBean.getModel())
+                                        , infoWindowBean.getTime()
+                                        , currentTime
+                                        , locateTime
+                                        , parkTime
+                                        , speed);
+
+                                mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), direction, imei));
+                            }
                         }
                         myHandler.sendEmptyMessage(Data.MSG_2);
                         break;
@@ -571,6 +590,17 @@ public class MonitorFragment extends Fragment {
                                 Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
 
                                 mInfoName = objBean.getName();
+                                mModel = Integer.valueOf(objBean.getModel());
+                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                                if ("3".equals(redisobjBean.getScene())) {
+                                    mIsActivation = false;
+                                    myHandler.sendEmptyMessage(Data.MSG_4);
+                                    return;
+                                } else {
+                                    mIsActivation = true;
+                                }
+
                                 String locateType = redisobjBean.getLocate_type();
                                 if (null == locateType) {
                                     locateType = "2";
@@ -593,8 +623,6 @@ public class MonitorFragment extends Fragment {
                                 mElectricity = redisobjBean.getDianliang();
                                 mInfoImei = objBean.getImei();
 
-                                mModel = Integer.valueOf(objBean.getModel());
-
                                 //  计算状态
                                 long currentTime = 0;
                                 long locateTime = 0;
@@ -613,7 +641,6 @@ public class MonitorFragment extends Fragment {
                                     speed = Integer.valueOf(redisobjBean.getSpeed());
                                 }
 
-                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
                                 Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
                                         , infoWindowBean.getTime()
                                         , currentTime
@@ -948,6 +975,22 @@ public class MonitorFragment extends Fragment {
                     //  显示InfoWindow
                     showInfoWindow(mInfoLatLng);
                     mOnlyInfo = false;
+                    break;
+                }
+                case Data.MSG_4: {
+                    //  设备未启用（未激活）
+                    mBaiduMap.hideInfoWindow();
+                    addMarker(mInfoLatLng, Data.STATUS_OTHER, 0, mChoiceImei, 1);
+                    moveToCenter(mInfoLatLng);
+                    String str = "";
+                    str += mInfoName;
+                    if (mModel == 1) {
+                        str += "有线：";
+                    } else {
+                        str += "无线：";
+                    }
+                    str += "设备未启用";
+                    mTextViewAddress.setText(str);
                     break;
                 }
             }

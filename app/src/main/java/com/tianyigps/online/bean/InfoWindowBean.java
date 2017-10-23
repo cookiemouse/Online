@@ -156,6 +156,7 @@ public class InfoWindowBean {
              * latitude : 31.343133
              * acc_status : 01
              * parkwarn : 0
+             * scene : 0
              */
 
             private String gps_time;
@@ -176,6 +177,7 @@ public class InfoWindowBean {
             private String latitude;
             private String acc_status;
             private String parkwarn;
+            private String scene;
             private int dianliang;
 
             public String getGps_time() {
@@ -328,6 +330,14 @@ public class InfoWindowBean {
 
             public void setStation_code(String station_code) {
                 this.station_code = station_code;
+            }
+
+            public String getScene() {
+                return scene;
+            }
+
+            public void setScene(String scene) {
+                this.scene = scene;
             }
         }
     }
