@@ -52,7 +52,6 @@ import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
-import com.tianyigps.online.utils.CoordinateConverterU;
 import com.tianyigps.online.utils.GeoCoderU;
 import com.tianyigps.online.utils.LocateTypeU;
 import com.tianyigps.online.utils.RegularU;
@@ -872,9 +871,7 @@ public class MonitorFragment extends Fragment {
     //  跳转到导航页面
     private void toNaviActivity() {
         Intent intent = new Intent(getContext(), NavigationActivity.class);
-        com.amap.api.maps.model.LatLng latLng = CoordinateConverterU.baiduToGaodeLatlng(getContext(), mInfoLatLng);
-        intent.putExtra(Data.INTENT_LATITUDE, latLng.latitude);
-        intent.putExtra(Data.INTENT_LONGITUDE, latLng.longitude);
+        intent.putExtra(Data.KEY_IMEI, mInfoImei);
         startActivity(intent);
     }
 
