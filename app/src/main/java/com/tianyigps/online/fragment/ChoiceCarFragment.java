@@ -105,6 +105,9 @@ public class ChoiceCarFragment extends Fragment {
     //  Toast
     private ToastU mToastU;
 
+    //  刷新时间
+    private int mFlushTime = 10000;
+
     //  Loading
     private LoadingDialogFragment mLoadingDialogFragment;
 
@@ -121,6 +124,42 @@ public class ChoiceCarFragment extends Fragment {
         setEventListener();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume: ");
+        super.onResume();
+        //  开始刷新
+        if (mCidSelected != 0 && mGroupSelected != 0) {
+            myHandler.removeMessages(Data.MSG_9);
+            myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        Log.i(TAG, "onPause: ");
+        super.onPause();
+        if (null != myHandler) {
+            myHandler.removeMessages(Data.MSG_9);
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.i(TAG, "onHiddenChanged: hidden-->" + hidden);
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            myHandler.removeMessages(Data.MSG_9);
+        } else {
+            //  开始刷新
+            mFlushTime = mSharedManager.getFlushTime();
+            if (mCidSelected != 0 && mGroupSelected != 0) {
+                myHandler.removeMessages(Data.MSG_9);
+                myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
+            }
+        }
     }
 
     @Override
@@ -166,6 +205,8 @@ public class ChoiceCarFragment extends Fragment {
         mCidSelected = mCid;
         mToken = mSharedManager.getToken();
         mName = mSharedManager.getName();
+
+        mFlushTime = mSharedManager.getFlushTime();
 
         myHandler = new MyHandler();
 
@@ -648,6 +689,8 @@ public class ChoiceCarFragment extends Fragment {
                         mExpandableListView.expandGroup(0);
                         isFirstExpand = false;
                     }
+                    myHandler.removeMessages(Data.MSG_9);
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
                     break;
                 }
                 case Data.MSG_5: {
@@ -702,6 +745,18 @@ public class ChoiceCarFragment extends Fragment {
                         mEditTextSearch.clearFocus();
                     }
                     mSearchDevicesAdapter.notifyDataSetChanged();
+                    myHandler.removeMessages(Data.MSG_9);
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
+                    break;
+                }
+                case Data.MSG_9: {
+                    //  刷新设备
+                    if (mLinearLayoutExpand.getVisibility() == View.VISIBLE) {
+                        getDevices();
+                    } else {
+                        String key = mEditTextSearch.getText().toString();
+                        searchDevices(key);
+                    }
                     break;
                 }
             }

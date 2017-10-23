@@ -68,17 +68,12 @@ public class TimeFormatU {
     }
 
     public static String millisToClock2(double mills) {
-        Log.i(TAG, "millisToClock2: mills-->" + mills);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis((long) mills);
         int day = calendar.get(Calendar.DAY_OF_YEAR);
         int hour = calendar.get(Calendar.HOUR);
         int min = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
-        Log.i(TAG, "millisToClock2: day-->" + day);
-        Log.i(TAG, "millisToClock2: hour-->" + hour);
-        Log.i(TAG, "millisToClock2: min-->" + min);
-        Log.i(TAG, "millisToClock2: second-->" + second);
         String time = "";
         if (day > 0) {
             time = day + "天";
