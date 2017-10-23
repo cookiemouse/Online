@@ -71,7 +71,7 @@ public class TerminalListBean {
         private String model;
         private int attention_id;
         private boolean isAttention;
-//        private int margin;
+        private float margin;
         private String online;
         private String orderIndex;
         private String terminalStatus;
@@ -124,13 +124,13 @@ public class TerminalListBean {
             this.isAttention = isAttention;
         }
 
-//        public int getMargin() {
-//            return margin;
-//        }
-//
-//        public void setMargin(int margin) {
-//            this.margin = margin;
-//        }
+        public float getMargin() {
+            return margin;
+        }
+
+        public void setMargin(float margin) {
+            this.margin = margin;
+        }
 
         public String getOnline() {
             return online;

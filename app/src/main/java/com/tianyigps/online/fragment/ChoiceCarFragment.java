@@ -50,6 +50,7 @@ import com.tianyigps.online.interfaces.OnSearchTerminalWithStatusListener;
 import com.tianyigps.online.interfaces.OnShowCustomersListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.TimeFormatU;
 import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
@@ -438,7 +439,7 @@ public class ChoiceCarFragment extends Fragment {
                     mAdapterExpandableChildDataList.add(new AdapterExpandableChildData(objBean.getName()
                             , objBean.getTerminalStatus()
                             , objBean.getImei()
-                            , 0
+                            , TimeFormatU.millisToClock2(objBean.getMargin())
                             , objBean.isIsAttention()
                             , objBean.getAttention_id()));
                 }
@@ -515,7 +516,7 @@ public class ChoiceCarFragment extends Fragment {
                     mAdapterSearchDevicesDataList.add(new AdapterSearchDevicesData(objBean.getName()
                             , objBean.getTerminalStatus()
                             , objBean.getImei()
-                            , 0
+                            , TimeFormatU.millisToClock2(objBean.getMargin())
                             , objBean.isIsAttention()
                             , objBean.getAttention_id()));
                 }

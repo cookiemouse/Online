@@ -67,6 +67,38 @@ public class TimeFormatU {
         return time;
     }
 
+    public static String millisToClock2(double mills) {
+        Log.i(TAG, "millisToClock2: mills-->" + mills);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis((long) mills);
+        int day = calendar.get(Calendar.DAY_OF_YEAR);
+        int hour = calendar.get(Calendar.HOUR);
+        int min = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        Log.i(TAG, "millisToClock2: day-->" + day);
+        Log.i(TAG, "millisToClock2: hour-->" + hour);
+        Log.i(TAG, "millisToClock2: min-->" + min);
+        Log.i(TAG, "millisToClock2: second-->" + second);
+        String time = "";
+        if (day > 0) {
+            time = day + "天";
+            return time;
+        }
+        if (hour > 0) {
+            time = hour + "小时";
+            return time;
+        }
+        if (min > 0) {
+            time = min + "分钟";
+            return time;
+        }
+        if (second > 0) {
+            time = second + "秒";
+            return time;
+        }
+        return time;
+    }
+
     public static String millsToMinSec(long mills) {
 //        int hour = (int) (mills / 1000 / 3600);
 //        int min = (int) (mills / 1000 % 3600 / 60);
