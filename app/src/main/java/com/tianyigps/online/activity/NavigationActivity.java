@@ -37,6 +37,7 @@ import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoForMapListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.BDTransU;
 import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
@@ -114,7 +115,8 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
                 }
                 TerminalInfo4MapBean.ObjBean objBean = terminalInfo4MapBean.getObj();
                 TerminalInfo4MapBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
-                mNaviLatLngEnd = new NaviLatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                double[] gcj = BDTransU.bd2gcj(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                mNaviLatLngEnd = new NaviLatLng(gcj[0], gcj[1]);
                 myHandler.sendEmptyMessage(Data.MSG_3);
             }
 

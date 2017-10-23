@@ -96,7 +96,8 @@ public class GuideActivity extends Activity {
         Log.i(TAG, "init: DeviceHeight-->" + DeviceU.getDeviceHeight(this));
 
         mNetManager.sendUserInfo(DeviceU.getDeviceId(this)
-                , DeviceU.getPhoneBrand() + "  " + DeviceU.getPhoneModel()
+                , DeviceU.getPhoneBrand()
+                , DeviceU.getPhoneModel()
                 , DeviceU.getVersionName(this)
                 , "39.989584"
                 , "116.480724"

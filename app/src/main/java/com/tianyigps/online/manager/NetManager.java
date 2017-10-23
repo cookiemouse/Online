@@ -957,6 +957,7 @@ public class NetManager {
      * 上传用户信息
      */
     public void sendUserInfo(String imei
+            , String phoneBrand
             , String phoneModel
             , String versionCode
             , String latitude
@@ -965,8 +966,9 @@ public class NetManager {
             , String loginName
             , String operateSystem) {
         Request.Builder builder = new Request.Builder();
-        builder.url("http://10.0.0.18:8080/tyzx/main/postLoginInfo?"
+        builder.url("http://121.43.178.183:8000/tyzx/main/postLoginInfo?"
                 + "&mphone_imei=" + imei
+                + "&mphone_brand=" + phoneBrand
                 + "&mphone_mode=" + phoneModel
                 + "&version=" + versionCode
                 + "&latitude=" + latitude

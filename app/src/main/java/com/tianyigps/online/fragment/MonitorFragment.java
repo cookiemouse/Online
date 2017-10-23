@@ -176,7 +176,7 @@ public class MonitorFragment extends Fragment {
     public void onPause() {
         mMapView.onPause();
         if (null != mInfoLatLng) {
-            moveToCenter(mInfoLatLng);
+            moveToInfoCenter(mInfoLatLng);
         }
         super.onPause();
     }
@@ -734,7 +734,7 @@ public class MonitorFragment extends Fragment {
         builder.target(latLng);
         MapStatus status = builder.build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-        mBaiduMap.animateMapStatus(update);
+        mBaiduMap.setMapStatus(update);
     }
 
     //  地图移动到目标点
