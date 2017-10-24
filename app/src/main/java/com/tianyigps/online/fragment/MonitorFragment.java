@@ -432,7 +432,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
                 Log.e("Tag", "zoom-->" + (int) mapStatus.zoom);
-                if (mFrom != FROM_CHOICE) {
+                if (mFrom != FROM_CHOICE && mFrom != FROM_CONCERN) {
                     int zoom = (int) mapStatus.zoom;
                     Point point1 = new Point(-(mWidth / 5), -(mHeight / 5));
                     Point point2 = new Point(mWidth * 6 / 5, mHeight * 6 / 5);
