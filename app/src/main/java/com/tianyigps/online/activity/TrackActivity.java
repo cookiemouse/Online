@@ -46,11 +46,10 @@ import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.base.BaseActivity;
-import com.tianyigps.online.bean.InfoWindowBean;
+import com.tianyigps.online.bean.TerminalInfo4MapBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.data.StatusData;
-import com.tianyigps.online.interfaces.OnGetStationInfoListener;
-import com.tianyigps.online.interfaces.OnShowPointNewListener;
+import com.tianyigps.online.interfaces.OnShowTerminalInfoForMapListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
@@ -111,6 +110,13 @@ public class TrackActivity extends BaseActivity {
     private WindowManager mWindowManager;
     private int mWidth, mHeight;
 
+    //  获取基站、获取GPS定位
+    private boolean mIsGetStation = false;
+    private boolean mIsGPS = false;
+
+    //  是否需要缩放地图
+    private boolean mZoomMap = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +175,7 @@ public class TrackActivity extends BaseActivity {
         mSharedManager = new SharedManager(this);
         mToken = mSharedManager.getToken();
         mCid = mSharedManager.getCid();
-        mFlushInterval = mSharedManager.getFlushTime();
+        mFlushInterval = mSharedManager.getFlushTime() * 1000;
 
         mGeoCoderU = new GeoCoderU();
 
@@ -296,8 +302,9 @@ public class TrackActivity extends BaseActivity {
             @Override
             public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
                 Log.i(TAG, "onGetDrivingRouteResult: 4");
-                if (null != mLatLngSelf && null != mInfoLatLng) {
+                if (null != mLatLngSelf && null != mInfoLatLng && !mIsGetStation && mZoomMap) {
                     changeZoom(mLatLngSelf, mInfoLatLng);
+                    mZoomMap = false;
                 }
                 if (null == drivingRouteResult || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     //  未找到路线
@@ -347,97 +354,90 @@ public class TrackActivity extends BaseActivity {
             }
         });
 
-        mNetManager.setOnShowPointNewListener(new OnShowPointNewListener() {
+        mNetManager.setOnShowTerminalInfoForMapListener(new OnShowTerminalInfoForMapListener() {
             @Override
             public void onSuccess(String result) {
                 Log.i(TAG, "onSuccess: result-->" + result);
                 Gson gson = new Gson();
-                InfoWindowBean infoWindowBean = gson.fromJson(result, InfoWindowBean.class);
-                if (!infoWindowBean.isSuccess()) {
-                    mStringMessage = infoWindowBean.getMsg();
+                TerminalInfo4MapBean terminalInfo4MapBean = gson.fromJson(result, TerminalInfo4MapBean.class);
+                if (!terminalInfo4MapBean.isSuccess()) {
+                    mStringMessage = terminalInfo4MapBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
-                    if (objBean.getImei().equals(mImei)) {
-                        InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
-                        Log.i(TAG, "onSuccess: name-->" + objBean.getName());
-                        Log.i(TAG, "onSuccess: speed-->" + redisobjBean.getSpeed());
-                        Log.i(TAG, "onSuccess: currentTime-->" + redisobjBean.getCurrent_time());
-                        Log.i(TAG, "onSuccess: locateTime-->" + redisobjBean.getLocate_time());
-                        Log.i(TAG, "onSuccess: locateType-->" + redisobjBean.getLocate_type());
-                        Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
-                        Log.i(TAG, "onSuccess: stationCode-->" + redisobjBean.getStation_code());
-                        mInfoStationCode = redisobjBean.getStation_code();
+                TerminalInfo4MapBean.ObjBean objBean = terminalInfo4MapBean.getObj();
+                TerminalInfo4MapBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
 
-                        mInfoName = objBean.getName();
-                        if (redisobjBean.getLocate_type().equals("1")) {
-                            int speedT = Integer.valueOf(redisobjBean.getSpeed());
-                            if (speedT < 0) {
-                                mInfoSpeed = "0km/h";
-                            } else {
-                                mInfoSpeed = redisobjBean.getSpeed() + "km/h";
-                            }
-                        } else {
-                            mInfoSpeed = "-";
-                        }
-                        mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
-                        mInfoCurrentTime = redisobjBean.getCurrent_time();
-                        mInfoLocateTime = redisobjBean.getLocate_time();
-                        mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
-                        mInfoElectricity = redisobjBean.getDianliang() + "%";
-                        mElectricity = redisobjBean.getDianliang();
-                        mInfoImei = objBean.getImei();
+                Log.i(TAG, "onSuccess: name-->" + objBean.getName());
+                Log.i(TAG, "onSuccess: speed-->" + redisobjBean.getSpeed());
+                Log.i(TAG, "onSuccess: currentTime-->" + redisobjBean.getCurrent_time());
+                Log.i(TAG, "onSuccess: locateTime-->" + redisobjBean.getLocate_time());
+                Log.i(TAG, "onSuccess: locateType-->" + redisobjBean.getLocate_type());
+                Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
+                Log.i(TAG, "onSuccess: stationCode-->" + redisobjBean.getStation_code());
+                mInfoStationCode = redisobjBean.getStation_code();
 
-                        mModel = Integer.valueOf(objBean.getModel());
-
-                        //  计算状态
-                        long currentTime = 0;
-                        long locateTime = 0;
-                        long parkTime = 0;
-                        int speed = 0;
-                        if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
-                            currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
-                        }
-                        if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
-                            locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
-                        }
-                        if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
-                            parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
-                        }
-                        if (!RegularU.isEmpty(redisobjBean.getSpeed())) {
-                            speed = Integer.valueOf(redisobjBean.getSpeed());
-                        }
-
-                        mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
-                        Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
-                                , infoWindowBean.getTime()
-                                , currentTime
-                                , locateTime
-                                , parkTime
-                                , speed));
-                        mStatusData = StatusU.getStatus(Integer.valueOf(objBean.getModel())
-                                , infoWindowBean.getTime()
-                                , currentTime
-                                , locateTime
-                                , parkTime
-                                , speed);
+                mInfoName = objBean.getName();
+                if (redisobjBean.getLocate_type() == 1) {
+                    int speedT = redisobjBean.getSpeed();
+                    if (speedT < 0) {
+                        mInfoSpeed = "0km/h";
+                    } else {
+                        mInfoSpeed = redisobjBean.getSpeed() + "km/h";
                     }
+                } else {
+                    mInfoSpeed = "-";
                 }
+                mInfoLocateType = LocateTypeU.getLocateType("" + redisobjBean.getLocate_type());
+                mInfoCurrentTime = redisobjBean.getCurrent_time();
+                mInfoLocateTime = redisobjBean.getLocate_time();
+                mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
+                mInfoElectricity = redisobjBean.getDianliang() + "%";
+                mElectricity = redisobjBean.getDianliang();
+                mInfoImei = objBean.getImei();
+
+                mModel = Integer.valueOf(objBean.getModel());
+
+                //  计算状态
+                long currentTime = 0;
+                long locateTime = 0;
+                long parkTime = 0;
+                int speed = 0;
+                if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
+                    currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
+                }
+                if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
+                    locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
+                }
+                if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
+                    parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
+                }
+                speed = redisobjBean.getSpeed();
+
+                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                if (mIsGetStation) {
+                    mInfoLatLng = calculateLatlng(redisobjBean.getLocate_type()
+                            , redisobjBean.getLatitudeF()
+                            , redisobjBean.getLongitudeF()
+                            , redisobjBean.getLatitudeGDZJB()
+                            , redisobjBean.getLongitudeGDZJB());
+                }
+
+                Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
+                        , terminalInfo4MapBean.getTime()
+                        , currentTime
+                        , locateTime
+                        , parkTime
+                        , speed));
+                mStatusData = StatusU.getStatus(Integer.valueOf(objBean.getModel())
+                        , terminalInfo4MapBean.getTime()
+                        , currentTime
+                        , locateTime
+                        , parkTime
+                        , speed);
+
                 myHandler.sendEmptyMessage(Data.MSG_1);
-            }
-
-            @Override
-            public void onFailure() {
-                mStringMessage = Data.DEFAULT_MESSAGE;
-                myHandler.sendEmptyMessage(Data.MSG_MSG);
-            }
-        });
-
-        mNetManager.setOnGetStationInfoListener(new OnGetStationInfoListener() {
-            @Override
-            public void onSuccess(String result) {
-                Log.i(TAG, "onSuccess: result-->" + result);
             }
 
             @Override
@@ -471,6 +471,7 @@ public class TrackActivity extends BaseActivity {
     private void searchDriving(LatLng from, LatLng to) {
         PlanNode planNodeFrom = PlanNode.withLocation(from);
         PlanNode planNodeTo = PlanNode.withLocation(to);
+        mZoomMap = true;
         mRoutePlanSearch.drivingSearch(new DrivingRoutePlanOption()
                 .from(planNodeFrom)
                 .to(planNodeTo)
@@ -567,7 +568,8 @@ public class TrackActivity extends BaseActivity {
             public void onClick(View view) {
                 // TODO: 2017/10/13 获取基站
                 Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
-                mNetManager.getStationInfo(mInfoStationCode);
+                mIsGetStation = true;
+                showPointNew();
             }
         });
 
@@ -581,7 +583,7 @@ public class TrackActivity extends BaseActivity {
 
     //  获取某台设备的信息，并显示infowindow
     private void showPointNew() {
-        mNetManager.showPointNew(mToken, mCid, "", mImei, false);
+        mNetManager.showTerminalInfo4Map(mToken, mImei);
     }
 
     //  改变地图zoom
@@ -594,6 +596,30 @@ public class TrackActivity extends BaseActivity {
         MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
         mBaiduMap.animateMapStatus(update);
         Log.i(TAG, "changeZoom:");
+    }
+
+    //  基站与GPS位置
+    private LatLng calculateLatlng(int locateType, double latitudeF, double longitudeF
+            , double latitudeG, double longitudeG) {
+        LatLng latLng = new LatLng(latitudeF, longitudeF);
+
+        if (1 == mModel) {
+            //  有线
+            if (mIsGPS) {
+                if (0 != latitudeG && 0 != longitudeG) {
+                    latLng = new LatLng(latitudeG, longitudeG);
+                    return latLng;
+                }
+                mIsGPS = false;
+                return latLng;
+            }
+            if (1 == locateType) {
+                mIsGPS = true;
+            }
+            return latLng;
+        }
+        //  无线
+        return latLng;
     }
 
     private class MyHandler extends Handler {
@@ -620,12 +646,15 @@ public class TrackActivity extends BaseActivity {
                         searchDriving(mLatLngSelf, mInfoLatLng);
                     }
                     Log.i(TAG, "handleMessage: mFlushInterval-->" + mFlushInterval);
-                    myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval * 1000);
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval);
+                    Log.i(TAG, "handleMessage: mInfoLatLng.lat-->" + mInfoLatLng.latitude);
+                    Log.i(TAG, "handleMessage: mInfoLatLng.lng-->" + mInfoLatLng.longitude);
                     break;
                 }
                 case Data.MSG_2: {
                     //  刷新
                     showPointNew();
+                    mIsGetStation = false;
                 }
             }
         }

@@ -182,6 +182,7 @@ public class TerminalInfo4MapBean {
             private String acc_status;
             private String parkwarn;
             private String lbs_time;
+            private int dianliang;
 
             public String getGps_time() {
                 return gps_time;
@@ -357,6 +358,14 @@ public class TerminalInfo4MapBean {
 
             public void setLbs_time(String lbs_time) {
                 this.lbs_time = lbs_time;
+            }
+
+            public int getDianliang() {
+                return dianliang;
+            }
+
+            public void setDianliang(int dianliang) {
+                this.dianliang = dianliang;
             }
         }
     }

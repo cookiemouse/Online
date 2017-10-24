@@ -25,7 +25,6 @@ import com.tianyigps.online.interfaces.OnShowTerminalInfoListener;
 import com.tianyigps.online.interfaces.OnUnifenceInfoListener;
 import com.tianyigps.online.interfaces.OnUnifenceOprListener;
 import com.tianyigps.online.interfaces.OnUnifenceUpsertListener;
-import com.tianyigps.online.utils.StringU;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -913,8 +912,8 @@ public class NetManager {
     public void getStationInfo(String stationCode) {
         String lac = stationCode.substring(8, 12);
         String cell_id = stationCode.substring(12);
-        String lacNum = StringU.str2HexStr(lac);
-        String cellIdNum = StringU.str2HexStr(cell_id);
+        int lacNum = Integer.parseInt(lac, 16);
+        int cellIdNum = Integer.parseInt(cell_id, 16);
 
         Log.i(TAG, "getStationInfo: lac-->" + lac);
         Log.i(TAG, "getStationInfo: cell_id-->" + cell_id);
@@ -923,10 +922,8 @@ public class NetManager {
 
         Request.Builder builder = new Request.Builder();
         builder.url("http://vipapiproxy.haoservice.com/api/getlbs?mcc=460&mnc=0&key=128ade83cb924eb5bdd02ba9bc6e151f&type=1"
-                + "&cell_id=" + cell_id
-                + "&cellIdNum=" + cellIdNum
-                + "&lac=" + lac
-                + "&lacNum=" + lacNum);
+                + "&cell_id=" + cellIdNum
+                + "&lac=" + lacNum);
         mRequest = builder.build();
         Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);

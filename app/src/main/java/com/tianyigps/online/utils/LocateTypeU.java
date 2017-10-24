@@ -9,7 +9,7 @@ public class LocateTypeU {
         String locateType;
         switch (type) {
             case "0": {
-                locateType = "基站";
+                locateType = "基站定位";
                 break;
             }
             case "1": {
