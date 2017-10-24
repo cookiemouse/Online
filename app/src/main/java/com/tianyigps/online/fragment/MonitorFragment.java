@@ -106,6 +106,9 @@ public class MonitorFragment extends Fragment {
     //  从ConcernDialogFragment传入的imei号，需存列表
     private List<String> mImeiList;
 
+    //  从OverviewDialogFragment传入的cid
+    private String mCidStr = "";
+
     private String mStringMessage;
 
     //  InfoWindow数据
@@ -136,6 +139,9 @@ public class MonitorFragment extends Fragment {
     //  Cluster
     private List<BaiduPoint> mBaiduPointList, mBaiduPointListShow;
     private CookieCluster mCookieCluster;
+
+    //  刷新
+    private int mFlushTime;
 
     @Nullable
     @Override
@@ -170,6 +176,8 @@ public class MonitorFragment extends Fragment {
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         mWidth = mWindowManager.getDefaultDisplay().getWidth();
         mHeight = mWindowManager.getDefaultDisplay().getHeight();
+
+        myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
     }
 
     @Override
@@ -178,6 +186,7 @@ public class MonitorFragment extends Fragment {
         if (null != mInfoLatLng) {
             moveToInfoCenter(mInfoLatLng);
         }
+        myHandler.removeMessages(Data.MSG_5);
         super.onPause();
     }
 
@@ -192,6 +201,8 @@ public class MonitorFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            mFlushTime = mSharedManager.getFlushTime() * 1000;
+            myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
             Bundle bundle = getArguments();
             if (null != bundle) {
                 mFrom = FROM_CHOICE;
@@ -207,6 +218,7 @@ public class MonitorFragment extends Fragment {
                 mImeiList.add(mChoiceImei);
             }
         } else {
+            myHandler.removeMessages(Data.MSG_5);
             if (null != mInfoLatLng) {
                 moveToCenter(mInfoLatLng);
             }
@@ -254,6 +266,7 @@ public class MonitorFragment extends Fragment {
         mSharedManager = new SharedManager(getContext());
         mCid = mSharedManager.getCid();
         mToken = mSharedManager.getToken();
+        mFlushTime = mSharedManager.getFlushTime() * 1000;
 
         mGeoCoderU = new GeoCoderU();
 
@@ -448,6 +461,9 @@ public class MonitorFragment extends Fragment {
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
+                if (null == infoWindowBean.getObj()) {
+                    return;
+                }
                 if (mOnlyInfo) {
                     for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                         if (objBean.getImei().equals(mChoiceImei)) {
@@ -532,6 +548,7 @@ public class MonitorFragment extends Fragment {
                 }
                 switch (mFrom) {
                     case FROM_OVERVIEW: {
+                        mMarkerDataList.clear();
                         for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                             InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
                             LatLng latLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
@@ -570,6 +587,83 @@ public class MonitorFragment extends Fragment {
                                         , speed);
 
                                 mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), direction, imei));
+                            }
+
+
+                            //  刷新的时候有infowindow
+                            if (objBean.getImei().equals(mChoiceImei)) {
+                                Log.i(TAG, "onSuccess: name-->" + objBean.getName());
+                                Log.i(TAG, "onSuccess: speed-->" + redisobjBean.getSpeed());
+                                Log.i(TAG, "onSuccess: currentTime-->" + redisobjBean.getCurrent_time());
+                                Log.i(TAG, "onSuccess: locateTime-->" + redisobjBean.getLocate_time());
+                                Log.i(TAG, "onSuccess: locateType-->" + redisobjBean.getLocate_type());
+                                Log.i(TAG, "onSuccess: status-->" + redisobjBean.getAcc_status());
+
+                                mInfoName = objBean.getName();
+                                mModel = Integer.valueOf(objBean.getModel());
+                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                                if ("3".equals(redisobjBean.getScene())) {
+                                    mIsActivation = false;
+                                    myHandler.sendEmptyMessage(Data.MSG_4);
+                                    return;
+                                } else {
+                                    mIsActivation = true;
+                                }
+
+                                String locateType = redisobjBean.getLocate_type();
+                                if (null == locateType) {
+                                    locateType = "2";
+                                }
+                                if (locateType.equals("1")) {
+                                    int speedT = Integer.valueOf(redisobjBean.getSpeed());
+                                    if (speedT < 0) {
+                                        mInfoSpeed = "0km/h";
+                                    } else {
+                                        mInfoSpeed = redisobjBean.getSpeed() + "km/h";
+                                    }
+                                } else {
+                                    mInfoSpeed = "-";
+                                }
+                                mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+                                mInfoCurrentTime = redisobjBean.getCurrent_time();
+                                mInfoLocateTime = redisobjBean.getLocate_time();
+                                mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
+                                mInfoElectricity = redisobjBean.getDianliang() + "%";
+                                mElectricity = redisobjBean.getDianliang();
+                                mInfoImei = objBean.getImei();
+
+                                //  计算状态
+                                long currentTime = 0;
+                                long locateTime = 0;
+                                long parkTime = 0;
+                                int speed = 0;
+                                if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
+                                    currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
+                                    locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
+                                    parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
+                                }
+                                if (!RegularU.isEmpty(redisobjBean.getSpeed())) {
+                                    speed = Integer.valueOf(redisobjBean.getSpeed());
+                                }
+
+                                Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
+                                        , infoWindowBean.getTime()
+                                        , currentTime
+                                        , locateTime
+                                        , parkTime
+                                        , speed));
+                                mStatusData = StatusU.getStatus(Integer.valueOf(objBean.getModel())
+                                        , infoWindowBean.getTime()
+                                        , currentTime
+                                        , locateTime
+                                        , parkTime
+                                        , speed);
+                                myHandler.sendEmptyMessage(Data.MSG_3);
                             }
                         }
                         myHandler.sendEmptyMessage(Data.MSG_2);
@@ -848,6 +942,16 @@ public class MonitorFragment extends Fragment {
         mNetManager.showPointNew(mToken, mCid, "", "", true);
     }
 
+    //  刷新页面设备
+    private void showPointNewFlush() {
+        String imeiStr = "";
+        for (String str : mImeiList) {
+            imeiStr += (str + ",");
+        }
+        boolean attention = mSharedManager.getShowAttention();
+        mNetManager.showPointNew(mToken, mCid, mCidStr, imeiStr, attention);
+    }
+
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
         mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
@@ -920,6 +1024,7 @@ public class MonitorFragment extends Fragment {
     public void showCompleteDevices(String cidStr) {
         mFrom = FROM_OVERVIEW;
         Log.i(TAG, "showCompleteDevices: cidStr-->" + cidStr);
+        this.mCidStr = cidStr;
         showPointNew(cidStr, mSharedManager.getShowAttention());
     }
 
@@ -952,6 +1057,8 @@ public class MonitorFragment extends Fragment {
                 case Data.MSG_2: {
                     //  showPointNew多个
                     if (null != mMarkerDataList) {
+                        mBaiduPointList.clear();
+                        mImeiList.clear();
                         for (MarkerData markerData : mMarkerDataList) {
                             mImeiList.add(markerData.getImei());
                             mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
@@ -988,6 +1095,14 @@ public class MonitorFragment extends Fragment {
                     }
                     str += "设备未启用";
                     mTextViewAddress.setText(str);
+                    break;
+                }
+                case Data.MSG_5: {
+                    //  延时及刷新页面
+                    Log.i(TAG, "handleMessage: MSG_5");
+                    myHandler.removeMessages(Data.MSG_5);
+                    showPointNewFlush();
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
                     break;
                 }
             }
