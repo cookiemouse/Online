@@ -54,7 +54,6 @@ import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.GeoCoderU;
-import com.tianyigps.online.utils.LocateTypeU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.StatusU;
 import com.tianyigps.online.utils.TimeFormatU;
@@ -78,7 +77,7 @@ public class TrackActivity extends BaseActivity {
     private TextView mTextViewNormal, mTextViewSatellite, mTextViewAddress;
 
     //  InfoWindow数据
-    private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
+    private String mInfoName, mInfoSpeed, mInfoLocateType = "", mInfoCurrentTime, mInfoLocateTime = "", mInfoElectricity, mInfoImei;
     private StatusData mStatusData;
     private String mInfoStationCode = "";
     private int mInfoDirection, mModel, mElectricity;
@@ -111,8 +110,9 @@ public class TrackActivity extends BaseActivity {
     private int mWidth, mHeight;
 
     //  获取基站、获取GPS定位
-    private boolean mIsGetStation = false;
-    private boolean mIsGPS = false;
+    private boolean mWitchType = true;  //  true = gps, false = 基站定位的坐标
+    private boolean mIsGPS = true;
+    private boolean mIsShow = false;
 
     //  是否需要缩放地图
     private boolean mZoomMap = true;
@@ -302,7 +302,7 @@ public class TrackActivity extends BaseActivity {
             @Override
             public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
                 Log.i(TAG, "onGetDrivingRouteResult: 4");
-                if (null != mLatLngSelf && null != mInfoLatLng && !mIsGetStation && mZoomMap) {
+                if (null != mLatLngSelf && null != mInfoLatLng && mZoomMap) {
                     changeZoom(mLatLngSelf, mInfoLatLng);
                     mZoomMap = false;
                 }
@@ -388,9 +388,7 @@ public class TrackActivity extends BaseActivity {
                 } else {
                     mInfoSpeed = "-";
                 }
-                mInfoLocateType = LocateTypeU.getLocateType("" + redisobjBean.getLocate_type());
                 mInfoCurrentTime = redisobjBean.getCurrent_time();
-                mInfoLocateTime = redisobjBean.getLocate_time();
                 mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
                 mInfoElectricity = redisobjBean.getDianliang() + "%";
                 mElectricity = redisobjBean.getDianliang();
@@ -414,15 +412,16 @@ public class TrackActivity extends BaseActivity {
                 }
                 speed = redisobjBean.getSpeed();
 
-                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+//                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
 
-                if (mIsGetStation) {
-                    mInfoLatLng = calculateLatlng(redisobjBean.getLocate_type()
-                            , redisobjBean.getLatitudeF()
-                            , redisobjBean.getLongitudeF()
-                            , redisobjBean.getLatitudeGDZJB()
-                            , redisobjBean.getLongitudeGDZJB());
-                }
+                mInfoLatLng = calculateLatlng(redisobjBean.getLocate_type()
+                        , redisobjBean.getLatitudeF()
+                        , redisobjBean.getLongitudeF()
+                        , redisobjBean.getLatitudeGDZJB()
+                        , redisobjBean.getLongitudeGDZJB()
+                        , redisobjBean.getGps_time()
+                        , redisobjBean.getLocate_time()
+                        , redisobjBean.getLbs_time());
 
                 Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
                         , terminalInfo4MapBean.getTime()
@@ -471,7 +470,6 @@ public class TrackActivity extends BaseActivity {
     private void searchDriving(LatLng from, LatLng to) {
         PlanNode planNodeFrom = PlanNode.withLocation(from);
         PlanNode planNodeTo = PlanNode.withLocation(to);
-        mZoomMap = true;
         mRoutePlanSearch.drivingSearch(new DrivingRoutePlanOption()
                 .from(planNodeFrom)
                 .to(planNodeTo)
@@ -519,7 +517,7 @@ public class TrackActivity extends BaseActivity {
     }
 
     //  显示infoWindow
-    private void showInfoWindow(LatLng latLng) {
+    private void showInfoWindow(final LatLng latLng) {
         View viewInfo = LayoutInflater.from(getContext()).inflate(R.layout.view_map_info_window_track, null);
 
         TextView tvName = viewInfo.findViewById(R.id.tv_view_info_window_track_title);
@@ -534,13 +532,23 @@ public class TrackActivity extends BaseActivity {
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_track_electricity);
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_track);
 
+        Log.i(TAG, "showInfoWindow: mIsShow-->" + mIsShow);
+        if (mIsShow) {
+            tvGetStation.setVisibility(View.VISIBLE);
+        } else {
+            tvGetStation.setVisibility(View.GONE);
+        }
+
+        if (mIsGPS) {
+            tvGetStation.setText("获取GPS");
+        } else {
+            tvGetStation.setText("获取基站");
+        }
+
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
             ivElectricity.setVisibility(View.GONE);
             pbElectricity.setVisibility(View.GONE);
-            if (!RegularU.isEmpty(mInfoStationCode)) {
-                tvGetStation.setVisibility(View.VISIBLE);
-            }
         } else {
             tvElectricity.setText(mInfoElectricity);
             tvElectricity.setVisibility(View.VISIBLE);
@@ -568,7 +576,7 @@ public class TrackActivity extends BaseActivity {
             public void onClick(View view) {
                 // TODO: 2017/10/13 获取基站
                 Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
-                mIsGetStation = true;
+                mWitchType = !mWitchType;
                 showPointNew();
             }
         });
@@ -600,25 +608,71 @@ public class TrackActivity extends BaseActivity {
 
     //  基站与GPS位置
     private LatLng calculateLatlng(int locateType, double latitudeF, double longitudeF
-            , double latitudeG, double longitudeG) {
+            , double latitudeG, double longitudeG
+            , String gpsTime, String locateTime, String lbsTime) {
         LatLng latLng = new LatLng(latitudeF, longitudeF);
+
+        Log.i(TAG, "calculateLatlng: mModel-->" + mModel);
+        Log.i(TAG, "calculateLatlng: mIsGPS-->" + mIsGPS);
+        Log.i(TAG, "calculateLatlng: locateType-->" + locateType);
+
+        mIsGPS = mWitchType;
 
         if (1 == mModel) {
             //  有线
             if (mIsGPS) {
+                mInfoLocateType = "GPS";
                 if (0 != latitudeG && 0 != longitudeG) {
                     latLng = new LatLng(latitudeG, longitudeG);
-                    return latLng;
+                } else {
+                    latLng = new LatLng(latitudeF, longitudeF);
                 }
-                mIsGPS = false;
-                return latLng;
+                if (1 == locateType) {
+                    mIsShow = false;
+                } else {
+                    mIsShow = true;
+                    mIsGPS = false;
+                }
+                if (!RegularU.isEmpty(gpsTime)) {
+                    mInfoLocateTime = gpsTime;
+                } else {
+                    if (1 == locateType) {
+                        mInfoLocateTime = locateTime;
+                    } else {
+                        mInfoLocateTime = "-";
+                    }
+                }
+            } else {
+                mInfoLocateType = "基站定位";
+                latLng = new LatLng(latitudeF, longitudeF);
+                if (0 != latitudeG && 0 != longitudeG) {
+                    mIsShow = true;
+                    mIsGPS = true;
+                } else {
+                    mIsShow = false;
+                }
+                if (!RegularU.isEmpty(lbsTime)) {
+                    mInfoLocateTime = lbsTime;
+                } else {
+                    if (1 != locateType) {
+                        mInfoLocateTime = locateTime;
+                    } else {
+                        mInfoLocateTime = "-";
+                    }
+                }
             }
+        } else {
+            //  无线
+            latLng = new LatLng(latitudeF, longitudeF);
+            mInfoLocateTime = locateTime;
             if (1 == locateType) {
-                mIsGPS = true;
+                mInfoLocateType = "GPS";
+            } else if (3 == locateType) {
+                mInfoLocateType = "WiFi";
+            } else {
+                mInfoLocateType = "基站定位";
             }
-            return latLng;
         }
-        //  无线
         return latLng;
     }
 
@@ -654,7 +708,6 @@ public class TrackActivity extends BaseActivity {
                 case Data.MSG_2: {
                     //  刷新
                     showPointNew();
-                    mIsGetStation = false;
                 }
             }
         }
