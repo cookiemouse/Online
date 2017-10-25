@@ -215,4 +215,18 @@ public class SharedManager {
     public int getMainPage() {
         return mSharedPreferences.getInt(Data.MAIN_PAGE, 0);
     }
+
+    /**
+     * 保存当天日期
+     * date
+     */
+    public void saveDate(String date) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Data.DATE, date);
+        editor.apply();
+    }
+
+    public String getDate() {
+        return mSharedPreferences.getString(Data.MAIN_PAGE, "");
+    }
 }

@@ -181,4 +181,16 @@ public class TimeFormatU {
         }
         return timeStamp;
     }
+
+    //  获取当前年-月-日
+    public static String getDate() {
+        String date;
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int mon = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        date = year + "-" + mon + "-" + day;
+        Log.i(TAG, "getDate: date-->" + date);
+        return date;
+    }
 }

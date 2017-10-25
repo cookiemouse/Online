@@ -12,13 +12,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.model.LatLng;
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.ChoiceCarFragment;
 import com.tianyigps.online.fragment.MonitorFragment;
 import com.tianyigps.online.fragment.SettingFragment;
 import com.tianyigps.online.fragment.WarnFragment;
+import com.tianyigps.online.manager.LocateManager;
+import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.DeviceU;
+import com.tianyigps.online.utils.TimeFormatU;
 import com.tianyigps.online.utils.TimerU;
 import com.tianyigps.online.utils.ToastU;
 
@@ -44,6 +49,9 @@ public class FragmentContentActivity extends AppCompatActivity {
     private boolean mExitAble = false;
 
     private SharedManager mSharedManager;
+    private NetManager mNetManager;
+
+    private LocateManager mLocateManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,12 @@ public class FragmentContentActivity extends AppCompatActivity {
         init();
 
         setEventListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLocateManager.stopLocate();
     }
 
     @Override
@@ -101,6 +115,9 @@ public class FragmentContentActivity extends AppCompatActivity {
         mSettingFragment = new SettingFragment();
 
         mFragmentManager = getSupportFragmentManager();
+        mNetManager = new NetManager();
+
+        mLocateManager = new LocateManager(this);
 
         Intent intent = getIntent();
         mSharedManager = new SharedManager(this);
@@ -125,6 +142,11 @@ public class FragmentContentActivity extends AppCompatActivity {
                 showChoiceCar();
                 break;
             }
+        }
+
+        if (!mSharedManager.getDate().equals(TimeFormatU.getDate())) {
+            mLocateManager.startLocate();
+            mSharedManager.saveDate(TimeFormatU.getDate());
         }
     }
 
@@ -172,6 +194,21 @@ public class FragmentContentActivity extends AppCompatActivity {
             @Override
             public void onEnd() {
                 mExitAble = false;
+            }
+        });
+
+        mLocateManager.setOnReceiveLocationListener(new LocateManager.OnReceiveLocationListener() {
+            @Override
+            public void onReceive(LatLng latLng) {
+                mNetManager.sendUserInfo(DeviceU.getDeviceId(FragmentContentActivity.this)
+                        , DeviceU.getPhoneBrand()
+                        , DeviceU.getPhoneModel()
+                        , DeviceU.getVersionName(FragmentContentActivity.this)
+                        , "" + latLng.longitude
+                        , "" + latLng.latitude
+                        , ""
+                        , mSharedManager.getAccount()
+                        , "2");
             }
         });
     }
