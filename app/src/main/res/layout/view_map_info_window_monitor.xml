@@ -153,6 +153,21 @@
                 android:text="定位类型："/>
 
             <TextView
+                android:id="@+id/tv_view_info_window_monitor_get_station"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_view_info_window_monitor_type_content"
+                android:layout_alignBottom="@+id/tv_view_info_window_monitor_type_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
+                android:background="@drawable/bg_get_station"
+                android:text="@string/get_station"
+                android:textColor="@color/colorWhite"
+                android:visibility="gone"/>
+
+            <TextView
                 android:id="@+id/tv_view_info_window_monitor_type_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

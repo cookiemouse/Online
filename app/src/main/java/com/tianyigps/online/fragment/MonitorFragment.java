@@ -41,6 +41,7 @@ import com.tianyigps.online.activity.NavigationActivity;
 import com.tianyigps.online.activity.PathActivity;
 import com.tianyigps.online.activity.TrackActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
+import com.tianyigps.online.bean.StationBean;
 import com.tianyigps.online.cluster.BaiduPoint;
 import com.tianyigps.online.cluster.CookieCluster;
 import com.tianyigps.online.data.Data;
@@ -48,12 +49,12 @@ import com.tianyigps.online.data.MarkerData;
 import com.tianyigps.online.data.StatusData;
 import com.tianyigps.online.dialog.ConcernDialogFragment;
 import com.tianyigps.online.dialog.OverviewDialogFragment;
+import com.tianyigps.online.interfaces.OnGetStationInfoListener;
 import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.LocateManager;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.GeoCoderU;
-import com.tianyigps.online.utils.LocateTypeU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.StatusU;
 import com.tianyigps.online.utils.TimeFormatU;
@@ -116,11 +117,17 @@ public class MonitorFragment extends Fragment {
 
     //  InfoWindow数据
     private String mInfoName, mInfoSpeed, mInfoLocateType, mInfoCurrentTime, mInfoLocateTime, mInfoElectricity, mInfoImei;
+    private boolean mIsShowGetStation = false;
+    private String mInfoStationCode = "";
     private StatusData mStatusData;
     private int mInfoDirection, mModel, mElectricity;
     private LatLng mInfoLatLng;
     //  设备是否已启用
     private boolean mIsActivation = true;
+
+    //  获取基站，基站坐标
+    private LatLng mLatLngStation;
+    private boolean mIsStation = false;
 
     //  Marker
     private List<MarkerData> mMarkerDataList;
@@ -486,7 +493,11 @@ public class MonitorFragment extends Fragment {
 
                             mInfoName = objBean.getName();
                             mModel = Integer.valueOf(objBean.getModel());
-                            mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                            if (mIsStation && null != mLatLngStation) {
+                                mInfoLatLng = mLatLngStation;
+                            } else {
+                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                            }
 
                             if ("3".equals(redisobjBean.getScene())) {
                                 mIsActivation = false;
@@ -495,7 +506,7 @@ public class MonitorFragment extends Fragment {
                             } else {
                                 mIsActivation = true;
                             }
-
+                            mInfoStationCode = redisobjBean.getStation_code();
                             String locateType = redisobjBean.getLocate_type();
                             if (null == locateType) {
                                 locateType = "2";
@@ -510,7 +521,8 @@ public class MonitorFragment extends Fragment {
                             } else {
                                 mInfoSpeed = "-";
                             }
-                            mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+//                            mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+                            calculateIsGetStation(redisobjBean.getLocate_type(), redisobjBean.getScene());
                             mInfoCurrentTime = redisobjBean.getCurrent_time();
                             mInfoLocateTime = redisobjBean.getLocate_time();
                             mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
@@ -564,7 +576,11 @@ public class MonitorFragment extends Fragment {
 
                             if ("3".equals(redisobjBean.getScene())) {
                                 mIsActivation = false;
-                                mMarkerDataList.add(new MarkerData(latLng, Data.STATUS_OTHER, 0, imei));
+                                if (mIsStation && null != mLatLngStation && mChoiceImei.equals(imei)) {
+                                    mMarkerDataList.add(new MarkerData(mLatLngStation, Data.STATUS_OTHER, 0, imei));
+                                } else {
+                                    mMarkerDataList.add(new MarkerData(latLng, Data.STATUS_OTHER, 0, imei));
+                                }
                             } else {
                                 mIsActivation = true;
 
@@ -594,7 +610,11 @@ public class MonitorFragment extends Fragment {
                                         , parkTime
                                         , speed);
 
-                                mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), direction, imei));
+                                if (mIsStation && null != mLatLngStation && mChoiceImei.equals(imei)) {
+                                    mMarkerDataList.add(new MarkerData(mLatLngStation, statusData.getStatu(), 0, imei));
+                                } else {
+                                    mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), 0, imei));
+                                }
                             }
 
 
@@ -609,7 +629,12 @@ public class MonitorFragment extends Fragment {
 
                                 mInfoName = objBean.getName();
                                 mModel = Integer.valueOf(objBean.getModel());
-                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                                if (mIsStation && null != mLatLngStation) {
+                                    mInfoLatLng = mLatLngStation;
+                                } else {
+                                    mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                                }
 
                                 if ("3".equals(redisobjBean.getScene())) {
                                     mIsActivation = false;
@@ -633,7 +658,8 @@ public class MonitorFragment extends Fragment {
                                 } else {
                                     mInfoSpeed = "-";
                                 }
-                                mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+//                                mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+                                calculateIsGetStation(redisobjBean.getLocate_type(), redisobjBean.getScene());
                                 mInfoCurrentTime = redisobjBean.getCurrent_time();
                                 mInfoLocateTime = redisobjBean.getLocate_time();
                                 mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
@@ -692,7 +718,12 @@ public class MonitorFragment extends Fragment {
 
                                 mInfoName = objBean.getName();
                                 mModel = Integer.valueOf(objBean.getModel());
-                                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+
+                                if (mIsStation && null != mLatLngStation) {
+                                    mInfoLatLng = mLatLngStation;
+                                } else {
+                                    mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                                }
 
                                 if ("3".equals(redisobjBean.getScene())) {
                                     mIsActivation = false;
@@ -701,7 +732,7 @@ public class MonitorFragment extends Fragment {
                                 } else {
                                     mIsActivation = true;
                                 }
-
+                                mInfoStationCode = redisobjBean.getStation_code();
                                 String locateType = redisobjBean.getLocate_type();
                                 if (null == locateType) {
                                     locateType = "2";
@@ -716,7 +747,8 @@ public class MonitorFragment extends Fragment {
                                 } else {
                                     mInfoSpeed = "-";
                                 }
-                                mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+//                                mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+                                calculateIsGetStation(redisobjBean.getLocate_type(), redisobjBean.getScene());
                                 mInfoCurrentTime = redisobjBean.getCurrent_time();
                                 mInfoLocateTime = redisobjBean.getLocate_time();
                                 mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
@@ -761,6 +793,25 @@ public class MonitorFragment extends Fragment {
                     }
                 }
 
+            }
+
+            @Override
+            public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
+            }
+        });
+
+        mNetManager.setOnGetStationInfoListener(new OnGetStationInfoListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                StationBean stationBean = gson.fromJson(result, StationBean.class);
+                StationBean.LocationBean lcLocationBean = stationBean.getLocation();
+                mLatLngStation = new LatLng(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
+
+                myHandler.obtainMessage(Data.MSG_6).sendToTarget();
             }
 
             @Override
@@ -864,10 +915,22 @@ public class MonitorFragment extends Fragment {
         TextView tvPath = viewInfo.findViewById(R.id.tv_view_info_window_monitor_path);
         TextView tvNavigation = viewInfo.findViewById(R.id.tv_view_info_window_monitor_navigation);
         TextView tvMore = viewInfo.findViewById(R.id.tv_view_info_window_monitor_more);
+        TextView tvGetStation = viewInfo.findViewById(R.id.tv_view_info_window_monitor_get_station);
         ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_monitor_close);
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_monitor_electricity);
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
+        if (mIsStation){
+            tvGetStation.setText("获取GPS");
+        }else {
+            tvGetStation.setText("获取基站");
+        }
+
+        if (mIsShowGetStation) {
+            tvGetStation.setVisibility(View.VISIBLE);
+        } else {
+            tvGetStation.setVisibility(View.GONE);
+        }
         if (mModel == 1) {
             tvElectricity.setVisibility(View.GONE);
             ivElectricity.setVisibility(View.GONE);
@@ -889,6 +952,21 @@ public class MonitorFragment extends Fragment {
         tvCurrentTime.setText(mInfoCurrentTime);
         tvLocateTime.setText(mInfoLocateTime);
         pbElectricity.setProgress(mElectricity);
+
+        tvGetStation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/10/13 获取基站
+                Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
+                if (mIsStation) {
+                    showPointNew(mChoiceImei);
+                    mIsStation = false;
+                } else {
+                    mNetManager.getStationInfo(mInfoStationCode);
+                }
+//                mWitchType = !mWitchType;
+            }
+        });
 
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1038,6 +1116,24 @@ public class MonitorFragment extends Fragment {
         showPointNew(cidStr, mSharedManager.getShowAttention());
     }
 
+    //  计算定位类型，以及是否显示获取基站
+    private void calculateIsGetStation(String locateType, String scene) {
+//        mInfoLocateType
+        mIsShowGetStation = false;
+        if (!RegularU.isEmpty(locateType) && "1".equals(locateType)) {
+            mInfoLocateType = "GPS";
+        } else if (!RegularU.isEmpty(locateType) && "2".equals(locateType)) {
+            mInfoLocateType = "GPS定位中";
+        } else if (!RegularU.isEmpty(locateType) && "3".equals(locateType)) {
+            mInfoLocateType = "WiFi";
+        } else if (!RegularU.isEmpty(scene) && "1".equals(scene)) {
+            mInfoLocateType = "GPS定位中";
+            mIsShowGetStation = true;
+        } else {
+            mInfoLocateType = "基站定位";
+        }
+    }
+
     //  反编码地址
     public void getAddress(LatLng latLng) {
         mGeoCoderU.searchAddress(latLng.latitude, latLng.longitude);
@@ -1117,6 +1213,33 @@ public class MonitorFragment extends Fragment {
                     myHandler.removeMessages(Data.MSG_5);
                     showPointNewFlush();
                     myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
+                    break;
+                }
+                case Data.MSG_6: {
+                    //  获取基站数据
+//                    for (Overlay overlay : mOverlayList) {
+//                        Marker marker = (Marker) overlay;
+//                        if (marker.getExtraInfo().getString(Data.KEY_IMEI).equals(mChoiceImei)) {
+//                            mIsStation = true;
+//                            marker.setPosition(mLatLngStation);
+//                        }
+//                    }
+                    for (MarkerData markerData : mMarkerDataList) {
+                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
+                        if (markerData.getImei().equals(mChoiceImei)) {
+                            markerData.setLatLng(mLatLngStation);
+                            mIsStation = true;
+                            showInfoWindow(mLatLngStation);
+                        }
+                    }
+                    for (BaiduPoint baiduPoint : mBaiduPointList) {
+                        if (baiduPoint.getImei().equals(mChoiceImei)) {
+                            baiduPoint.setLatLng(mLatLngStation);
+                            mIsStation = true;
+                            showInfoWindow(mLatLngStation);
+                        }
+                    }
+
                     break;
                 }
             }
