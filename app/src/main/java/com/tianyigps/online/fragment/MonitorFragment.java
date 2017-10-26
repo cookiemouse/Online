@@ -77,6 +77,9 @@ public class MonitorFragment extends Fragment {
     private int mFrom = 0;
     private boolean mOnlyInfo = false;
 
+    //  InfoWindow是否打开
+    private boolean mIsOpenInfo = true;
+
     private ImageView mImageViewTitle1, mImageViewTitle2, mImageViewTitle3;
     private ImageView mImageViewLocate, mImageViewLeft, mImageViewRight;
     private TextView mTextViewNormal, mTextViewSatellite, mTextViewAddress;
@@ -163,6 +166,7 @@ public class MonitorFragment extends Fragment {
             mFrom = FROM_CHOICE;
             mChoiceImei = bundle.getString(Data.KEY_IMEI);
             Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
+            mIsOpenInfo = true;
             showPointNew(mChoiceImei);
 
             mImeiList.clear();
@@ -207,6 +211,7 @@ public class MonitorFragment extends Fragment {
             if (null != bundle) {
                 mFrom = FROM_CHOICE;
                 mChoiceImei = bundle.getString(Data.KEY_IMEI);
+                mIsOpenInfo = true;
                 Log.i(TAG, "onHiddenChanged: value-->" + mChoiceImei);
                 showPointNew(mChoiceImei);
 
@@ -322,6 +327,7 @@ public class MonitorFragment extends Fragment {
             public void onClick(View view) {
                 int size = mImeiList.size();
                 if (size > 0) {
+                    mIsOpenInfo = true;
                     if (mCarousel <= 0) {
                         mCarousel = size - 1;
                     } else {
@@ -339,6 +345,7 @@ public class MonitorFragment extends Fragment {
             public void onClick(View view) {
                 int size = mImeiList.size();
                 if (size > 0) {
+                    mIsOpenInfo = true;
                     if (mCarousel >= size - 1) {
                         mCarousel = 0;
                     } else {
@@ -404,6 +411,7 @@ public class MonitorFragment extends Fragment {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 mOnlyInfo = true;
+                mIsOpenInfo = true;
                 Bundle bundle = marker.getExtraInfo();
                 String imei = bundle.getString(Data.KEY_IMEI, "");
                 int type = bundle.getInt(Data.KEY_TYPE, Data.STATUS_OTHER);
@@ -885,6 +893,7 @@ public class MonitorFragment extends Fragment {
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mIsOpenInfo = false;
                 mBaiduMap.hideInfoWindow();
             }
         });
@@ -991,6 +1000,7 @@ public class MonitorFragment extends Fragment {
     public void showDevices(String imei) {
         mFrom = FROM_CONCERN;
         mChoiceImei = imei;
+        mIsOpenInfo = true;
         boolean added = false;
         for (String str : mImeiList) {
             if (str.equals(imei)) {
@@ -1051,7 +1061,9 @@ public class MonitorFragment extends Fragment {
                 case Data.MSG_1: {
                     //  showPointNew单个
                     addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei, 1);
-                    showInfoWindow(mInfoLatLng);
+                    if (mIsOpenInfo) {
+                        showInfoWindow(mInfoLatLng);
+                    }
                     break;
                 }
                 case Data.MSG_2: {
@@ -1077,7 +1089,9 @@ public class MonitorFragment extends Fragment {
                 }
                 case Data.MSG_3: {
                     //  显示InfoWindow
-                    showInfoWindow(mInfoLatLng);
+                    if (mIsOpenInfo) {
+                        showInfoWindow(mInfoLatLng);
+                    }
                     mOnlyInfo = false;
                     break;
                 }
