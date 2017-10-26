@@ -957,19 +957,19 @@ public class NetManager {
             , String phoneBrand
             , String phoneModel
             , String versionCode
-            , String latitude
             , String longitude
+            , String latitude
             , String exception_msg
             , String loginName
             , String operateSystem) {
         Request.Builder builder = new Request.Builder();
         builder.url("http://121.43.178.183:8000/tyzx/main/postLoginInfo?"
-                + "&mphone_imei=" + imei
+                + "mphone_imei=" + imei
                 + "&mphone_brand=" + phoneBrand
                 + "&mphone_mode=" + phoneModel
                 + "&version=" + versionCode
-                + "&latitude=" + latitude
                 + "&longitude=" + longitude
+                + "&latitude=" + latitude
                 + "&exception_msg=" + exception_msg
                 + "&loginName=" + loginName
                 + "&appName=1"
