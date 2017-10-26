@@ -227,6 +227,6 @@ public class SharedManager {
     }
 
     public String getDate() {
-        return mSharedPreferences.getString(Data.MAIN_PAGE, "");
+        return mSharedPreferences.getString(Data.DATE, "");
     }
 }

@@ -123,7 +123,9 @@ public class FragmentContentActivity extends AppCompatActivity {
         mSharedManager = new SharedManager(this);
         int mainPage = mSharedManager.getMainPage();
         if (null != intent) {
-            mainPage = intent.getIntExtra(Data.MAIN_PAGE, 0);
+            if (intent.getIntExtra(Data.MAIN_PAGE, 0) != 0) {
+                mainPage = intent.getIntExtra(Data.MAIN_PAGE, 0);
+            }
         }
         switch (mainPage) {
             case 0: {
