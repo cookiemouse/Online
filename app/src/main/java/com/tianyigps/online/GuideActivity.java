@@ -19,8 +19,10 @@ import com.google.gson.Gson;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.LoginActivity;
 import com.tianyigps.online.bean.CheckUserBean;
+import com.tianyigps.online.bean.CheckVersionBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnCheckUserListener;
+import com.tianyigps.online.interfaces.OnCheckVersionListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
@@ -106,6 +108,30 @@ public class GuideActivity extends Activity {
                 myHandler.sendEmptyMessage(Data.MSG_ERO);
             }
         });
+
+        mNetManager.setCheckVersionListener(new OnCheckVersionListener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.i(TAG, "onSuccess: result-->" + result);
+                Gson gson = new Gson();
+                CheckVersionBean checkVersionBean = gson.fromJson(result, CheckVersionBean.class);
+                if (!checkVersionBean.isSuccess()) {
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_1, Data.DELAY_1000);
+                    return;
+                }
+                String version = checkVersionBean.getObj();
+                if (!RegularU.isEmpty(version) && Float.valueOf(version) > 4) {
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
+                myHandler.sendEmptyMessageDelayed(Data.MSG_1, Data.DELAY_1000);
+            }
+
+            @Override
+            public void onFailure() {
+                myHandler.sendEmptyMessageDelayed(Data.MSG_1, Data.DELAY_1000);
+            }
+        });
     }
 
     //  登录
@@ -151,7 +177,7 @@ public class GuideActivity extends Activity {
                 .callback(new PermissionListener() {
                     @Override
                     public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
-                        myHandler.sendEmptyMessageDelayed(Data.MSG_1, Data.DELAY_1000);
+                        myHandler.sendEmptyMessage(Data.MSG_3);
                     }
 
                     @Override
@@ -177,6 +203,21 @@ public class GuideActivity extends Activity {
         dialog.show();
     }
 
+    //  显示信息对话框
+    public void showMessageDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg);
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+                myHandler.sendEmptyMessage(Data.MSG_1);
+            }
+        });
+        builder.create().show();
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -185,6 +226,10 @@ public class GuideActivity extends Activity {
                 case Data.MSG_ERO: {
                     //  跳转到登录页
                     toLoginActivity();
+                    break;
+                }
+                case Data.MSG_MSG: {
+                    showMessageDialog("有新版本，请前往各大市场下载更新");
                     break;
                 }
                 case Data.MSG_1: {
@@ -196,6 +241,11 @@ public class GuideActivity extends Activity {
                     //  跳转到主页
                     JPushInterface.setAlias(GuideActivity.this, 0, mUserName);
                     toFragmentContent();
+                    break;
+                }
+                case Data.MSG_3: {
+                    //  检查版本
+                    mNetManager.checkVersion("1");
                     break;
                 }
                 default: {
