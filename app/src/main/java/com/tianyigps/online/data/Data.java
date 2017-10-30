@@ -49,6 +49,7 @@ public class Data {
     public static final String SHOW_ATTENTION = "show_attention";
 
     public static final String MAIN_PAGE = "main_page";
+    public static final String MAP_TYPE = "map_type";
     public static final String DATE = "date";
 
     //  延时时间
@@ -81,6 +82,10 @@ public class Data {
     public final static int LOCATE_BASE = 0;
     public final static int LOCATE_GPS = 1;
     public final static int LOCATE_NO = 2;
+
+    //  地图类型
+    public final static int MAP_BAIDU = 0;
+    public final static int MAP_GAODE = 1;
 
     //  设备状态
     public final static int STATUS_OTHER = 0;

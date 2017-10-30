@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.ChoiceCarFragment;
 import com.tianyigps.online.fragment.MonitorFragment;
+import com.tianyigps.online.fragment.MonitorGaodeFragment;
 import com.tianyigps.online.fragment.SettingFragment;
 import com.tianyigps.online.fragment.WarnFragment;
 import com.tianyigps.online.manager.LocateManager;
@@ -29,10 +31,13 @@ import com.tianyigps.online.utils.ToastU;
 
 public class FragmentContentActivity extends AppCompatActivity {
 
+    private static final String TAG = "FragmentContent";
+
     private FrameLayout mFrameLayout;
 
     private ChoiceCarFragment mChoiceCarFragment;
     private MonitorFragment mMonitorFragment;
+    private MonitorGaodeFragment mMonitorGaodeFragment;
     private WarnFragment mWarnFragment;
     private SettingFragment mSettingFragment;
 
@@ -111,6 +116,7 @@ public class FragmentContentActivity extends AppCompatActivity {
 
         mChoiceCarFragment = new ChoiceCarFragment();
         mMonitorFragment = new MonitorFragment();
+        mMonitorGaodeFragment = new MonitorGaodeFragment();
         mWarnFragment = new WarnFragment();
         mSettingFragment = new SettingFragment();
 
@@ -255,7 +261,21 @@ public class FragmentContentActivity extends AppCompatActivity {
         setDefault();
         mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
-        showFragment(mMonitorFragment);
+        int mapType = mSharedManager.getMapType();
+        switch (mapType) {
+            case Data.MAP_GAODE: {
+                showFragment(mMonitorGaodeFragment);
+                break;
+            }
+            case Data.MAP_BAIDU: {
+                showFragment(mMonitorFragment);
+                break;
+            }
+            default: {
+                showFragment(mMonitorFragment);
+                Log.i(TAG, "init: default-->" + mapType);
+            }
+        }
     }
 
     //  显示监控，给外部使用
@@ -263,8 +283,24 @@ public class FragmentContentActivity extends AppCompatActivity {
         setDefault();
         mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
+        int mapType = mSharedManager.getMapType();
+        switch (mapType) {
+            case Data.MAP_GAODE: {
+                mMonitorGaodeFragment.setArguments(bundle);
+                showFragment(mMonitorGaodeFragment);
+                break;
+            }
+            case Data.MAP_BAIDU: {
         mMonitorFragment.setArguments(bundle);
-        showFragment(mMonitorFragment);
+                showFragment(mMonitorFragment);
+                break;
+            }
+            default: {
+        mMonitorFragment.setArguments(bundle);
+                showFragment(mMonitorFragment);
+                Log.i(TAG, "init: default-->" + mapType);
+            }
+        }
     }
 
     //  显示报警

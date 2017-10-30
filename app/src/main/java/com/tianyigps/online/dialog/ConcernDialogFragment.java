@@ -26,6 +26,7 @@ import com.tianyigps.online.bean.DelAttentionBean;
 import com.tianyigps.online.data.AdapterConcernData;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.MonitorFragment;
+import com.tianyigps.online.fragment.MonitorGaodeFragment;
 import com.tianyigps.online.interfaces.OnAddAttentionListener;
 import com.tianyigps.online.interfaces.OnAttentionListListener;
 import com.tianyigps.online.interfaces.OnDelAttentionListener;
@@ -61,6 +62,7 @@ public class ConcernDialogFragment extends DialogFragment {
 
     //  MonitorFragment
     private MonitorFragment mMonitorFragment;
+    private MonitorGaodeFragment mMonitorGaodeFragment;
 
     private String mStringMessage;
     private ToastU mToastU;
@@ -123,7 +125,20 @@ public class ConcernDialogFragment extends DialogFragment {
 
         getAttentionList();
 
-        mMonitorFragment = (MonitorFragment) getParentFragment();
+        int mapType = mSharedManager.getMapType();
+        switch (mapType) {
+            case Data.MAP_BAIDU: {
+                mMonitorFragment = (MonitorFragment) getParentFragment();
+                break;
+            }
+            case Data.MAP_GAODE: {
+                mMonitorGaodeFragment = (MonitorGaodeFragment) getParentFragment();
+                break;
+            }
+            default: {
+                Log.i(TAG, "init: default-->" + mapType);
+            }
+        }
     }
 
     private void setEventListener() {
@@ -150,7 +165,12 @@ public class ConcernDialogFragment extends DialogFragment {
                 // TODO: 2017/9/13 item点击
                 mPosition = i;
                 AdapterConcernData data = mAdapterConcernDataList.get(i);
-                mMonitorFragment.showDevices(data.getImei());
+                if (null != mMonitorFragment) {
+                    mMonitorFragment.showDevices(data.getImei());
+                }
+                if (null != mMonitorGaodeFragment) {
+                    mMonitorGaodeFragment.showDevices(data.getImei());
+                }
                 ConcernDialogFragment.this.dismiss();
             }
         });

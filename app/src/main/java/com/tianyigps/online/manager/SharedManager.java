@@ -217,6 +217,20 @@ public class SharedManager {
     }
 
     /**
+     * 保存使用哪种地图
+     * 0 = baidu, 1 = gaode
+     * */
+    public void saveMapType(int mapType){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Data.MAP_TYPE, mapType);
+        editor.apply();
+    }
+
+    public int getMapType() {
+        return mSharedPreferences.getInt(Data.MAP_TYPE, Data.MAP_BAIDU);
+    }
+
+    /**
      * 保存当天日期
      * date
      */

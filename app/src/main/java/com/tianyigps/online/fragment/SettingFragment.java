@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.tianyigps.online.activity.FlushTimeActivity;
 import com.tianyigps.online.activity.InstructionActivity;
 import com.tianyigps.online.activity.LoginActivity;
 import com.tianyigps.online.activity.OpinionActivity;
+import com.tianyigps.online.data.Data;
 import com.tianyigps.online.manager.SharedManager;
 
 /**
@@ -28,12 +30,14 @@ import com.tianyigps.online.manager.SharedManager;
 
 public class SettingFragment extends Fragment {
 
+    private static final String TAG = "SettingFragment";
+
     private TableRow mTableRowFlushTime, mTableRowOpinion, mTableRowInstruction, mTableRowAbout;
-    private TableRow mTableRowPage;
-    private ImageView mImageViewMonitor, mImageViewCarList;
+    private TableRow mTableRowPage, mTableRowMap;
+    private ImageView mImageViewMonitor, mImageViewCarList, mImageViewGaode, mImageViewBaidu;
     private Button mButtonExit;
-    private LinearLayout mLinearLayoutPage;
-    private ImageView mImageViewPage;
+    private LinearLayout mLinearLayoutPage, mLinearLayoutMap;
+    private ImageView mImageViewPage, mImageViewMap;
 
     private SharedManager mSharedManager;
 
@@ -55,11 +59,16 @@ public class SettingFragment extends Fragment {
         mTableRowInstruction = view.findViewById(R.id.tr_fragment_instructions);
         mTableRowAbout = view.findViewById(R.id.tr_fragment_about);
         mTableRowPage = view.findViewById(R.id.tr_fragment_set_main_page);
+        mTableRowMap = view.findViewById(R.id.tr_fragment_set_map_type);
         mImageViewMonitor = view.findViewById(R.id.iv_fragment_set_monitor);
         mImageViewCarList = view.findViewById(R.id.iv_fragment_set_car_list);
+        mImageViewGaode = view.findViewById(R.id.iv_fragment_set_gaode);
+        mImageViewBaidu = view.findViewById(R.id.iv_fragment_set_baidu);
 
         mImageViewPage = view.findViewById(R.id.iv_fragment_setting_page);
+        mImageViewMap = view.findViewById(R.id.iv_fragment_setting_map);
         mLinearLayoutPage = view.findViewById(R.id.ll_fragment_setting);
+        mLinearLayoutMap = view.findViewById(R.id.ll_fragment_setting_map);
 
         mButtonExit = view.findViewById(R.id.btn_fragment_setting);
 
@@ -72,6 +81,26 @@ public class SettingFragment extends Fragment {
         } else {
             mImageViewMonitor.setSelected(false);
             mImageViewCarList.setSelected(true);
+        }
+
+        int mapType = mSharedManager.getMapType();
+        switch (mapType) {
+            case Data.MAP_BAIDU: {
+                mImageViewBaidu.setSelected(true);
+                mImageViewGaode.setSelected(false);
+                break;
+            }
+            case Data.MAP_GAODE: {
+                mImageViewBaidu.setSelected(false);
+                mImageViewGaode.setSelected(true);
+                break;
+            }
+            default: {
+                mImageViewBaidu.setSelected(true);
+                mImageViewGaode.setSelected(false);
+                Log.i(TAG, "init: default-->" + mapType);
+                break;
+            }
         }
     }
 
@@ -97,6 +126,19 @@ public class SettingFragment extends Fragment {
             }
         });
 
+        mTableRowMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mLinearLayoutMap.getVisibility() == View.VISIBLE) {
+                    mImageViewMap.setSelected(false);
+                    mLinearLayoutMap.setVisibility(View.GONE);
+                } else {
+                    mImageViewMap.setSelected(true);
+                    mLinearLayoutMap.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         mImageViewMonitor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,6 +154,24 @@ public class SettingFragment extends Fragment {
                 mSharedManager.saveMainPage(0);
                 mImageViewMonitor.setSelected(false);
                 mImageViewCarList.setSelected(true);
+            }
+        });
+
+        mImageViewGaode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSharedManager.saveMapType(Data.MAP_GAODE);
+                mImageViewGaode.setSelected(true);
+                mImageViewBaidu.setSelected(false);
+            }
+        });
+
+        mImageViewBaidu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSharedManager.saveMapType(Data.MAP_BAIDU);
+                mImageViewGaode.setSelected(false);
+                mImageViewBaidu.setSelected(true);
             }
         });
 

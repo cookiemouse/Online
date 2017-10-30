@@ -22,6 +22,7 @@ import com.tianyigps.online.R;
 import com.tianyigps.online.bean.CompanyBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.fragment.MonitorFragment;
+import com.tianyigps.online.fragment.MonitorGaodeFragment;
 import com.tianyigps.online.interfaces.OnShowCustomersListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
@@ -60,6 +61,7 @@ public class OverviewDialogFragment extends DialogFragment {
 
     //  MonitorFragment
     private MonitorFragment mMonitorFragment;
+    private MonitorGaodeFragment mMonitorGaodeFragment;
 
     private ToastU mToastU;
 
@@ -126,7 +128,20 @@ public class OverviewDialogFragment extends DialogFragment {
 
         mToastU = new ToastU(getContext());
 
-        mMonitorFragment = (MonitorFragment) getParentFragment();
+        int mapType = mSharedManager.getMapType();
+        switch (mapType) {
+            case Data.MAP_BAIDU: {
+                mMonitorFragment = (MonitorFragment) getParentFragment();
+                break;
+            }
+            case Data.MAP_GAODE: {
+                mMonitorGaodeFragment = (MonitorGaodeFragment) getParentFragment();
+                break;
+            }
+            default: {
+                Log.i(TAG, "init: default-->" + mapType);
+            }
+        }
 
         getCompany(mCid);
     }
@@ -146,7 +161,12 @@ public class OverviewDialogFragment extends DialogFragment {
                 mImageViewSwitch.setSelected(mSwitch);
 
                 mSharedManager.saveShowAttention(mSwitch);
-                mMonitorFragment.showAttentionDevices();
+                if (null != mMonitorFragment) {
+                    mMonitorFragment.showAttentionDevices();
+                }
+                if (null != mMonitorGaodeFragment) {
+                    mMonitorGaodeFragment.showAttentionDevices();
+                }
             }
         });
 
@@ -179,7 +199,12 @@ public class OverviewDialogFragment extends DialogFragment {
                         cidStr += groupData2.getId() + ",";
                     }
                 }
-                mMonitorFragment.showCompleteDevices(cidStr);
+                if (null != mMonitorFragment) {
+                    mMonitorFragment.showCompleteDevices(cidStr);
+                }
+                if (null != mMonitorGaodeFragment) {
+                    mMonitorGaodeFragment.showCompleteDevices(cidStr);
+                }
             }
         });
 

@@ -41,4 +41,7 @@
     <string name="end">止：</string>
     <string name="address">位置：</string>
     <string name="get_station">获取基站</string>
+    <string name="choice_map">选择地图</string>
+    <string name="map_gaode">高德地图</string>
+    <string name="map_baidu">百度地图</string>
 </resources>

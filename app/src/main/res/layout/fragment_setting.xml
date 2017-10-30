@@ -158,6 +158,106 @@
         android:background="@drawable/bg_table_row">
 
         <TableRow
+            android:id="@+id/tr_fragment_set_map_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_32"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/choice_map"
+                android:textSize="@dimen/sp_16"
+                />
+
+            <ImageView
+                android:id="@+id/iv_fragment_setting_map"
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/bg_go"
+                />
+        </TableRow>
+
+        <LinearLayout
+            android:id="@+id/ll_fragment_setting_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/px_1"
+                android:layout_marginBottom="@dimen/dp_4"
+                android:layout_marginTop="@dimen/dp_4"
+                android:background="@color/colorBlueTheme"/>
+
+            <TableRow
+                android:id="@+id/tr_fragment_set_gaode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp_32"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/map_gaode"
+                    android:textSize="@dimen/sp_16"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_fragment_set_gaode"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:padding="@dimen/dp_2"
+                    android:src="@drawable/bg_radio"
+                    />
+            </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/px_1"
+                android:layout_marginBottom="@dimen/dp_4"
+                android:layout_marginTop="@dimen/dp_4"
+                android:background="@color/colorBlueTheme"/>
+
+            <TableRow
+                android:id="@+id/tr_fragment_set_baidu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp_32"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/map_baidu"
+                    android:textSize="@dimen/sp_16"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_fragment_set_baidu"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:padding="@dimen/dp_2"
+                    android:src="@drawable/bg_radio"
+                    />
+            </TableRow>
+        </LinearLayout>
+
+    </TableLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginRight="@dimen/dp_8"
+        android:background="@drawable/bg_table_row">
+
+        <TableRow
             android:id="@+id/tr_fragment_opinion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
