@@ -185,7 +185,7 @@ public class BaseActivity extends AppCompatActivity {
     public void disMissLoadingDialog() {
         Log.i(TAG, "disMissLoadingDialog: ");
         if (mLoadingDialogFragment.isAdded()) {
-            mLoadingDialogFragment.dismiss();
+            mLoadingDialogFragment.dismissAllowingStateLoss();
         }
     }
 

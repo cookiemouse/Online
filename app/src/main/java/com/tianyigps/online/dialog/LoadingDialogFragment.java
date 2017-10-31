@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,5 +43,13 @@ public class LoadingDialogFragment extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
         getDialog().setCancelable(false);
         getDialog().getWindow().setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.colorNull));
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+//        super.show(manager, tag);
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.add(LoadingDialogFragment.this, tag);
+        ft.commitAllowingStateLoss();
     }
 }
