@@ -336,6 +336,7 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
     @Override
     public void onNaviCancel() {
         Log.i(TAG, "onNaviCancel: ");
+        this.finish();
     }
 
     @Override
