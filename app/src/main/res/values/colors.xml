@@ -9,6 +9,7 @@
     <color name="colorBlueThemeAlpha">#6f3cabfa</color>
     <color name="colorBlueHeavy">#3385ff</color>
     <color name="colorBlue">#3cabfa</color>
+    <color name="colorBlueLight">#c8deff</color>
     <color name="colorBlueAlpha">#a0c8deff</color>
     <color name="colorBlueHeavyAlpha">#a03385ff</color>
     <color name="colorWhite">#ffffff</color>

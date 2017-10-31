@@ -60,4 +60,11 @@
         android:layout_alignStart="@+id/tv_item_expandable_child_status"
         android:text="时间"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px_1"
+        android:layout_marginTop="@dimen/dp_4"
+        android:layout_below="@id/iv_item_expandable_child_icon"
+        android:background="@color/colorGray"/>
+
 </RelativeLayout>
