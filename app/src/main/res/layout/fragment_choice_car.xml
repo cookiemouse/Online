@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/colorNull"
+            android:listSelector="@android:color/transparent"
             android:scrollbars="none"/>
 
         <ImageView
@@ -48,7 +49,7 @@
         android:id="@+id/iv_fragment_choice_car_division"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_32"
-        android:background="@color/colorGrayAlpha"
+        android:background="@color/colorBlueAlpha"
         android:padding="@dimen/dp_2"
         android:src="@drawable/bg_choice_car"/>
 
@@ -176,6 +177,8 @@
                 android:id="@+id/elv_fragment_choice_car"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:divider="@color/colorNull"
+                android:dividerHeight="0dp"
                 android:groupIndicator="@color/colorNull"/>
         </LinearLayout>
 

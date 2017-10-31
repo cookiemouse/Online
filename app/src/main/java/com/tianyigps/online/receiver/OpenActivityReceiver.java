@@ -9,6 +9,7 @@ import android.util.Log;
 import com.tianyigps.online.GuideActivity;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.RegularU;
 
@@ -51,6 +52,17 @@ public class OpenActivityReceiver extends BroadcastReceiver {
         } else {
             toWarn();
         }
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                NetManager netManager = new NetManager();
+                netManager.sendAppName();
+            }
+        };
+
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
 
     private void toGuide() {

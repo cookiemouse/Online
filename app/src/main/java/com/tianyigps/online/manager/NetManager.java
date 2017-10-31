@@ -987,4 +987,24 @@ public class NetManager {
             }
         });
     }
+
+    /**
+     * 上传用户信息，AppName
+     */
+    public void sendAppName() {
+        Request.Builder builder = new Request.Builder();
+        builder.url("http://121.43.178.183:8000/tyzx/main/postPushMessageInfo?appName=1");
+        mRequest = builder.build();
+        Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+        });
+    }
 }
