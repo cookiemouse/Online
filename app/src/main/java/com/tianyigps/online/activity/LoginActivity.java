@@ -175,7 +175,9 @@ public class LoginActivity extends BaseActivity {
                     mPopupWindow.dismiss();
                     return;
                 }
-                showPopupWindow();
+                if (mDataManager.getAccounts().size() > 0) {
+                    showPopupWindow();
+                }
             }
         });
 
@@ -242,7 +244,15 @@ public class LoginActivity extends BaseActivity {
         mPopupWindow.setBackgroundDrawable(null);
         ListView listView = view.findViewById(R.id.lv_view_popup_account);
         mAccountList.clear();
-        mAccountList.addAll(mDataManager.getAccounts());
+        List<Account> accounts = mDataManager.getAccounts();
+        String editAccount = mEditTextAccount.getText().toString();
+        for (Account account : accounts){
+            if (account.getmAccount().equals(editAccount)){
+                accounts.remove(account);
+                break;
+            }
+        }
+        mAccountList.addAll(accounts);
 
         mPopupAccountAdapter = new PopupAccountAdapter(this, mAccountList);
         listView.setAdapter(mPopupAccountAdapter);
