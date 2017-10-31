@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
@@ -151,12 +153,12 @@ public class LoginActivity extends BaseActivity {
                 mAutoLogin = mCheckBoxAuto.isChecked();
 
                 if (RegularU.isEmpty(mAccount)) {
-                    mStringMessage = "请输入账号！";
+                    mStringMessage = "请输入用户名";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
                 if (RegularU.isEmpty(mPassword)) {
-                    mStringMessage = "请输入密码！";
+                    mStringMessage = "请输入密码";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
@@ -207,7 +209,7 @@ public class LoginActivity extends BaseActivity {
                 Gson gson = new Gson();
                 CheckUserBean checkUserBean = gson.fromJson(result, CheckUserBean.class);
                 if (!checkUserBean.isSuccess()) {
-                    mStringMessage = checkUserBean.getMsg();
+                    mStringMessage = "账号或密码错误";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
@@ -290,6 +292,12 @@ public class LoginActivity extends BaseActivity {
         this.finish();
     }
 
+    private void showToastCenter(String msg){
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
+
     /**
      * 内部类Handler
      */
@@ -307,7 +315,7 @@ public class LoginActivity extends BaseActivity {
                     break;
                 }
                 case Data.MSG_MSG: {
-                    showToast(mStringMessage);
+                    showToastCenter(mStringMessage);
                     break;
                 }
                 case Data.MSG_1: {

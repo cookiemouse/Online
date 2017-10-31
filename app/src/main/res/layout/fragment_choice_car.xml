@@ -186,6 +186,8 @@
             android:id="@+id/lv_fragment_choice_car_search"
             android:layout_width="match_parent"
             android:visibility="gone"
+            android:divider="@color/colorNull"
+            android:dividerHeight="0dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 </LinearLayout>
