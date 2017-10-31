@@ -151,7 +151,7 @@ public class SharedManager {
      * 获取报警类型
      */
     public String getWarnType() {
-        return mSharedPreferences.getString(Data.WARN_TYPE, "");
+        return mSharedPreferences.getString(Data.WARN_TYPE, "01,99,84,83,93,97,98");
     }
 
     /**

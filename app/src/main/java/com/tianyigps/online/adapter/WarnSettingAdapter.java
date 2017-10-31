@@ -60,7 +60,7 @@ public class WarnSettingAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        String title = WarnTypeU.getType(data.getType());
+        String title = WarnTypeU.getType(data.getType()) + "报警";
         viewHolder.tvTitle.setText(title);
         viewHolder.switchOpen.setSelected(data.isOpen());
 
