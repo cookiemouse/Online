@@ -34,30 +34,42 @@ public class TimeFormatU {
     }
 
     public static String millisToClock(long mills) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(mills);
-        int hour = calendar.get(Calendar.HOUR);
-        int min = calendar.get(Calendar.MINUTE);
-        int second = calendar.get(Calendar.SECOND);
+        Log.i(TAG, "millisToClock: mills-->" + mills);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(mills);
+//        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
+//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+//        int min = calendar.get(Calendar.MINUTE);
+//        int second = calendar.get(Calendar.SECOND);
+        mills = mills / 1000;
+        int day = (int) (mills / (24 * 3600));
+        int hour = (int) ((mills % (24 * 3600)) / 3600);
+        int min = (int) (mills % 3600 / 60);
+        int second = (int) (mills % 3600 % 60);
+        Log.i(TAG, "millisToClock: day-->" + day);
         Log.i(TAG, "millisToClock: hour-->" + hour);
         Log.i(TAG, "millisToClock: min-->" + min);
         Log.i(TAG, "millisToClock: second-->" + second);
-//        int hour = (int) (mills / 1000 / 3600);
-//        int min = (int) (mills / 1000 % 3600 / 60);
-//        int second = (int) (mills / 1000 % 3600 % 60);
-        String time;
-        time = "0" + hour;
-//        if (hour < 10) {
-//        } else {
-//            time = "" + hour;
-//        }
-        time += "小时";
-        if (min < 10) {
-            time += "0" + min;
-        } else {
-            time += min;
+        String time = "";
+        if (day > 0) {
+            time = day + "天";
         }
-        time += "分钟";
+        if (hour > 0) {
+            if (hour < 10) {
+                time += "0" + hour;
+            } else {
+                time += "" + hour;
+            }
+            time += "小时";
+        }
+        if (min > 0) {
+            if (min < 10) {
+                time += "0" + min;
+            } else {
+                time += min;
+            }
+            time += "分钟";
+        }
         if (second < 10) {
             time += "0" + second;
         } else {
@@ -70,10 +82,14 @@ public class TimeFormatU {
     public static String millisToClock2(double mills) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis((long) mills);
-        int day = calendar.get(Calendar.DAY_OF_YEAR);
+        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
         int hour = calendar.get(Calendar.HOUR);
         int min = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
+        Log.i(TAG, "millisToClock2: day-->" + day);
+        Log.i(TAG, "millisToClock2: hour-->" + hour);
+        Log.i(TAG, "millisToClock2: min-->" + min);
+        Log.i(TAG, "millisToClock2: second-->" + second);
         String time = "";
         if (mills == 0) {
             return time;
