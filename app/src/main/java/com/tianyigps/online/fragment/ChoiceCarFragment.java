@@ -302,8 +302,6 @@ public class ChoiceCarFragment extends Fragment {
                 if (groupData.isLeaf()) {
                     getCompany(cid);
                 }
-                getGroup(cid);
-                getNumber(cid);
                 isFirstExpand = true;
             }
 
@@ -315,6 +313,10 @@ public class ChoiceCarFragment extends Fragment {
                     mListViewSearch.setVisibility(View.GONE);
                     mEditTextSearch.setText(null);
                 }
+                GroupData groupData = mGroupDataList.get(i);
+                int cid = Integer.valueOf(groupData.getId());
+                getGroup(cid);
+                getNumber(cid);
             }
         });
 
