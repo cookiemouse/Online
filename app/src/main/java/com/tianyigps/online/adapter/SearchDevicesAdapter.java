@@ -48,45 +48,47 @@ public class SearchDevicesAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
         final int finalPosition = i;
-        AdapterSearchDevicesData childData = mDataList.get(i);
-        if (null == view) {
-            viewHolder = new ViewHolder();
-            view = LayoutInflater.from(context).inflate(R.layout.item_expandable_child, null);
+        if (mDataList.size() > i) {
+            AdapterSearchDevicesData childData = mDataList.get(i);
+            if (null == view) {
+                viewHolder = new ViewHolder();
+                view = LayoutInflater.from(context).inflate(R.layout.item_expandable_child, null);
 
-            viewHolder.tvName = view.findViewById(R.id.tv_item_expandable_child_name);
-            viewHolder.tvStatus = view.findViewById(R.id.tv_item_expandable_child_status);
-            viewHolder.tvTime = view.findViewById(R.id.tv_item_expandable_child_time);
-            viewHolder.ivConcern = view.findViewById(R.id.iv_item_expandable_child_concern);
+                viewHolder.tvName = view.findViewById(R.id.tv_item_expandable_child_name);
+                viewHolder.tvStatus = view.findViewById(R.id.tv_item_expandable_child_status);
+                viewHolder.tvTime = view.findViewById(R.id.tv_item_expandable_child_time);
+                viewHolder.ivConcern = view.findViewById(R.id.iv_item_expandable_child_concern);
 
-            view.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) view.getTag();
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
+            }
+
+            viewHolder.tvName.setText(childData.getName());
+            viewHolder.tvStatus.setText(childData.getTerminalStatus());
+            viewHolder.tvTime.setText("" + childData.getMargin());
+            viewHolder.ivConcern.setSelected(childData.isAttention());
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (null == mOnItemListener) {
+                        throw new NullPointerException("OnItemListener is null");
+                    }
+                    mOnItemListener.onItemClick(finalPosition);
+                }
+            });
+
+            viewHolder.ivConcern.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (null == mOnItemListener) {
+                        throw new NullPointerException("OnItemListener is null");
+                    }
+                    mOnItemListener.onConcernClick(finalPosition);
+                }
+            });
         }
-
-        viewHolder.tvName.setText(childData.getName());
-        viewHolder.tvStatus.setText(childData.getTerminalStatus());
-        viewHolder.tvTime.setText("" + childData.getMargin());
-        viewHolder.ivConcern.setSelected(childData.isAttention());
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null == mOnItemListener) {
-                    throw new NullPointerException("OnItemListener is null");
-                }
-                mOnItemListener.onItemClick(finalPosition);
-            }
-        });
-
-        viewHolder.ivConcern.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null == mOnItemListener) {
-                    throw new NullPointerException("OnItemListener is null");
-                }
-                mOnItemListener.onConcernClick(finalPosition);
-            }
-        });
         return view;
     }
 

@@ -94,46 +94,49 @@ public class TerminalBaseExpandableListAdapter extends BaseExpandableListAdapter
         AdapterExpandableGroupData groupData = mGroupDataList.get(i);
         final int finalP = i;
         final int finalC = i1;
-        AdapterExpandableChildData childData = groupData.getExpandableChildDatalist().get(i1);
+        int size = groupData.getExpandableChildDatalist().size();
+        if (size > i1) {
+            AdapterExpandableChildData childData = groupData.getExpandableChildDatalist().get(i1);
 
-        if (null == view) {
-            viewHolderChild = new ViewHolderChild();
-            view = LayoutInflater.from(context).inflate(R.layout.item_expandable_child, null);
+            if (null == view) {
+                viewHolderChild = new ViewHolderChild();
+                view = LayoutInflater.from(context).inflate(R.layout.item_expandable_child, null);
 
-            viewHolderChild.tvName = view.findViewById(R.id.tv_item_expandable_child_name);
-            viewHolderChild.tvStatus = view.findViewById(R.id.tv_item_expandable_child_status);
-            viewHolderChild.tvTime = view.findViewById(R.id.tv_item_expandable_child_time);
-            viewHolderChild.ivConcern = view.findViewById(R.id.iv_item_expandable_child_concern);
+                viewHolderChild.tvName = view.findViewById(R.id.tv_item_expandable_child_name);
+                viewHolderChild.tvStatus = view.findViewById(R.id.tv_item_expandable_child_status);
+                viewHolderChild.tvTime = view.findViewById(R.id.tv_item_expandable_child_time);
+                viewHolderChild.ivConcern = view.findViewById(R.id.iv_item_expandable_child_concern);
 
-            view.setTag(viewHolderChild);
-        } else {
-            viewHolderChild = (ViewHolderChild) view.getTag();
+                view.setTag(viewHolderChild);
+            } else {
+                viewHolderChild = (ViewHolderChild) view.getTag();
+            }
+
+            viewHolderChild.tvName.setText(childData.getName());
+            viewHolderChild.tvStatus.setText(childData.getTerminalStatus());
+            viewHolderChild.tvTime.setText("" + childData.getMargin());
+            viewHolderChild.ivConcern.setSelected(childData.isAttention());
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (null == mOnItemListener) {
+                        throw new NullPointerException("OnItemListener is null");
+                    }
+                    mOnItemListener.onChildClick(finalP, finalC);
+                }
+            });
+
+            viewHolderChild.ivConcern.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (null == mOnItemListener) {
+                        throw new NullPointerException("OnItemListener is null");
+                    }
+                    mOnItemListener.onConcernClick(finalP, finalC);
+                }
+            });
         }
-
-        viewHolderChild.tvName.setText(childData.getName());
-        viewHolderChild.tvStatus.setText(childData.getTerminalStatus());
-        viewHolderChild.tvTime.setText("" + childData.getMargin());
-        viewHolderChild.ivConcern.setSelected(childData.isAttention());
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null == mOnItemListener){
-                    throw new NullPointerException("OnItemListener is null");
-                }
-                mOnItemListener.onChildClick(finalP, finalC);
-            }
-        });
-
-        viewHolderChild.ivConcern.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null == mOnItemListener){
-                    throw new NullPointerException("OnItemListener is null");
-                }
-                mOnItemListener.onConcernClick(finalP, finalC);
-            }
-        });
         return view;
     }
 
@@ -154,6 +157,7 @@ public class TerminalBaseExpandableListAdapter extends BaseExpandableListAdapter
 
     public interface OnItemListener {
         void onConcernClick(int parentPosition, int childPosition);
+
         void onChildClick(int parentPosition, int childPosition);
     }
 

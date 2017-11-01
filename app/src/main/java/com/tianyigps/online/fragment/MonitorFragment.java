@@ -305,13 +305,17 @@ public class MonitorFragment extends Fragment {
         mImageViewTitle2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mOverviewDialogFragment.show(getChildFragmentManager(), "车辆概览");
+                if (!mOverviewDialogFragment.isAdded()) {
+                    mOverviewDialogFragment.show(getChildFragmentManager(), "车辆概览");
+                }
             }
         });
         mImageViewTitle3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mConcernDialogFragment.show(getChildFragmentManager(), "关注列表");
+                if (!mConcernDialogFragment.isAdded()) {
+                    mConcernDialogFragment.show(getChildFragmentManager(), "关注列表");
+                }
             }
         });
         mImageViewLocate.setOnClickListener(new View.OnClickListener() {
@@ -920,9 +924,9 @@ public class MonitorFragment extends Fragment {
         ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_monitor_electricity);
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
-        if (mIsStation){
+        if (mIsStation) {
             tvGetStation.setText("获取GPS");
-        }else {
+        } else {
             tvGetStation.setText("获取基站");
         }
 

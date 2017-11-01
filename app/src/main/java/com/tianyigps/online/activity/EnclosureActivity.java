@@ -516,7 +516,7 @@ public class EnclosureActivity extends AppCompatActivity {
                 EnclosureBean.ObjBean objBean = enclosureBean.getObj();
                 if (null == objBean) {
                     mEnclosureType = TYPE_CYCLE;
-                    myHandler.sendEmptyMessageDelayed(Data.MSG_4, 100);
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_4, 200);
                     return;
                 } else {
                     mEnclosureType = objBean.getType();
@@ -723,8 +723,13 @@ public class EnclosureActivity extends AppCompatActivity {
         }
         mWidth = mMapView.getWidth();
         mHeight = mMapView.getHeight();
+        Log.i(TAG, "showSetCircle: mWidth-->" + mWidth);
+        Log.i(TAG, "showSetCircle: mHeight-->" + mHeight);
+        Log.i(TAG, "showSetCircle: mBaiduMap-->" + mBaiduMap);
         Projection mProjection = mBaiduMap.getProjection();
+        Log.i(TAG, "showSetCircle: mProjection-->" + mProjection);
         Point point = new Point((mWidth / 2), (mHeight / 2));
+        Log.i(TAG, "showSetCircle: point-->" + point);
         LatLng latLng = mProjection.fromScreenLocation(point);
 
         OverlayOptions circleOption = new CircleOptions().center(latLng).radius((radius + 2) * 100).fillColor(0xa03cabfa);
@@ -796,6 +801,7 @@ public class EnclosureActivity extends AppCompatActivity {
                 case Data.MSG_1: {
                     //  获取设备信息
                     addMarker(mLatLngCar, mIcon, 0);
+                    moveToCenter2(mLatLngCar);
                     break;
                 }
                 case Data.MSG_2: {
