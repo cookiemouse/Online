@@ -102,6 +102,11 @@ public class OverviewDialogFragment extends DialogFragment {
         getDialog().setCancelable(false);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     private void init(View view) {
         mImageViewClose = view.findViewById(R.id.iv_dialog_fragment_overview_close);
         mImageViewSwitch = view.findViewById(R.id.switch_dialog_fragment_overview);
@@ -188,20 +193,28 @@ public class OverviewDialogFragment extends DialogFragment {
             public void onSuccess(String result) {
                 Log.i(TAG, "onSuccess: result-->" + result);
                 Gson gson = new Gson();
-                CompanyBean companyBean = gson.fromJson(result, CompanyBean.class);
+                final CompanyBean companyBean = gson.fromJson(result, CompanyBean.class);
                 if (!companyBean.isSuccess()) {
                     mStringMessage = companyBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
-                    mGroupDataList.add(new GroupData2("" + objBean.getId()
-                            , "" + mParentId
-                            , mParentGrade + 1
-                            , objBean.getName()
-                            , objBean.isLeaf()));
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
+                                mGroupDataList.add(new GroupData2("" + objBean.getId()
+                                        , "" + mParentId
+                                        , mParentGrade + 1
+                                        , objBean.getName()
+                                        , objBean.isLeaf()));
+                            }
+                            mGroupListView.notifyDataSetChanged();
+                        }
+                    });
                 }
-                myHandler.sendEmptyMessage(Data.MSG_1);
+//                myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
             @Override

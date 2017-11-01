@@ -392,20 +392,28 @@ public class ChoiceCarFragment extends Fragment {
             public void onSuccess(String result) {
                 Log.i(TAG, "onSuccess: result-->" + result);
                 Gson gson = new Gson();
-                CompanyBean companyBean = gson.fromJson(result, CompanyBean.class);
+                final CompanyBean companyBean = gson.fromJson(result, CompanyBean.class);
                 if (!companyBean.isSuccess()) {
                     mStringMessage = companyBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
-                    mGroupDataList.add(new GroupData("" + objBean.getId()
-                            , "" + mParentId
-                            , mParentGrade + 1
-                            , objBean.getName()
-                            , objBean.isLeaf()));
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
+                                mGroupDataList.add(new GroupData("" + objBean.getId()
+                                        , "" + mParentId
+                                        , mParentGrade + 1
+                                        , objBean.getName()
+                                        , objBean.isLeaf()));
+                            }
+                            mListView.notifyDataSetChanged();
+                        }
+                    });
                 }
-                myHandler.sendEmptyMessage(Data.MSG_1);
+//                myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
             @Override
