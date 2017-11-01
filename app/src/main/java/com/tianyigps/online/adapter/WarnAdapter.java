@@ -1,6 +1,7 @@
 package com.tianyigps.online.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,18 @@ import java.util.List;
  */
 
 public class WarnAdapter extends BaseAdapter {
+    private static final String TAG = "WarnAdapter";
 
     private Context context;
     private List<WarnAdapterData> mWarnAdapterDatas;
 
+    private long millsNow = 0;
+    private long millsDay = 24 * 3600 * 1000;
+
     public WarnAdapter(Context context, List<WarnAdapterData> mWarnAdapterDatas) {
         this.context = context;
         this.mWarnAdapterDatas = mWarnAdapterDatas;
+        millsNow = System.currentTimeMillis();
     }
 
     @Override
@@ -64,7 +70,13 @@ public class WarnAdapter extends BaseAdapter {
         viewHolder.tvName.setText(data.getName());
         viewHolder.tvType.setText(WarnTypeU.getType(data.getType()) + "报警");
         long mills = TimeFormatU.dateToMillis2(data.getDate());
-        viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
+        long millsTime = millsNow - mills;
+        Log.i(TAG, "getView: millsTime-->" + millsTime);
+        if (millsTime <= millsDay) {
+            viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime));
+        } else {
+            viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
+        }
 
         return view;
     }

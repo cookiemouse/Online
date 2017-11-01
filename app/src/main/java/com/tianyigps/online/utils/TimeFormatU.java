@@ -80,12 +80,18 @@ public class TimeFormatU {
     }
 
     public static String millisToClock2(double mills) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis((long) mills);
-        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
-        int hour = calendar.get(Calendar.HOUR);
-        int min = calendar.get(Calendar.MINUTE);
-        int second = calendar.get(Calendar.SECOND);
+        Log.i(TAG, "millisToClock2: mills-->" + mills);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis((long) mills);
+//        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
+//        int hour = calendar.get(Calendar.HOUR);
+//        int min = calendar.get(Calendar.MINUTE);
+//        int second = calendar.get(Calendar.SECOND);
+        mills = mills / 1000;
+        int day = (int) (mills / (24 * 3600));
+        int hour = (int) ((mills % (24 * 3600)) / 3600);
+        int min = (int) (mills % 3600 / 60);
+        int second = (int) (mills % 3600 % 60);
         Log.i(TAG, "millisToClock2: day-->" + day);
         Log.i(TAG, "millisToClock2: hour-->" + hour);
         Log.i(TAG, "millisToClock2: min-->" + min);
