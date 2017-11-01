@@ -88,8 +88,16 @@ public class DetailsActivity extends BaseActivity {
                 mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" + objBean.getCar_no()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("型号：" + objBean.getModel_name()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("车型：" + objBean.getCar_type()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期：" + TimeFormatU.millisToDate3(objBean.getSale_time())));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期：" + TimeFormatU.millisToDate3(objBean.getEnd_date())));
+                if (0 == objBean.getSale_time()) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期：" + TimeFormatU.millisToDate3(objBean.getSale_time())));
+                }
+                if (0 == objBean.getEnd_date()) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期：" + TimeFormatU.millisToDate3(objBean.getEnd_date())));
+                }
                 mAdapterDetailsDataList.add(new AdapterDetailsData("联系人：" + objBean.getContact_name()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("联系电话：" + objBean.getContact_phone()));
                 myHandler.sendEmptyMessage(Data.MSG_1);

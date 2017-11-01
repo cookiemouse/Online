@@ -632,7 +632,7 @@ public class ChoiceCarFragment extends Fragment {
 
     //  搜索
     private void searchDevices(String key) {
-        mNetManager.searchTerminalWithStatus(mToken, mCidSelected, key);
+        mNetManager.searchTerminalWithStatus(mToken, mCid, key);
     }
 
     //  取消关注确认对话框
