@@ -23,6 +23,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.tianyigps.online.R;
 import com.tianyigps.online.base.BaseActivity;
 import com.tianyigps.online.data.Data;
+import com.tianyigps.online.utils.BDTransU;
 import com.tianyigps.online.utils.GeoCoderU;
 import com.tianyigps.online.utils.WarnTypeU;
 
@@ -83,6 +84,10 @@ public class WarnActivity extends BaseActivity {
         mDate = intent.getStringExtra(Data.INTENT_DATE);
         mLatidude = intent.getDoubleExtra(Data.INTENT_LATITUDE, 0);
         mLongitude = intent.getDoubleExtra(Data.INTENT_LONGITUDE, 0);
+
+        double[] doubles = BDTransU.wgs2bd(mLatidude, mLongitude);
+        mLatidude = doubles[0];
+        mLongitude = doubles[1];
 
         this.setTitleText(mTitle);
 

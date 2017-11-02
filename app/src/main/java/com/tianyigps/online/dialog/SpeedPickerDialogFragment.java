@@ -1,9 +1,6 @@
 package com.tianyigps.online.dialog;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -53,22 +50,27 @@ public class SpeedPickerDialogFragment extends DialogFragment {
         mSpeed = bundle.getInt(Data.KEY_SPEED);
         Log.i(TAG, "onCreateView: speed-->" + mSpeed);
         setSeep(mSpeed);
-        return null;
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setCancelable(false);
-        builder.setView(mView);
-
-        AlertDialog dialog = builder.create();
 
         setEventListener();
 
-        return dialog;
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.colorNull));
+        return mView;
     }
+
+//    @NonNull
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//        builder.setCancelable(false);
+//        builder.setView(mView);
+//
+//        AlertDialog dialog = builder.create();
+//
+//        setEventListener();
+//
+//        return dialog;
+//    }
 
     @Override
     public void onResume() {
@@ -82,7 +84,7 @@ public class SpeedPickerDialogFragment extends DialogFragment {
         lp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
         dialogWindow.setAttributes(lp);
 
-        getDialog().getWindow().setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.colorNull));
+//        getDialog().getWindow().setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.colorNull));
     }
 
     private void setEventListener() {

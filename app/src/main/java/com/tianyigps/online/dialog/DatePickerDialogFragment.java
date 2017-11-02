@@ -39,6 +39,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     private View mView;
 
     private TextView mTextViewStart, mTextViewEnd;
+    private TextView mTextViewCustom, mTextViewStartTitle, mTextViewEndTitle, mTextViewToday, mTextViewYesterday, mTextViewHour;
     private RadioButton mRadioButtonCustom, mRadioButtonToday, mRadioButtonYesterday, mRadioButtonHour;
     private Button mButtonEnsure, mButtonCancle;
     private LinearLayout mLinearLayoutCustom, mLinearLayoutToday, mLinearLayoutYesterday, mLinearLayoutHour;
@@ -95,6 +96,13 @@ public class DatePickerDialogFragment extends DialogFragment {
         mTextViewStart = view.findViewById(R.id.tv_dialog_date_picker_start);
         mTextViewEnd = view.findViewById(R.id.tv_dialog_date_picker_end);
 
+        mTextViewCustom = view.findViewById(R.id.tv_dialog_date_picker_custom);
+        mTextViewStartTitle = view.findViewById(R.id.tv_dialog_date_picker_start_title);
+        mTextViewEndTitle = view.findViewById(R.id.tv_dialog_date_picker_end_title);
+        mTextViewToday = view.findViewById(R.id.tv_dialog_date_picker_today);
+        mTextViewYesterday = view.findViewById(R.id.tv_dialog_date_picker_yesterday);
+        mTextViewHour = view.findViewById(R.id.tv_dialog_date_picker_hour);
+
         mButtonEnsure = view.findViewById(R.id.btn_dialog_date_picker_ensure);
         mButtonCancle = view.findViewById(R.id.btn_dialog_date_picker_cancel);
 
@@ -123,7 +131,11 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mTextViewStart.setEnabled(true);
+                mTextViewStartTitle.setEnabled(true);
                 mTextViewEnd.setEnabled(true);
+                mTextViewEndTitle.setEnabled(true);
+                mTextViewCustom.setEnabled(true);
+
                 mRadioButtonCustom.setChecked(true);
 
                 Calendar calendar = Calendar.getInstance();
@@ -142,6 +154,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewToday.setEnabled(true);
                 mRadioButtonToday.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
@@ -162,6 +175,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewYesterday.setEnabled(true);
                 mRadioButtonYesterday.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
@@ -182,6 +196,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewHour.setEnabled(true);
                 mRadioButtonHour.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 mEnd = calendar.getTimeInMillis();
@@ -198,7 +213,11 @@ public class DatePickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 setDefault();
                 mTextViewStart.setEnabled(true);
+                mTextViewStartTitle.setEnabled(true);
                 mTextViewEnd.setEnabled(true);
+                mTextViewEndTitle.setEnabled(true);
+                mTextViewCustom.setEnabled(true);
+
                 mRadioButtonCustom.setChecked(true);
 
                 Calendar calendar = Calendar.getInstance();
@@ -217,6 +236,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewToday.setEnabled(true);
                 mRadioButtonToday.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
@@ -237,6 +257,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewYesterday.setEnabled(true);
                 mRadioButtonYesterday.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
@@ -257,6 +278,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setDefault();
+                mTextViewHour.setEnabled(true);
                 mRadioButtonHour.setChecked(true);
                 Calendar calendar = Calendar.getInstance();
                 mEnd = calendar.getTimeInMillis();
@@ -312,6 +334,14 @@ public class DatePickerDialogFragment extends DialogFragment {
     private void setDefault() {
         mTextViewStart.setEnabled(false);
         mTextViewEnd.setEnabled(false);
+
+        mTextViewCustom.setEnabled(false);
+        mTextViewStartTitle.setEnabled(false);
+        mTextViewEndTitle.setEnabled(false);
+        mTextViewToday.setEnabled(false);
+        mTextViewYesterday.setEnabled(false);
+        mTextViewHour.setEnabled(false);
+
         mRadioButtonCustom.setChecked(false);
         mRadioButtonToday.setChecked(false);
         mRadioButtonYesterday.setChecked(false);

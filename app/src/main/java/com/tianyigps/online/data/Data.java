@@ -92,6 +92,7 @@ public class Data {
     public final static int STATUS_ON = 1;
     public final static int STATUS_OFF = 2;
     public final static int MARKER_CLUSTER = 3;
+    public final static int STATUS_RUNNING = 4;
 
     //  轨迹回放速度
     public final static int SPEED_10 = 5000 / 250;  //  5000 / 250

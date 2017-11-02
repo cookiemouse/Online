@@ -1,11 +1,13 @@
 package com.tianyigps.online.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -244,6 +246,11 @@ public class PathActivity extends AppCompatActivity {
         mImageViewPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (null != mMapListBeanList && mMapListBeanList.size() < 1){
+                    mStringMessage = "轨迹数据不存在，请重新选择回放条件";
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
                 if (isPlaying) {
                     if (isPause) {
                         myHandler.sendEmptyMessage(Data.MSG_2);
@@ -570,12 +577,26 @@ public class PathActivity extends AppCompatActivity {
         mBaiduMap.animateMapStatus(update);
     }
 
+    //  显示信息对话框
+    public void showMessageDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        builder.create().show();
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 case Data.MSG_MSG: {
+                    showMessageDialog(mStringMessage);
                     break;
                 }
                 case Data.MSG_NOTHING: {
