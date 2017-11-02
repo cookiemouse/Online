@@ -6,9 +6,12 @@ package com.tianyigps.online.data;
 
 public class Urls {
 
-    private static final String IP = "http://sit.tianyigps.cn/app-service/app";
-//    private static final String IP = "http://www.tianyigps.cn/app";
-    private static final String IP_2 = "http://sit.tianyigps.cn";
+    //    private static final String IP = "http://sit.tianyigps.cn/app-service/app"; //  测试环境
+    private static final String IP = "http://121.43.178.183:8000/app-service/app";  //  测试环境
+    //    private static final String IP = "http://www.tianyigps.cn/app";   //  正式环境
+
+    private static final String IP_2 = "http://sit.tianyigps.cn";   //  围栏测试环境
+//    private static final String IP_2 = "http://www.tianyigps.cn";   //  围栏正式环境
 
     public static final String CHECK_USER = IP + "/loginController.do?checkuser&";
     public static final String CHECK_VERSION = IP + "/loginController.do?checkVersion&";
@@ -30,6 +33,6 @@ public class Urls {
 
     public static final String UNIFENCE_STATUS = IP_2 + "/geofenceapi/unifencestatus?";
     public static final String UNIFENCE_OPR = IP_2 + "/geofenceapi/unifenceopr?";
-    public static final String UNIFENCE_INFO= IP_2 + "/geofenceapi/unifenceinfo?";
-    public static final String UNIFENCE_UPSERT= IP_2 + "/geofenceapi/unifenceupsert";
+    public static final String UNIFENCE_INFO = IP_2 + "/geofenceapi/unifenceinfo?";
+    public static final String UNIFENCE_UPSERT = IP_2 + "/geofenceapi/unifenceupsert";
 }

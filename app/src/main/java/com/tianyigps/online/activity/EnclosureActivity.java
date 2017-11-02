@@ -9,6 +9,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -42,6 +44,7 @@ import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.bean.EnclosureBean;
 import com.tianyigps.online.bean.TerminalInfo4MapBean;
+import com.tianyigps.online.bean.UnifenceResultBean;
 import com.tianyigps.online.bean.UnifenceSetBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoForMapListener;
@@ -545,7 +548,14 @@ public class EnclosureActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 Log.i(TAG, "onSuccess: result-->" + result);
-                myHandler.obtainMessage(Data.MSG_3).sendToTarget();
+                Gson gson = new Gson();
+                UnifenceResultBean unifenceResultBean = gson.fromJson(result, UnifenceResultBean.class);
+                if (unifenceResultBean.isSuccess()) {
+                    myHandler.obtainMessage(Data.MSG_3).sendToTarget();
+                    return;
+                }
+                mStringMessage = unifenceResultBean.getMsg();
+                myHandler.sendEmptyMessage(Data.MSG_MSG);
             }
 
             @Override
@@ -626,7 +636,7 @@ public class EnclosureActivity extends AppCompatActivity {
         //构建Marker图标
         View viewMarker;
         switch (type) {
-            case Data.STATUS_RUNNING:{
+            case Data.STATUS_RUNNING: {
                 viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
                 break;
             }
@@ -774,7 +784,6 @@ public class EnclosureActivity extends AppCompatActivity {
         Log.i(TAG, "changeZoom: --3");
     }
 
-
     // 计算多个坐标的中心点
     private LatLng getCenter(List<LatLng> latLngList) {
         //  计算中心点
@@ -788,6 +797,14 @@ public class EnclosureActivity extends AppCompatActivity {
         return latLng;
     }
 
+
+    //  显示轻提示
+    private void showToastCenter(String msg) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -797,6 +814,7 @@ public class EnclosureActivity extends AppCompatActivity {
                     break;
                 }
                 case Data.MSG_MSG: {
+                    showToastCenter(mStringMessage);
                     break;
                 }
                 case Data.MSG_NOTHING: {
