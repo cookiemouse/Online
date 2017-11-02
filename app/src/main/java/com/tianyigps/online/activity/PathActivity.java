@@ -639,7 +639,7 @@ public class PathActivity extends AppCompatActivity {
                     mTextViewSpeed.setText("");
 
                     int size = mMapListBeanList.size();
-                    mSeekBar.setMax(size);
+                    mSeekBar.setMax(size - 1);
                     if (size > 1) {
                         PathBean.ObjBean.MaplistBean maplistBeanStart = mMapListBeanList.get(0);
                         if (null != maplistBeanStart) {
