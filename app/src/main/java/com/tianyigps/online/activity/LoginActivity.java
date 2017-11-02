@@ -248,8 +248,8 @@ public class LoginActivity extends BaseActivity {
         mAccountList.clear();
         List<Account> accounts = mDataManager.getAccounts();
         String editAccount = mEditTextAccount.getText().toString();
-        for (Account account : accounts){
-            if (account.getmAccount().equals(editAccount)){
+        for (Account account : accounts) {
+            if (account.getmAccount().equals(editAccount)) {
                 accounts.remove(account);
                 break;
             }
@@ -279,10 +279,12 @@ public class LoginActivity extends BaseActivity {
         mPopupWindow.setContentView(view);
         mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPopupWindow.showAsDropDown(mViewLine, -30, -30);
-        isOpened = true;
-        mEditTextAccount.clearFocus();
-        mLinearLayoutAccount.setBackgroundResource(R.drawable.bg_popup_account);
+        if (mAccountList.size() > 0) {
+            mPopupWindow.showAsDropDown(mViewLine, -30, -30);
+            isOpened = true;
+            mEditTextAccount.clearFocus();
+            mLinearLayoutAccount.setBackgroundResource(R.drawable.bg_popup_account);
+        }
     }
 
     //  跳转到主页
@@ -292,7 +294,7 @@ public class LoginActivity extends BaseActivity {
         this.finish();
     }
 
-    private void showToastCenter(String msg){
+    private void showToastCenter(String msg) {
         Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();

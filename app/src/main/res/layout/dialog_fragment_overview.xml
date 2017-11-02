@@ -92,6 +92,7 @@
     <com.tianyigps.grouplistlibrary.GroupListView2
         android:id="@+id/glv_dialog_fragment_overview"
         android:layout_width="match_parent"
+        android:listSelector="@android:color/transparent"
         android:layout_height="@dimen/dp_240"/>
 
 </LinearLayout>

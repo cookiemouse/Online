@@ -73,7 +73,7 @@ public class WarnAdapter extends BaseAdapter {
         long millsTime = millsNow - mills;
         Log.i(TAG, "getView: millsTime-->" + millsTime);
         if (millsTime <= millsDay) {
-            viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime));
+            viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime) + "前");
         } else {
             viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
         }
