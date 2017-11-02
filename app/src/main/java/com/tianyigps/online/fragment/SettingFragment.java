@@ -142,7 +142,7 @@ public class SettingFragment extends Fragment {
         mButtonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showChoiceDialog("账号退出后，您将接收不到报警信息的念头，是否退出。");
+                showChoiceDialog("账号退出后，您将接收不到报警信息的推送，是否退出。");
             }
         });
     }

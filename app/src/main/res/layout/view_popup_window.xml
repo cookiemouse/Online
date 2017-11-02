@@ -3,6 +3,7 @@
               android:id="@+id/ll_view_popup_window"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:background="@color/colorNull"
               android:orientation="vertical"
               android:paddingEnd="@dimen/dp_28"
               android:paddingLeft="@dimen/dp_1"
