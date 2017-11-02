@@ -626,12 +626,16 @@ public class EnclosureActivity extends AppCompatActivity {
         //构建Marker图标
         View viewMarker;
         switch (type) {
+            case Data.STATUS_RUNNING:{
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
+                break;
+            }
             case Data.STATUS_OFF: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_gray, null);
                 break;
             }
             case Data.STATUS_ON: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
                 break;
             }
             case Data.STATUS_OTHER: {
@@ -639,7 +643,7 @@ public class EnclosureActivity extends AppCompatActivity {
                 break;
             }
             default: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_gray, null);
                 Log.i(TAG, "addMarker: locate_type.default-->" + type);
             }
         }

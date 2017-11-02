@@ -32,6 +32,7 @@ public class StatusU {
                         } else {
                             if (speed > 0) {
                                 //  行驶
+                                statu = Data.STATUS_RUNNING;
                                 status = "行驶";
                             } else {
                                 //  静止，时长为 systemTime - locateTime
