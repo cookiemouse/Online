@@ -34,7 +34,6 @@ public class TimeFormatU {
     }
 
     public static String millisToClock(long mills) {
-        Log.i(TAG, "millisToClock: mills-->" + mills);
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis(mills);
 //        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
@@ -46,10 +45,6 @@ public class TimeFormatU {
         int hour = (int) ((mills % (24 * 3600)) / 3600);
         int min = (int) (mills % 3600 / 60);
         int second = (int) (mills % 3600 % 60);
-        Log.i(TAG, "millisToClock: day-->" + day);
-        Log.i(TAG, "millisToClock: hour-->" + hour);
-        Log.i(TAG, "millisToClock: min-->" + min);
-        Log.i(TAG, "millisToClock: second-->" + second);
         String time = "";
         if (day > 0) {
             time = day + "天";
@@ -80,7 +75,6 @@ public class TimeFormatU {
     }
 
     public static String millisToClock2(double mills) {
-        Log.i(TAG, "millisToClock2: mills-->" + mills);
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis((long) mills);
 //        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
@@ -92,10 +86,6 @@ public class TimeFormatU {
         int hour = (int) ((mills % (24 * 3600)) / 3600);
         int min = (int) (mills % 3600 / 60);
         int second = (int) (mills % 3600 % 60);
-        Log.i(TAG, "millisToClock2: day-->" + day);
-        Log.i(TAG, "millisToClock2: hour-->" + hour);
-        Log.i(TAG, "millisToClock2: min-->" + min);
-        Log.i(TAG, "millisToClock2: second-->" + second);
         String time = "";
         if (mills == 0) {
             return time;

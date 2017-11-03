@@ -95,4 +95,12 @@ public class Data {
     public final static int SPEED_100 = 5000 / 150; //  5000 / 150
     public final static int SPEED_200 = 5000 / 100; //  5000 / 100
     public final static int SPEED_400 = 5000 / 50;  //  5000 / 50
+
+    //  埋点信息
+    public final static String BURIED_POINT_1_N = "-1";
+    public final static String BURIED_POINT_2_N = "-2";
+    public final static String BURIED_POINT_1 = "1";
+    public final static String BURIED_POINT_2 = "2";
+    public final static String BURIED_POINT_3 = "3";
+    public final static String BURIED_POINT_4 = "4";
 }

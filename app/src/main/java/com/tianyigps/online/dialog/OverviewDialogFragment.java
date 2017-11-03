@@ -43,7 +43,7 @@ public class OverviewDialogFragment extends DialogFragment {
     private MyHandler myHandler;
 
     private int mCid, mParentId, mParentGrade;
-    private String mToken;
+    private String mToken, mName;
 
     private ImageView mImageViewClose;
     private ImageView mImageViewSwitch;
@@ -117,17 +117,19 @@ public class OverviewDialogFragment extends DialogFragment {
         mSharedManager = new SharedManager(getContext());
         myHandler = new MyHandler();
 
+
+        mCid = mSharedManager.getCid();
+        mName = mSharedManager.getName();
+        mToken = mSharedManager.getToken();
+        mSwitch = mSharedManager.getShowAttention();
+        mImageViewSwitch.setSelected(mSwitch);
+
         mGroupDataList = new ArrayList<>();
-        mGroupDataList.add(new GroupData2("" + mCid, "根目录", true));
+        mGroupDataList.add(new GroupData2("" + mCid, mName, true));
         GroupData2 groupData = mGroupDataList.get(0);
         groupData.setExhibited(true);
         mGroupAdapter = new GroupAdapter2(getContext(), mGroupDataList);
         mGroupListView.setAdapter(mGroupAdapter);
-
-        mCid = mSharedManager.getCid();
-        mToken = mSharedManager.getToken();
-        mSwitch = mSharedManager.getShowAttention();
-        mImageViewSwitch.setSelected(mSwitch);
 
         mToastU = new ToastU(getContext());
 

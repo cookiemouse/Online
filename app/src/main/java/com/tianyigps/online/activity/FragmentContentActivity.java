@@ -51,6 +51,8 @@ public class FragmentContentActivity extends AppCompatActivity {
     private SharedManager mSharedManager;
     private NetManager mNetManager;
 
+    private String mUserName = "";
+
     private LocateManager mLocateManager;
 
     @Override
@@ -121,6 +123,10 @@ public class FragmentContentActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         mSharedManager = new SharedManager(this);
+        mUserName = mSharedManager.getAccount();
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_1_N);
+
         int mainPage = mSharedManager.getMainPage();
         if (null != intent) {
             if (intent.getIntExtra(Data.MAIN_PAGE, 0) != 0) {
@@ -248,6 +254,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewChoiceCar.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewChoiceCar.setImageResource(R.drawable.ic_choice_car_blue);
         showFragment(mChoiceCarFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_1);
     }
 
     //  显示监控
@@ -256,6 +264,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
         showFragment(mMonitorFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
     }
 
     //  显示监控，给外部使用
@@ -265,6 +275,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
         mMonitorFragment.setArguments(bundle);
         showFragment(mMonitorFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
     }
 
     //  显示报警
@@ -273,6 +285,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewWarn.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewWarn.setImageResource(R.drawable.ic_warn_blue);
         showFragment(mWarnFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_3);
     }
 
     //  显示设置
@@ -281,6 +295,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewSetting.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewSetting.setImageResource(R.drawable.ic_setting_blue);
         showFragment(mSettingFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_4);
     }
 
     //  显示BottomView

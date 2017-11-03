@@ -975,7 +975,7 @@ public class NetManager {
                 + "&appName=1"
                 + "&operateSystem=" + operateSystem);
         mRequest = builder.build();
-        Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
+        Log.i(TAG, "sendUserInfo: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);
         call.enqueue(new Callback() {
             @Override
@@ -991,11 +991,35 @@ public class NetManager {
     /**
      * 上传用户信息，AppName
      */
-    public void sendAppName() {
+    public void pushClick(String warnType) {
         Request.Builder builder = new Request.Builder();
-        builder.url("http://121.43.178.183:8000/tyzx/main/postPushMessageInfo?appName=1");
+        builder.url("http://121.43.178.183:8000/tyzx/main/postPushMessageInfo?appName=1&warnType=" + warnType);
         mRequest = builder.build();
-        Log.i(TAG, "getStationInfo: url-->" + mRequest.url());
+        Log.i(TAG, "pushClick: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+        });
+    }
+
+    /**
+     * 埋点信息
+     */
+    public void buriedPoint(String imei, String loginName, String pageCode) {
+        Request.Builder builder = new Request.Builder();
+        builder.url("http://121.43.178.183:8000/tyzx/main/postPageInfo?" +
+                "mphone_imei=" + imei +
+                "&loginName=" + loginName +
+                "&appName=1" +
+                "&pageCode=" + pageCode);
+        mRequest = builder.build();
+        Log.i(TAG, "buriedPoint: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);
         call.enqueue(new Callback() {
             @Override
