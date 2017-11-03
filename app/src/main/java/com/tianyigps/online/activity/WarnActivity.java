@@ -189,7 +189,7 @@ public class WarnActivity extends BaseActivity {
             mOverlayMarker.remove();
         }
         //构建Marker图标
-        View viewMarker = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_marker_car_red, null);
+        View viewMarker = LayoutInflater.from(WarnActivity.this).inflate(R.layout.view_map_marker_pause, null);
         BitmapDescriptor bitmap = BitmapDescriptorFactory.fromView(viewMarker);
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions().position(latLng).icon(bitmap).anchor(0.5f, 0.5f);
