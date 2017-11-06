@@ -17,6 +17,7 @@ import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.TimeFormatU;
 
 import java.util.ArrayList;
@@ -85,7 +86,11 @@ public class DetailsActivity extends BaseActivity {
                 mAdapterDetailsDataList.add(new AdapterDetailsData("设备号：" + objBean.getImei()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("SIM卡号：" + objBean.getSim()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("名称：" + objBean.getName()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" + objBean.getCar_no()));
+                if (RegularU.isEmpty(objBean.getCar_no())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" ));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" + objBean.getCar_no()));
+                }
                 mAdapterDetailsDataList.add(new AdapterDetailsData("型号：" + objBean.getModel_name()));
                 mAdapterDetailsDataList.add(new AdapterDetailsData("车型：" + objBean.getCar_type()));
                 if (0 == objBean.getSale_time()) {
