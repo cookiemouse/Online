@@ -83,16 +83,36 @@ public class DetailsActivity extends BaseActivity {
                 }
                 DetailsBean.ObjBean objBean = detailsBean.getObj();
                 mAdapterDetailsDataList.add(new AdapterDetailsData(objBean.getName()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("设备号：" + objBean.getImei()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("SIM卡号：" + objBean.getSim()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("名称：" + objBean.getName()));
+                if (RegularU.isEmpty(objBean.getImei())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("设备号："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("设备号：" + objBean.getImei()));
+                }
+                if (RegularU.isEmpty(objBean.getSim())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("SIM卡号："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("SIM卡号：" + objBean.getSim()));
+                }
+                if (RegularU.isEmpty(objBean.getName())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("名称："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("名称：" + objBean.getName()));
+                }
                 if (RegularU.isEmpty(objBean.getCar_no())) {
-                    mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" ));
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号："));
                 } else {
                     mAdapterDetailsDataList.add(new AdapterDetailsData("车牌号：" + objBean.getCar_no()));
                 }
-                mAdapterDetailsDataList.add(new AdapterDetailsData("型号：" + objBean.getModel_name()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("车型：" + objBean.getCar_type()));
+                if (RegularU.isEmpty(objBean.getModel_name())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("型号："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("型号：" + objBean.getModel_name()));
+                }
+                if (RegularU.isEmpty(objBean.getCar_type())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("车型："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("车型：" + objBean.getCar_type()));
+                }
                 if (0 == objBean.getSale_time()) {
                     mAdapterDetailsDataList.add(new AdapterDetailsData("开通日期："));
                 } else {
@@ -103,8 +123,16 @@ public class DetailsActivity extends BaseActivity {
                 } else {
                     mAdapterDetailsDataList.add(new AdapterDetailsData("到期日期：" + TimeFormatU.millisToDate3(objBean.getEnd_date())));
                 }
-                mAdapterDetailsDataList.add(new AdapterDetailsData("联系人：" + objBean.getContact_name()));
-                mAdapterDetailsDataList.add(new AdapterDetailsData("联系电话：" + objBean.getContact_phone()));
+                if (RegularU.isEmpty(objBean.getContact_name())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("联系人："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("联系人：" + objBean.getContact_name()));
+                }
+                if (RegularU.isEmpty(objBean.getContact_phone())) {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("联系电话："));
+                } else {
+                    mAdapterDetailsDataList.add(new AdapterDetailsData("联系电话：" + objBean.getContact_phone()));
+                }
                 myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
