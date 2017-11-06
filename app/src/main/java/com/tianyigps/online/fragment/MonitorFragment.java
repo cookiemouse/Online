@@ -1,7 +1,9 @@
 package com.tianyigps.online.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -838,7 +840,7 @@ public class MonitorFragment extends Fragment {
         //构建Marker图标
         View viewMarker;
         switch (type) {
-            case Data.STATUS_RUNNING:{
+            case Data.STATUS_RUNNING: {
                 viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
                 break;
             }
@@ -1004,7 +1006,11 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
-                toNaviActivity();
+                if ("GPS".equals(mInfoLocateType)) {
+                    toNaviActivity();
+                } else {
+                    showNaviDialog(mInfoLocateType);
+                }
             }
         });
 
@@ -1145,6 +1151,28 @@ public class MonitorFragment extends Fragment {
     //  反编码地址
     public void getAddress(LatLng latLng) {
         mGeoCoderU.searchAddress(latLng.latitude, latLng.longitude);
+    }
+
+    //  跳转地图
+    private void showNaviDialog(String msg) {
+        String strMsg = "该车辆为" + msg + "，可能与车辆实际位置存在一定误差，是否继续导航。";
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(strMsg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  导航
+                toNaviActivity();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class MyHandler extends Handler {
