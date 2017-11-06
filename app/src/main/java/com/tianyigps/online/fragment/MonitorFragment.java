@@ -432,7 +432,14 @@ public class MonitorFragment extends Fragment {
                     return false;
                 }
                 if (Data.MARKER_CLUSTER == type) {
-                    mToastU.showToast("Cluster Point");
+                    //  聚合点点击事件
+//                    mToastU.showToast("Cluster Point");
+                    MapStatus mapStatus = mBaiduMap.getMapStatus();
+                    MapStatus.Builder builder = new MapStatus.Builder();
+                    builder.zoom(mapStatus.zoom + 1);
+                    MapStatus status = builder.build();
+                    MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+                    mBaiduMap.animateMapStatus(update);
                     return false;
                 }
                 mChoiceImei = imei;
