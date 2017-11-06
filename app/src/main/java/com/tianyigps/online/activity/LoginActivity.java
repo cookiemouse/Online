@@ -330,7 +330,7 @@ public class LoginActivity extends BaseActivity {
                     } else {
                         mDataManager.deleteAccount(mAccount);
                     }
-                    JPushInterface.setAlias(LoginActivity.this, 0, mAccount);
+                    JPushInterface.setAlias(LoginActivity.this, 0, "" + mCid);
                     toFragmentContent();
                     break;
                 }

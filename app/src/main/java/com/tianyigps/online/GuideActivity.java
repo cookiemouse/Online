@@ -49,7 +49,7 @@ public class GuideActivity extends Activity {
 
     private NetManager mNetManager;
 
-    private String mUserName, mPassword;
+    private String mUserName, mPassword, mCid;
     private boolean mIsAuto;
 
     @Override
@@ -85,6 +85,7 @@ public class GuideActivity extends Activity {
         mUserName = mSharedManager.getAccount();
         mPassword = mSharedManager.getPassword();
         mIsAuto = mSharedManager.getAutoLogin();
+        mCid = "" + mSharedManager.getCid();
 
         applyPermiss();
     }
@@ -239,7 +240,7 @@ public class GuideActivity extends Activity {
                 }
                 case Data.MSG_2: {
                     //  跳转到主页
-                    JPushInterface.setAlias(GuideActivity.this, 0, mUserName);
+                    JPushInterface.setAlias(GuideActivity.this, 0, mCid);
                     toFragmentContent();
                     break;
                 }
