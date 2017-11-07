@@ -153,6 +153,17 @@ public class TimeFormatU {
         return time;
     }
 
+    public static String millsToHourMin2(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        return simpleDateFormat.format(date);
+    }
+
+    public static String dateToHourMin(String date) {
+        long mills = dateToMillis(date);
+        return millsToHourMin2(mills);
+    }
+
     //  转为分钟秒
     public static String millsToMinSec2(long mills) {
         String time;
