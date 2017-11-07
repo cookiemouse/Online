@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
@@ -64,6 +65,9 @@ public class FragmentContentActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        //  百度地图初始化
+        SDKInitializer.initialize(getApplicationContext());
 
         init();
 
