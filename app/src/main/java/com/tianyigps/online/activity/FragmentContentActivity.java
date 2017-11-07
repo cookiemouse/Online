@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,6 +30,8 @@ import com.tianyigps.online.utils.TimerU;
 import com.tianyigps.online.utils.ToastU;
 
 public class FragmentContentActivity extends AppCompatActivity {
+
+    private static final String TAG = "FragmentContent";
 
     private FrameLayout mFrameLayout;
 
@@ -137,6 +140,7 @@ public class FragmentContentActivity extends AppCompatActivity {
                 mainPage = intent.getIntExtra(Data.MAIN_PAGE, 0);
             }
         }
+        Log.i(TAG, "init: ");
         switch (mainPage) {
             case 0: {
                 showChoiceCar();
