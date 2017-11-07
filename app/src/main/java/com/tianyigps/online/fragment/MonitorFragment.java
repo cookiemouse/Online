@@ -939,7 +939,7 @@ public class MonitorFragment extends Fragment {
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
         if (mIsStation) {
-            tvGetStation.setText("获取GPS");
+            tvGetStation.setText("状态返回");
         } else {
             tvGetStation.setText("获取基站");
         }
