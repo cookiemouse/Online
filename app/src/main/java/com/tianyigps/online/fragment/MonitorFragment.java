@@ -214,6 +214,7 @@ public class MonitorFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            //  显示
             mFlushTime = mSharedManager.getFlushTime() * 1000;
             myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
             Bundle bundle = getArguments();
@@ -1271,22 +1272,29 @@ public class MonitorFragment extends Fragment {
 //                            marker.setPosition(mLatLngStation);
 //                        }
 //                    }
-                    for (MarkerData markerData : mMarkerDataList) {
-                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
-                        if (markerData.getImei().equals(mChoiceImei)) {
-                            markerData.setLatLng(mLatLngStation);
-                            mIsStation = true;
-                            showInfoWindow(mLatLngStation);
-                        }
-                    }
-                    for (BaiduPoint baiduPoint : mBaiduPointList) {
-                        if (baiduPoint.getImei().equals(mChoiceImei)) {
-                            baiduPoint.setLatLng(mLatLngStation);
-                            mIsStation = true;
-                            showInfoWindow(mLatLngStation);
-                        }
-                    }
 
+                    if (mFrom == FROM_CHOICE) {
+                        Marker marker = (Marker) mOverlayMarker;
+                        marker.setPosition(mLatLngStation);
+                        mIsStation = true;
+                        showInfoWindow(mLatLngStation);
+                    } else {
+                        for (MarkerData markerData : mMarkerDataList) {
+                            Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
+                            if (markerData.getImei().equals(mChoiceImei)) {
+                                markerData.setLatLng(mLatLngStation);
+                                mIsStation = true;
+                                showInfoWindow(mLatLngStation);
+                            }
+                        }
+                        for (BaiduPoint baiduPoint : mBaiduPointList) {
+                            if (baiduPoint.getImei().equals(mChoiceImei)) {
+                                baiduPoint.setLatLng(mLatLngStation);
+                                mIsStation = true;
+                                showInfoWindow(mLatLngStation);
+                            }
+                        }
+                    }
                     break;
                 }
             }
