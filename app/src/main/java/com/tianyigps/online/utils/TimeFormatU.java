@@ -179,6 +179,12 @@ public class TimeFormatU {
         return simpleDateFormat.format(date);
     }
 
+    public static int millsGetDay(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
+        return Integer.valueOf(simpleDateFormat.format(date));
+    }
+
     //字符串转时间戳
     public static long dateToMillis(String time) {
         long timeStamp = 0;
