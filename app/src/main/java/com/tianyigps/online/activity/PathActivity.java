@@ -246,7 +246,7 @@ public class PathActivity extends AppCompatActivity {
         mImageViewPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (null != mMapListBeanList && mMapListBeanList.size() < 1){
+                if (null != mMapListBeanList && mMapListBeanList.size() < 1) {
                     mStringMessage = "轨迹数据不存在，请重新选择回放条件";
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
@@ -286,6 +286,10 @@ public class PathActivity extends AppCompatActivity {
                 Log.i(TAG, "onChoice: start-->" + datePickerData.getStart());
                 Log.i(TAG, "onChoice: end-->" + datePickerData.getEnd());
                 getPath(datePickerData.getStart(), datePickerData.getEnd());
+                String start = TimeFormatU.dateToHourMin(datePickerData.getStart());
+                String end = TimeFormatU.dateToHourMin(datePickerData.getEnd());
+                mTextViewStart.setText(start);
+                mTextViewEnd.setText(end);
             }
         });
 
@@ -639,7 +643,7 @@ public class PathActivity extends AppCompatActivity {
                     mTextViewSpeed.setText("");
 
                     int size = mMapListBeanList.size();
-                    mSeekBar.setMax(size);
+                    mSeekBar.setMax(size - 1);
                     if (size > 1) {
                         PathBean.ObjBean.MaplistBean maplistBeanStart = mMapListBeanList.get(0);
                         if (null != maplistBeanStart) {

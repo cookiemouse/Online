@@ -7,7 +7,8 @@
         android:id="@+id/tv_layout_map_control_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorGrayAlpha"/>
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorBlueHeavyAlpha"/>
 
     <TextView
         android:id="@+id/tv_layout_map_control_normal"

@@ -22,7 +22,12 @@ import com.tianyigps.online.activity.InstructionActivity;
 import com.tianyigps.online.activity.LoginActivity;
 import com.tianyigps.online.activity.OpinionActivity;
 import com.tianyigps.online.data.Data;
+<<<<<<< HEAD
+=======
+import com.tianyigps.online.manager.NetManager;
+>>>>>>> master
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.DeviceU;
 
 /**
  * Created by cookiemouse on 2017/9/5.
@@ -40,6 +45,8 @@ public class SettingFragment extends Fragment {
     private ImageView mImageViewPage, mImageViewMap;
 
     private SharedManager mSharedManager;
+    private String mUserName = "";
+    private NetManager mNetManager;
 
     @Nullable
     @Override
@@ -73,6 +80,8 @@ public class SettingFragment extends Fragment {
         mButtonExit = view.findViewById(R.id.btn_fragment_setting);
 
         mSharedManager = new SharedManager(getContext());
+        mNetManager = new NetManager();
+        mUserName = mSharedManager.getAccount();
 
         int mainPage = mSharedManager.getMainPage();
         if (mainPage == 1) {
@@ -214,6 +223,9 @@ public class SettingFragment extends Fragment {
         builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
+                mNetManager.buriedPoint(DeviceU.getDeviceId(getContext()), mUserName, Data.BURIED_POINT_2_N);
+
                 mSharedManager.saveAutoLogin(false);
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

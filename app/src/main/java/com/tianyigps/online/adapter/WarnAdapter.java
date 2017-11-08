@@ -35,6 +35,12 @@ public class WarnAdapter extends BaseAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        millsNow = System.currentTimeMillis();
+        super.notifyDataSetChanged();
+    }
+
+    @Override
     public int getCount() {
         return mWarnAdapterDatas.size();
     }
@@ -71,9 +77,22 @@ public class WarnAdapter extends BaseAdapter {
         viewHolder.tvType.setText(WarnTypeU.getType(data.getType()) + "报警");
         long mills = TimeFormatU.dateToMillis2(data.getDate());
         long millsTime = millsNow - mills;
+
+        int dayNow = TimeFormatU.millsGetDay(millsNow);
+        int dayData = TimeFormatU.millsGetDay(mills);
+
+        Log.i(TAG, "getView: millsNow-->" + millsNow);
+        Log.i(TAG, "getView: mills-->" + mills);
         Log.i(TAG, "getView: millsTime-->" + millsTime);
-        if (millsTime <= millsDay) {
+        Log.i(TAG, "getView: dayNow-->" + dayNow);
+        Log.i(TAG, "getView: dayData-->" + dayData);
+
+        if (0 == (dayNow - dayData)) {
             viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime) + "前");
+        } else if ((1 == (dayNow - dayData)) || (0 < (dayNow - dayData))) {
+            viewHolder.tvDate.setText("昨天" + TimeFormatU.millsToHourMin2(mills));
+        } else if ((2 == (dayNow - dayData)) || (0 < (dayNow - dayData))) {
+            viewHolder.tvDate.setText("前天" + TimeFormatU.millsToHourMin2(mills));
         } else {
             viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));
         }

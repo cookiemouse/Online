@@ -1,7 +1,9 @@
 package com.tianyigps.online.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -212,6 +214,7 @@ public class MonitorFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            //  显示
             mFlushTime = mSharedManager.getFlushTime() * 1000;
             myHandler.sendEmptyMessageDelayed(Data.MSG_5, mFlushTime);
             Bundle bundle = getArguments();
@@ -430,7 +433,14 @@ public class MonitorFragment extends Fragment {
                     return false;
                 }
                 if (Data.MARKER_CLUSTER == type) {
-                    mToastU.showToast("Cluster Point");
+                    //  聚合点点击事件
+//                    mToastU.showToast("Cluster Point");
+                    MapStatus mapStatus = mBaiduMap.getMapStatus();
+                    MapStatus.Builder builder = new MapStatus.Builder();
+                    builder.zoom(mapStatus.zoom + 1);
+                    MapStatus status = builder.build();
+                    MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+                    mBaiduMap.animateMapStatus(update);
                     return false;
                 }
                 mChoiceImei = imei;
@@ -838,7 +848,7 @@ public class MonitorFragment extends Fragment {
         //构建Marker图标
         View viewMarker;
         switch (type) {
-            case Data.STATUS_RUNNING:{
+            case Data.STATUS_RUNNING: {
                 viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
                 break;
             }
@@ -929,7 +939,7 @@ public class MonitorFragment extends Fragment {
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
         if (mIsStation) {
-            tvGetStation.setText("获取GPS");
+            tvGetStation.setText("状态返回");
         } else {
             tvGetStation.setText("获取基站");
         }
@@ -1004,7 +1014,15 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
-                toNaviActivity();
+                if (mStatusData.getStatu() == Data.STATUS_ON) {
+                    if ("GPS".equals(mInfoLocateType)) {
+                        toNaviActivity();
+                    } else {
+                        showNaviDialog(mInfoLocateType);
+                    }
+                } else {
+                    showNaviDialog("不在线");
+                }
             }
         });
 
@@ -1147,6 +1165,28 @@ public class MonitorFragment extends Fragment {
         mGeoCoderU.searchAddress(latLng.latitude, latLng.longitude);
     }
 
+    //  跳转地图
+    private void showNaviDialog(String msg) {
+        String strMsg = "该车辆为" + msg + "，可能与车辆实际位置存在一定误差，是否继续导航。";
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(strMsg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  导航
+                toNaviActivity();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -1232,22 +1272,29 @@ public class MonitorFragment extends Fragment {
 //                            marker.setPosition(mLatLngStation);
 //                        }
 //                    }
-                    for (MarkerData markerData : mMarkerDataList) {
-                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
-                        if (markerData.getImei().equals(mChoiceImei)) {
-                            markerData.setLatLng(mLatLngStation);
-                            mIsStation = true;
-                            showInfoWindow(mLatLngStation);
-                        }
-                    }
-                    for (BaiduPoint baiduPoint : mBaiduPointList) {
-                        if (baiduPoint.getImei().equals(mChoiceImei)) {
-                            baiduPoint.setLatLng(mLatLngStation);
-                            mIsStation = true;
-                            showInfoWindow(mLatLngStation);
-                        }
-                    }
 
+                    if (mFrom == FROM_CHOICE) {
+                        Marker marker = (Marker) mOverlayMarker;
+                        marker.setPosition(mLatLngStation);
+                        mIsStation = true;
+                        showInfoWindow(mLatLngStation);
+                    } else {
+                        for (MarkerData markerData : mMarkerDataList) {
+                            Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
+                            if (markerData.getImei().equals(mChoiceImei)) {
+                                markerData.setLatLng(mLatLngStation);
+                                mIsStation = true;
+                                showInfoWindow(mLatLngStation);
+                            }
+                        }
+                        for (BaiduPoint baiduPoint : mBaiduPointList) {
+                            if (baiduPoint.getImei().equals(mChoiceImei)) {
+                                baiduPoint.setLatLng(mLatLngStation);
+                                mIsStation = true;
+                                showInfoWindow(mLatLngStation);
+                            }
+                        }
+                    }
                     break;
                 }
             }

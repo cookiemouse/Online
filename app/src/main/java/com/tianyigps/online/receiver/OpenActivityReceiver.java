@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.tianyigps.online.GuideActivity;
 import com.tianyigps.online.activity.FragmentContentActivity;
+import com.tianyigps.online.bean.WarnTypeBean;
 import com.tianyigps.online.data.Data;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
@@ -20,6 +22,8 @@ public class OpenActivityReceiver extends BroadcastReceiver {
     private static final String TAG = "OpenActivityReceiver";
 
     private SharedManager mSharedManager;
+
+    private String warnType = "";
 
     private Context context;
 
@@ -53,11 +57,15 @@ public class OpenActivityReceiver extends BroadcastReceiver {
             toWarn();
         }
 
+        Gson gson = new Gson();
+        WarnTypeBean warnTypeBean = gson.fromJson(type, WarnTypeBean.class);
+        warnType = warnTypeBean.getWarnType();
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 NetManager netManager = new NetManager();
-                netManager.sendAppName();
+                netManager.pushClick(warnType);
             }
         };
 

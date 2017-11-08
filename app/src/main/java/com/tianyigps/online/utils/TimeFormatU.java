@@ -34,7 +34,6 @@ public class TimeFormatU {
     }
 
     public static String millisToClock(long mills) {
-        Log.i(TAG, "millisToClock: mills-->" + mills);
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis(mills);
 //        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
@@ -46,10 +45,6 @@ public class TimeFormatU {
         int hour = (int) ((mills % (24 * 3600)) / 3600);
         int min = (int) (mills % 3600 / 60);
         int second = (int) (mills % 3600 % 60);
-        Log.i(TAG, "millisToClock: day-->" + day);
-        Log.i(TAG, "millisToClock: hour-->" + hour);
-        Log.i(TAG, "millisToClock: min-->" + min);
-        Log.i(TAG, "millisToClock: second-->" + second);
         String time = "";
         if (day > 0) {
             time = day + "天";
@@ -80,7 +75,6 @@ public class TimeFormatU {
     }
 
     public static String millisToClock2(double mills) {
-        Log.i(TAG, "millisToClock2: mills-->" + mills);
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis((long) mills);
 //        int day = calendar.get(Calendar.DAY_OF_YEAR) - 1;
@@ -92,10 +86,6 @@ public class TimeFormatU {
         int hour = (int) ((mills % (24 * 3600)) / 3600);
         int min = (int) (mills % 3600 / 60);
         int second = (int) (mills % 3600 % 60);
-        Log.i(TAG, "millisToClock2: day-->" + day);
-        Log.i(TAG, "millisToClock2: hour-->" + hour);
-        Log.i(TAG, "millisToClock2: min-->" + min);
-        Log.i(TAG, "millisToClock2: second-->" + second);
         String time = "";
         if (mills == 0) {
             return time;
@@ -163,6 +153,17 @@ public class TimeFormatU {
         return time;
     }
 
+    public static String millsToHourMin2(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        return simpleDateFormat.format(date);
+    }
+
+    public static String dateToHourMin(String date) {
+        long mills = dateToMillis(date);
+        return millsToHourMin2(mills);
+    }
+
     //  转为分钟秒
     public static String millsToMinSec2(long mills) {
         String time;
@@ -176,6 +177,12 @@ public class TimeFormatU {
         Date date = new Date(mills);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M月dd日");
         return simpleDateFormat.format(date);
+    }
+
+    public static int millsGetDay(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
+        return Integer.valueOf(simpleDateFormat.format(date));
     }
 
     //字符串转时间戳

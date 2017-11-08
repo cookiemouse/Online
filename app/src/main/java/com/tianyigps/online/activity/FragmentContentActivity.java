@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.tianyigps.online.R;
 import com.tianyigps.online.data.Data;
@@ -56,6 +57,8 @@ public class FragmentContentActivity extends AppCompatActivity {
     private SharedManager mSharedManager;
     private NetManager mNetManager;
 
+    private String mUserName = "";
+
     private LocateManager mLocateManager;
 
     @Override
@@ -67,6 +70,9 @@ public class FragmentContentActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        //  百度地图初始化
+        SDKInitializer.initialize(getApplicationContext());
 
         init();
 
@@ -127,12 +133,17 @@ public class FragmentContentActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         mSharedManager = new SharedManager(this);
+        mUserName = mSharedManager.getAccount();
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_1_N);
+
         int mainPage = mSharedManager.getMainPage();
         if (null != intent) {
             if (intent.getIntExtra(Data.MAIN_PAGE, 0) != 0) {
                 mainPage = intent.getIntExtra(Data.MAIN_PAGE, 0);
             }
         }
+        Log.i(TAG, "init: ");
         switch (mainPage) {
             case 0: {
                 showChoiceCar();
@@ -254,6 +265,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewChoiceCar.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewChoiceCar.setImageResource(R.drawable.ic_choice_car_blue);
         showFragment(mChoiceCarFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_1);
     }
 
     //  显示监控
@@ -261,6 +274,7 @@ public class FragmentContentActivity extends AppCompatActivity {
         setDefault();
         mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
+<<<<<<< HEAD
         int mapType = mSharedManager.getMapType();
         switch (mapType) {
             case Data.MAP_GAODE: {
@@ -276,6 +290,11 @@ public class FragmentContentActivity extends AppCompatActivity {
                 Log.i(TAG, "init: default-->" + mapType);
             }
         }
+=======
+        showFragment(mMonitorFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
+>>>>>>> master
     }
 
     //  显示监控，给外部使用
@@ -297,10 +316,16 @@ public class FragmentContentActivity extends AppCompatActivity {
             }
             default: {
         mMonitorFragment.setArguments(bundle);
+<<<<<<< HEAD
                 showFragment(mMonitorFragment);
                 Log.i(TAG, "init: default-->" + mapType);
             }
         }
+=======
+        showFragment(mMonitorFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
+>>>>>>> master
     }
 
     //  显示报警
@@ -309,6 +334,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewWarn.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewWarn.setImageResource(R.drawable.ic_warn_blue);
         showFragment(mWarnFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_3);
     }
 
     //  显示设置
@@ -317,6 +344,8 @@ public class FragmentContentActivity extends AppCompatActivity {
         mTextViewSetting.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewSetting.setImageResource(R.drawable.ic_setting_blue);
         showFragment(mSettingFragment);
+
+        mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_4);
     }
 
     //  显示BottomView
