@@ -27,11 +27,15 @@ public class WarnAdapter extends BaseAdapter {
 
     private long millsNow = 0;
     private long millsDay = 24 * 3600 * 1000;
+    private long millsDay2 = 2 * 24 * 3600 * 1000;
+    private long millsDay3 = 3 * 24 * 3600 * 1000;
 
     public WarnAdapter(Context context, List<WarnAdapterData> mWarnAdapterDatas) {
         this.context = context;
         this.mWarnAdapterDatas = mWarnAdapterDatas;
         millsNow = System.currentTimeMillis();
+        Log.i(TAG, "WarnAdapter: millsDay2-->" + millsDay2);
+        Log.i(TAG, "WarnAdapter: millsDay3-->" + millsDay3);
     }
 
     @Override
@@ -89,9 +93,9 @@ public class WarnAdapter extends BaseAdapter {
 
         if (0 == (dayNow - dayData)) {
             viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime) + "前");
-        } else if ((1 == (dayNow - dayData)) || (0 < (dayNow - dayData))) {
+        } else if ((1 == (dayNow - dayData)) || (0 > (dayNow - dayData) && millsTime < millsDay2)) {
             viewHolder.tvDate.setText("昨天" + TimeFormatU.millsToHourMin2(mills));
-        } else if ((2 == (dayNow - dayData)) || (0 < (dayNow - dayData))) {
+        } else if ((2 == (dayNow - dayData)) || (0 > (dayNow - dayData) && millsTime < millsDay3)) {
             viewHolder.tvDate.setText("前天" + TimeFormatU.millsToHourMin2(mills));
         } else {
             viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));

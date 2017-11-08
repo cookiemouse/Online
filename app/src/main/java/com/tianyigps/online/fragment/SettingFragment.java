@@ -22,10 +22,7 @@ import com.tianyigps.online.activity.InstructionActivity;
 import com.tianyigps.online.activity.LoginActivity;
 import com.tianyigps.online.activity.OpinionActivity;
 import com.tianyigps.online.data.Data;
-<<<<<<< HEAD
-=======
 import com.tianyigps.online.manager.NetManager;
->>>>>>> master
 import com.tianyigps.online.manager.SharedManager;
 import com.tianyigps.online.utils.DeviceU;
 

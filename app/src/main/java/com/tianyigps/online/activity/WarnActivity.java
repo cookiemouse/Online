@@ -77,7 +77,6 @@ public class WarnActivity extends BaseActivity {
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_warn_normal);
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_warn_satellite);
 
-
         Intent intent = getIntent();
         mTitle = intent.getStringExtra(Data.INTENT_NAME);
         mType = intent.getStringExtra(Data.INTENT_WARN_TYPE);

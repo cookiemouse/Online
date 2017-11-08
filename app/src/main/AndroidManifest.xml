@@ -39,6 +39,7 @@
     <permission
         android:name="com.tianyigps.online.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature"/>
+
     <uses-permission android:name="com.tianyigps.online.permission.JPUSH_MESSAGE"/>
 
     <application
@@ -59,7 +60,7 @@
             android:name="com.amap.api.v2.apikey"
             android:value="2e6f60cd7e05db3f10b9ca961905e472"/>
 
-        <!--极光推送Key-->
+        <!-- 极光推送Key -->
         <meta-data
             android:name="JPUSH_APPKEY"
             android:value="a059c82ea2e26c36d48c64cd"/>
@@ -97,10 +98,11 @@
             android:process=":remote"/>
 
         <!-- 高德定位服务 -->
-        <!--<service android:name="com.amap.api.location.APSService"/>-->
+        <!-- <service android:name="com.amap.api.location.APSService"/> -->
 
-        <!--极光推送服务-->
-        <!-- Required SDK 核心功能-->
+
+        <!-- 极光推送服务 -->
+        <!-- Required SDK 核心功能 -->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
         <service
             android:name="cn.jpush.android.service.PushService"
@@ -113,17 +115,18 @@
                 <action android:name="cn.jpush.android.intent.PUSH_TIME"/>
             </intent-filter>
         </service>
+
         <provider
             android:name="cn.jpush.android.service.DataProvider"
             android:authorities="com.tianyigps.online.DataProvider"
-            android:exported="true"
-            />
-        <!-- Required SDK核心功能-->
+            android:exported="true"/>
+        <!-- Required SDK核心功能 -->
         <receiver
             android:name="cn.jpush.android.service.PushReceiver"
             android:enabled="true">
             <intent-filter android:priority="1000">
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY"/>
+
                 <category android:name="com.tianyigps.online"/>
             </intent-filter>
             <intent-filter>
@@ -138,7 +141,7 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-        <!-- Required SDK核心功能-->
+        <!-- Required SDK核心功能 -->
         <activity
             android:name="cn.jpush.android.ui.PushActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -151,7 +154,7 @@
                 <category android:name="com.tianyigps.online"/>
             </intent-filter>
         </activity>
-        <!-- SDK核心功能-->
+        <!-- SDK核心功能 -->
         <activity
             android:name="cn.jpush.android.ui.PopWinActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -162,9 +165,8 @@
                 <category android:name="com.tianyigps.online"/>
             </intent-filter>
         </activity>
-        <!-- Required SDK核心功能-->
+        <!-- Required SDK核心功能 -->
         <receiver android:name="cn.jpush.android.service.AlarmReceiver"/>
-
 
         <activity
             android:name=".activity.WarnActivity"
@@ -211,7 +213,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"/>
-
         <activity
             android:name=".activity.NavigationActivity"
             android:screenOrientation="portrait">
@@ -238,6 +239,10 @@
                 <category android:name="com.tianyigps.online"/>
             </intent-filter>
         </receiver>
+
+        <activity android:name=".activity.WarnGaodeActivity"
+                  android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

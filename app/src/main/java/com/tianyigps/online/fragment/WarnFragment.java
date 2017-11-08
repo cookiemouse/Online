@@ -26,7 +26,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
-import com.tianyigps.online.activity.WarnActivity;
+import com.tianyigps.online.activity.WarnGaodeActivity;
 import com.tianyigps.online.adapter.WarnAdapter;
 import com.tianyigps.online.bean.WarnListBean;
 import com.tianyigps.online.data.Data;
@@ -160,7 +160,8 @@ public class WarnFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 WarnAdapterData data = mWarnAdapterDataList.get(i);
-                Intent intent = new Intent(getActivity(), WarnActivity.class);
+//                Intent intent = new Intent(getActivity(), WarnActivity.class);
+                Intent intent = new Intent(getActivity(), WarnGaodeActivity.class);
                 intent.putExtra(Data.INTENT_NAME, data.getName());
                 intent.putExtra(Data.INTENT_WARN_TYPE, data.getType());
                 intent.putExtra(Data.INTENT_DATE, data.getDate());

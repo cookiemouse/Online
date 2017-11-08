@@ -274,7 +274,7 @@ public class FragmentContentActivity extends AppCompatActivity {
         setDefault();
         mTextViewMonitor.setTextColor(getResources().getColor(R.color.colorBlue));
         mImageViewMonitor.setImageResource(R.drawable.ic_monitor_blue);
-<<<<<<< HEAD
+
         int mapType = mSharedManager.getMapType();
         switch (mapType) {
             case Data.MAP_GAODE: {
@@ -290,11 +290,8 @@ public class FragmentContentActivity extends AppCompatActivity {
                 Log.i(TAG, "init: default-->" + mapType);
             }
         }
-=======
-        showFragment(mMonitorFragment);
 
         mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
->>>>>>> master
     }
 
     //  显示监控，给外部使用
@@ -316,16 +313,12 @@ public class FragmentContentActivity extends AppCompatActivity {
             }
             default: {
         mMonitorFragment.setArguments(bundle);
-<<<<<<< HEAD
                 showFragment(mMonitorFragment);
                 Log.i(TAG, "init: default-->" + mapType);
             }
         }
-=======
-        showFragment(mMonitorFragment);
 
         mNetManager.buriedPoint(DeviceU.getDeviceId(this), mUserName, Data.BURIED_POINT_2);
->>>>>>> master
     }
 
     //  显示报警
