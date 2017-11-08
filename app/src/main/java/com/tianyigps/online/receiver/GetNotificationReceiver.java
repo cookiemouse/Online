@@ -44,8 +44,10 @@ public class GetNotificationReceiver extends BroadcastReceiver {
 
         Log.i(TAG, "onReceive: warnType-->" + warnType);
         Log.i(TAG, "onReceive: warnTypeLocate-->" + warnTypeLocate);
-        if (!warnTypeLocate.contains(warnType) && !isReceiveWarn) {
-            JPushInterface.clearNotificationById(context, notificationId);
+        if (null != warnType) {
+            if (!warnTypeLocate.contains(warnType) && !isReceiveWarn) {
+                JPushInterface.clearNotificationById(context, notificationId);
+            }
         }
     }
 }
