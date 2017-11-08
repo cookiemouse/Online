@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
+import com.tianyigps.online.activity.WarnActivity;
 import com.tianyigps.online.activity.WarnGaodeActivity;
 import com.tianyigps.online.adapter.WarnAdapter;
 import com.tianyigps.online.bean.WarnListBean;
@@ -160,8 +161,22 @@ public class WarnFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 WarnAdapterData data = mWarnAdapterDataList.get(i);
-//                Intent intent = new Intent(getActivity(), WarnActivity.class);
-                Intent intent = new Intent(getActivity(), WarnGaodeActivity.class);
+                Intent intent;
+                int mapType = mSharedManager.getMapType();
+                switch (mapType) {
+                    case Data.MAP_GAODE: {
+                        intent = new Intent(getActivity(), WarnGaodeActivity.class);
+                        break;
+                    }
+                    case Data.MAP_BAIDU: {
+                        intent = new Intent(getActivity(), WarnActivity.class);
+                        break;
+                    }
+                    default: {
+                        intent = new Intent(getActivity(), WarnActivity.class);
+                        Log.i(TAG, "init: default-->" + mapType);
+                    }
+                }
                 intent.putExtra(Data.INTENT_NAME, data.getName());
                 intent.putExtra(Data.INTENT_WARN_TYPE, data.getType());
                 intent.putExtra(Data.INTENT_DATE, data.getDate());

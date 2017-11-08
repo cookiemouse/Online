@@ -240,8 +240,11 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.WarnGaodeActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".activity.WarnGaodeActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TrackGaodeActivity">
         </activity>
     </application>
 

@@ -5,10 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tianyigps.online.activity.TrackActivity">
+    tools:context="com.tianyigps.online.activity.TrackGaodeActivity">
 
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/mv_activity_track_gaode"
+    <com.amap.api.maps.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -20,8 +19,8 @@
             android:id="@+id/tv_activity_track_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp_16"
-            android:background="@color/colorBlueAlpha"/>
+            android:background="@color/colorBlueAlpha"
+            android:textSize="@dimen/sp_16"/>
 
         <TextView
             android:id="@+id/tv_activity_track_normal"
@@ -61,4 +60,5 @@
             android:padding="@dimen/dp_2"
             android:src="@drawable/ic_location_self"/>
     </RelativeLayout>
+
 </FrameLayout>
