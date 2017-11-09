@@ -8,7 +8,7 @@
     tools:context="com.tianyigps.online.activity.TrackActivity">
 
     <com.baidu.mapapi.map.MapView
-        android:id="@+id/mv_activity_track_gaode"
+        android:id="@+id/mv_activity_track"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
