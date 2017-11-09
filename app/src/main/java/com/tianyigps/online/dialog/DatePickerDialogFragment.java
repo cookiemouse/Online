@@ -53,6 +53,9 @@ public class DatePickerDialogFragment extends DialogFragment {
     private DatePicker mDatePicker;
     private TimePicker mTimePicker;
 
+    //  是开始时间还是结束时间弹出BottomDialog
+    private boolean mIsStartDialog = true;
+
     private ToastU mToastU;
 
     private OnChoiceDateListener mOnChoiceDateListener;
@@ -355,6 +358,8 @@ public class DatePickerDialogFragment extends DialogFragment {
 
         mDatePicker = view.findViewById(R.id.dp_view_date_picker);
         mTimePicker = view.findViewById(R.id.tp_view_date_picker);
+        mDatePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
+        mTimePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
         mTimePicker.setIs24HourView(true);
 
         Button btnEnsure = view.findViewById(R.id.btn_view_date_picker_ensure);
