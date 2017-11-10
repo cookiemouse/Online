@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,9 @@ public class DatePickerDialogFragment extends DialogFragment {
     private ToastU mToastU;
 
     private OnChoiceDateListener mOnChoiceDateListener;
+
+    //  时间选择器显示时间
+    private long mDateShow = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -297,6 +301,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 isStart = true;
+                mDateShow = TimeFormatU.dateToMillis3(mTextViewStart.getText().toString());
                 showBottomDialog();
             }
         });
@@ -305,6 +310,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 isStart = false;
+                mDateShow = TimeFormatU.dateToMillis3(mTextViewEnd.getText().toString());
                 showBottomDialog();
             }
         });
@@ -361,6 +367,24 @@ public class DatePickerDialogFragment extends DialogFragment {
         mDatePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
         mTimePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
         mTimePicker.setIs24HourView(true);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mDateShow);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int min = calendar.get(Calendar.MINUTE);
+
+        Log.i(TAG, "showBottomDialog: year-->" + year);
+        Log.i(TAG, "showBottomDialog: month-->" + month);
+        Log.i(TAG, "showBottomDialog: day-->" + day);
+        Log.i(TAG, "showBottomDialog: hour-->" + hour);
+        Log.i(TAG, "showBottomDialog: min-->" + min);
+
+        mDatePicker.updateDate(year, month, day);
+        mTimePicker.setCurrentHour(hour);
+        mTimePicker.setCurrentMinute(min);
 
         Button btnEnsure = view.findViewById(R.id.btn_view_date_picker_ensure);
         Button btnCancel = view.findViewById(R.id.btn_view_date_picker_cancel);

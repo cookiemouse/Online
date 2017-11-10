@@ -211,6 +211,19 @@ public class TimeFormatU {
         return timeStamp;
     }
 
+    //字符串转时间戳
+    public static long dateToMillis3(String time) {
+        long timeStamp = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            Date date = sdf.parse(time);
+            timeStamp = date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timeStamp;
+    }
+
     //  获取当前年-月-日
     public static String getDate() {
         String date;
