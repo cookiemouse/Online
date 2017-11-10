@@ -940,7 +940,9 @@ public class MonitorFragment extends Fragment {
 
         if (mIsStation) {
             tvGetStation.setText("状态返回");
+            tvLocateType.setText("基站定位");
         } else {
+            tvLocateType.setText(mInfoLocateType);
             tvGetStation.setText("获取基站");
         }
 
@@ -966,7 +968,6 @@ public class MonitorFragment extends Fragment {
         Log.i(TAG, "showInfoWindow: mStatusData.getStatu-->" + mStatusData.getStatu());
         tvStatus.setText(mStatusData.getStatus());
         tvSpeed.setText(mInfoSpeed);
-        tvLocateType.setText(mInfoLocateType);
         tvCurrentTime.setText(mInfoCurrentTime);
         tvLocateTime.setText(mInfoLocateTime);
         pbElectricity.setProgress(mElectricity);
