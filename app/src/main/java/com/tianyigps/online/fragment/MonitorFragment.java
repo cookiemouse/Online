@@ -181,6 +181,7 @@ public class MonitorFragment extends Fragment {
             mImeiList.clear();
             mMarkerDataList.clear();
             mSharedManager.saveShowAttention(false);
+            mSharedManager.saveShowCompany("");
             removeAllMarker();
             mBaiduMap.hideInfoWindow();
             mImeiList.add(mChoiceImei);
@@ -228,6 +229,7 @@ public class MonitorFragment extends Fragment {
                 mImeiList.clear();
                 mMarkerDataList.clear();
                 mSharedManager.saveShowAttention(false);
+                mSharedManager.saveShowCompany("");
                 removeAllMarker();
                 mBaiduMap.hideInfoWindow();
                 mImeiList.add(mChoiceImei);

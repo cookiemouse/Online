@@ -165,6 +165,7 @@ public class SettingFragment extends Fragment {
                 mNetManager.buriedPoint(DeviceU.getDeviceId(getContext()), mUserName, Data.BURIED_POINT_2_N);
 
                 mSharedManager.saveAutoLogin(false);
+                mSharedManager.saveShowCompany("");
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);

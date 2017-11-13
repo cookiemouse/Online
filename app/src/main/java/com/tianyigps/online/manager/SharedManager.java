@@ -203,6 +203,23 @@ public class SharedManager {
     }
 
     /**
+     * 监控页面-概览，保存已打开的客户
+     * 1,17198,(cid)
+     */
+    public void saveShowCompany(String company) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Data.SHOW_COMPANY, company);
+        editor.apply();
+    }
+
+    /**
+     * 获取已打开客户
+     */
+    public String getShowCompany() {
+        return mSharedPreferences.getString(Data.SHOW_COMPANY, "");
+    }
+
+    /**
      * 保存登陆主页
      * 0 = 车辆列表，1 = 监控页面，2 = 监控页面
      */

@@ -309,7 +309,8 @@ public class TrackActivity extends BaseActivity {
                 if (null == drivingRouteResult || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
                     //  未找到路线
                     Log.i(TAG, "onGetDrivingRouteResult: 未找到路线");
-                    showToast("未找到路线");
+                    mStringMessage = "未找到路线";
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
 

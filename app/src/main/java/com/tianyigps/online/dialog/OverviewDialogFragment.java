@@ -186,7 +186,9 @@ public class OverviewDialogFragment extends DialogFragment {
                         cidStr += groupData2.getId() + ",";
                     }
                 }
+                mSharedManager.saveShowCompany(cidStr);
                 mMonitorFragment.showCompleteDevices(cidStr);
+                Log.i(TAG, "onSwitch: cidStr-->" + cidStr);
             }
         });
 
@@ -201,22 +203,29 @@ public class OverviewDialogFragment extends DialogFragment {
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                if (null != getActivity()) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
-                                mGroupDataList.add(new GroupData2("" + objBean.getId()
-                                        , "" + mParentId
-                                        , mParentGrade + 1
-                                        , objBean.getName()
-                                        , objBean.isLeaf()));
-                            }
-                            mGroupListView.notifyDataSetChanged();
-                        }
-                    });
+//                if (null != getActivity()) {
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
+//                                mGroupDataList.add(new GroupData2("" + objBean.getId()
+//                                        , "" + mParentId
+//                                        , mParentGrade + 1
+//                                        , objBean.getName()
+//                                        , objBean.isLeaf()));
+//                            }
+//                            mGroupListView.notifyDataSetChanged();
+//                        }
+//                    });
+//                }
+                for (CompanyBean.ObjBean objBean : companyBean.getObj()) {
+                    mGroupDataList.add(new GroupData2("" + objBean.getId()
+                            , "" + mParentId
+                            , mParentGrade + 1
+                            , objBean.getName()
+                            , objBean.isLeaf()));
                 }
-//                myHandler.sendEmptyMessage(Data.MSG_1);
+                myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
             @Override
@@ -252,6 +261,23 @@ public class OverviewDialogFragment extends DialogFragment {
                 }
                 case Data.MSG_1: {
                     //  获取公司列表
+                    for (GroupData2 groupData : mGroupDataList) {
+                        groupData.setSelected(false);
+                    }
+
+                    String companyAll = mSharedManager.getShowCompany();
+                    String[] companys = companyAll.split(",");
+                    Log.i(TAG, "handleMessage: companyAll-->" + companyAll);
+                    if (companys.length > 0) {
+                        for (String company : companys) {
+                            for (GroupData2 groupData : mGroupDataList) {
+                                if (groupData.getId().equals(company)) {
+                                    groupData.setSelected(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     mGroupListView.notifyDataSetChanged();
                     break;
                 }
