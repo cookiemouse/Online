@@ -74,11 +74,10 @@ public class WarnActivity extends BaseActivity {
     private void init() {
         mMapView = (MapView) findViewById(R.id.mv_activity_warn);
         mBaiduMap = mMapView.getMap();
-
         UiSettings uiSettings = mBaiduMap.getUiSettings();
         uiSettings.setCompassEnabled(false);
-        uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setOverlookingGesturesEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
 
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_warn_normal);
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_warn_satellite);
