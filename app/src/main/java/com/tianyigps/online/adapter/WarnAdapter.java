@@ -1,7 +1,6 @@
 package com.tianyigps.online.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,22 +24,21 @@ public class WarnAdapter extends BaseAdapter {
     private Context context;
     private List<WarnAdapterData> mWarnAdapterDatas;
 
-    private long millsNow = 0;
+    private long millsNow = 0, millsToday = 0;
     private long millsDay = 24 * 3600 * 1000;
     private long millsDay2 = 2 * 24 * 3600 * 1000;
-    private long millsDay3 = 3 * 24 * 3600 * 1000;
 
     public WarnAdapter(Context context, List<WarnAdapterData> mWarnAdapterDatas) {
         this.context = context;
         this.mWarnAdapterDatas = mWarnAdapterDatas;
         millsNow = System.currentTimeMillis();
-        Log.i(TAG, "WarnAdapter: millsDay2-->" + millsDay2);
-        Log.i(TAG, "WarnAdapter: millsDay3-->" + millsDay3);
+        millsToday = TimeFormatU.dateToMillis4(TimeFormatU.getDate());
     }
 
     @Override
     public void notifyDataSetChanged() {
         millsNow = System.currentTimeMillis();
+        millsToday = TimeFormatU.dateToMillis4(TimeFormatU.getDate());
         super.notifyDataSetChanged();
     }
 
@@ -82,20 +80,11 @@ public class WarnAdapter extends BaseAdapter {
         long mills = TimeFormatU.dateToMillis2(data.getDate());
         long millsTime = millsNow - mills;
 
-        int dayNow = TimeFormatU.millsGetDay(millsNow);
-        int dayData = TimeFormatU.millsGetDay(mills);
-
-        Log.i(TAG, "getView: millsNow-->" + millsNow);
-        Log.i(TAG, "getView: mills-->" + mills);
-        Log.i(TAG, "getView: millsTime-->" + millsTime);
-        Log.i(TAG, "getView: dayNow-->" + dayNow);
-        Log.i(TAG, "getView: dayData-->" + dayData);
-
-        if (0 == (dayNow - dayData)) {
+        if (mills >= millsToday) {
             viewHolder.tvDate.setText(TimeFormatU.millisToClock2(millsTime) + "前");
-        } else if ((1 == (dayNow - dayData)) || (0 > (dayNow - dayData) && millsTime < millsDay2)) {
+        } else if (mills >= millsToday - millsDay && mills < millsToday) {
             viewHolder.tvDate.setText("昨天" + TimeFormatU.millsToHourMin2(mills));
-        } else if ((2 == (dayNow - dayData)) || (0 > (dayNow - dayData) && millsTime < millsDay3)) {
+        } else if (mills >= millsToday - millsDay2 && mills < millsToday - millsDay) {
             viewHolder.tvDate.setText("前天" + TimeFormatU.millsToHourMin2(mills));
         } else {
             viewHolder.tvDate.setText(TimeFormatU.millsToMothDay(mills));

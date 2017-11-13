@@ -185,6 +185,12 @@ public class TimeFormatU {
         return Integer.valueOf(simpleDateFormat.format(date));
     }
 
+    public static int millsGetMonth(long mills) {
+        Date date = new Date(mills);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+        return Integer.valueOf(simpleDateFormat.format(date));
+    }
+
     //字符串转时间戳
     public static long dateToMillis(String time) {
         long timeStamp = 0;
@@ -202,6 +208,32 @@ public class TimeFormatU {
     public static long dateToMillis2(String time) {
         long timeStamp = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        try {
+            Date date = sdf.parse(time);
+            timeStamp = date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timeStamp;
+    }
+
+    //字符串转时间戳
+    public static long dateToMillis3(String time) {
+        long timeStamp = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            Date date = sdf.parse(time);
+            timeStamp = date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timeStamp;
+    }
+
+    //字符串转时间戳
+    public static long dateToMillis4(String time) {
+        long timeStamp = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date date = sdf.parse(time);
             timeStamp = date.getTime();

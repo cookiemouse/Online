@@ -33,7 +33,7 @@ public class AboutActivity extends BaseActivity {
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
 
-        mWebView.loadUrl("http://sit.tianyigps.cn/app-service/webpage/about/about.html");
+        mWebView.loadUrl("http://121.196.194.36:8083/webpage/about/about.html");
 
         //覆盖WebView默认使用第三方或系统默认浏览器打开网页的行为，使网页用WebView打开
         mWebView.setWebViewClient(new WebViewClient() {

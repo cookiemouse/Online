@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -56,6 +57,11 @@ public class WarnFragment extends Fragment {
     private List<WarnAdapterData> mWarnAdapterDataList;
     private WarnAdapter mWarnAdapter;
 
+    //  Listview滑动过半时，是否可请求数据
+    private boolean mIsRequestAble = true;
+    //  是否是加载更多
+    private boolean mIsAddMore = false;
+
     private SharedManager mSharedManager;
     private String mToken, mCondition = "", mType;
     private int mCid, mLastId;
@@ -88,6 +94,7 @@ public class WarnFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            mIsAddMore = false;
             getWarnInfo(mType, "", mCondition);
         }
     }
@@ -123,6 +130,7 @@ public class WarnFragment extends Fragment {
 
         myHandler = new MyHandler();
 
+        mIsAddMore = false;
         getWarnInfo(mType, "", mCondition);
     }
 
@@ -146,6 +154,7 @@ public class WarnFragment extends Fragment {
                 hideKeyboard();
                 mCondition = mEditTextSearch.getText().toString();
                 mCondition = mCondition.trim();
+                mIsAddMore = false;
                 getWarnInfo(mType, "", mCondition);
             }
         });
@@ -153,6 +162,7 @@ public class WarnFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                mIsAddMore = false;
                 getWarnInfo(mType, "", mCondition);
             }
         });
@@ -186,10 +196,30 @@ public class WarnFragment extends Fragment {
             }
         });
 
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount) {
+                    Log.i(TAG, "onScroll: request");
+                    mIsRequestAble = false;
+                    mIsAddMore = true;
+                    if (totalItemCount > 1) {
+                        String lastid = mWarnAdapterDataList.get(totalItemCount - 1).getId();
+                        getWarnInfo(mType, lastid, mCondition);
+                    }
+                }
+            }
+        });
+
         mWarnSettingFragment.setOnDismissListener(new WarnSettingFragment.OnDismissListener() {
             @Override
             public void onDismiss(String type) {
                 mType = type;
+                mIsAddMore = false;
                 getWarnInfo(mType, "", mCondition);
             }
         });
@@ -205,14 +235,18 @@ public class WarnFragment extends Fragment {
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }
-                mWarnAdapterDataList.clear();
+                if (!mIsAddMore) {
+                    mWarnAdapterDataList.clear();
+                }
+                mIsRequestAble = true;
                 for (WarnListBean.ObjBean objBean : warnListBean.getObj()) {
                     mWarnAdapterDataList.add(new WarnAdapterData(objBean.getName()
                             , objBean.getWarn_type()
                             , objBean.getReceive_time()
                             , objBean.getImei()
                             , objBean.getLatitude()
-                            , objBean.getLongitude()));
+                            , objBean.getLongitude()
+                            , objBean.getId()));
                 }
                 myHandler.sendEmptyMessage(Data.MSG_1);
             }

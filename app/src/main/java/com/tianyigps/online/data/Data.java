@@ -47,6 +47,7 @@ public class Data {
     public static final String FLUSH_TIME = "flush_time";
 
     public static final String SHOW_ATTENTION = "show_attention";
+    public static final String SHOW_COMPANY = "show_company";
 
     public static final String MAIN_PAGE = "main_page";
     public static final String MAP_TYPE = "map_type";
