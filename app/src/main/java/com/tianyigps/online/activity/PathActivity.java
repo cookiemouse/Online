@@ -154,6 +154,7 @@ public class PathActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        myHandler.removeMessages(Data.MSG_2);
         mMapView.onDestroy();
         super.onDestroy();
     }
