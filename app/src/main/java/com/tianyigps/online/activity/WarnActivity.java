@@ -19,6 +19,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.tianyigps.online.R;
 import com.tianyigps.online.base.BaseActivity;
@@ -73,6 +74,11 @@ public class WarnActivity extends BaseActivity {
     private void init() {
         mMapView = (MapView) findViewById(R.id.mv_activity_warn);
         mBaiduMap = mMapView.getMap();
+
+        UiSettings uiSettings = mBaiduMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setOverlookingGesturesEnabled(false);
 
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_warn_normal);
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_warn_satellite);

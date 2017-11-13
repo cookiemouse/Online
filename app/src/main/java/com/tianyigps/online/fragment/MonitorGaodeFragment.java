@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.TextureMapView;
+import com.amap.api.maps.UiSettings;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -255,6 +256,9 @@ public class MonitorGaodeFragment extends Fragment {
         mGaodeMap = mMapView.getMap();
         //  开启地位图层
         mGaodeMap.setMyLocationEnabled(true);
+        UiSettings uiSettings = mGaodeMap.getUiSettings();
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setTiltGesturesEnabled(false);
 
         mImageViewTitle1 = view.findViewById(R.id.iv_fragment_monitor_1_gaode);
         mImageViewTitle2 = view.findViewById(R.id.iv_fragment_monitor_2_gaode);

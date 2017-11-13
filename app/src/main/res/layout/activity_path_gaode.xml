@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.tianyigps.online.activity.PathGaodeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlueTheme"
+        android:padding="@dimen/dp_2">
+
+        <ImageView
+            android:id="@+id/iv_activity_path_1"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_12"
+            android:layout_marginStart="@dimen/dp_12"
+            android:padding="@dimen/dp_4"
+            android:src="@drawable/ic_back"/>
+
+        <TextView
+            android:id="@+id/tv_activity_path_title"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/sp_18"/>
+
+        <ImageView
+            android:id="@+id/iv_activity_path_2"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_2"
+            android:layout_marginRight="@dimen/dp_2"
+            android:layout_toLeftOf="@+id/iv_activity_path_3"
+            android:layout_toStartOf="@+id/iv_activity_path_3"
+            android:padding="@dimen/dp_4"
+            android:src="@drawable/bg_speed"/>
+
+        <ImageView
+            android:id="@+id/iv_activity_path_3"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_4"
+            android:src="@drawable/bg_date"/>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.amap.api.maps.MapView
+            android:id="@+id/mv_activity_path_gaode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_activity_path_normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_activity_path_satellite"
+                android:layout_marginEnd="@dimen/dp_1"
+                android:layout_marginRight="@dimen/dp_1"
+                android:layout_toLeftOf="@+id/tv_activity_path_satellite"
+                android:layout_toStartOf="@+id/tv_activity_path_satellite"
+                android:background="@drawable/bg_map_control_select"
+                android:text="@string/map"/>
+
+            <TextView
+                android:id="@+id/tv_activity_path_satellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_20"
+                android:background="@drawable/bg_map_control"
+                android:text="@string/satellite"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_72"
+            android:layout_gravity="bottom"
+            android:background="@color/colorBlueHeavyAlpha"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_8">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_24"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_activity_path_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorWhite"/>
+
+                <TextView
+                    android:id="@+id/tv_activity_path_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_activity_path_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/colorWhite"/>
+
+                <SeekBar
+                    android:id="@+id/sb_activity_path"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:thumb="@drawable/bg_thumb"/>
+
+                <TextView
+                    android:id="@+id/tv_activity_path_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/colorWhite"/>
+
+                <ImageView
+                    android:id="@+id/iv_activity_path_play"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:layout_marginLeft="@dimen/dp_8"
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:src="@drawable/bg_play_pause"/>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

@@ -34,13 +34,14 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Projection;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
 import com.tianyigps.online.activity.MoreActivity;
 import com.tianyigps.online.activity.NavigationActivity;
-import com.tianyigps.online.activity.PathActivity;
+import com.tianyigps.online.activity.PathGaodeActivity;
 import com.tianyigps.online.activity.TrackGaodeActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
 import com.tianyigps.online.bean.StationBean;
@@ -254,6 +255,10 @@ public class MonitorFragment extends Fragment {
         mBaiduMap = mMapView.getMap();
         //  开启地位图层
         mBaiduMap.setMyLocationEnabled(true);
+        UiSettings uiSettings = mBaiduMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setOverlookingGesturesEnabled(false);
 
         mImageViewTitle1 = view.findViewById(R.id.iv_fragment_monitor_1);
         mImageViewTitle2 = view.findViewById(R.id.iv_fragment_monitor_2);
@@ -1083,7 +1088,8 @@ public class MonitorFragment extends Fragment {
 
     //  跳转到回放页面
     private void toPathActivity(String imei, String name) {
-        Intent intent = new Intent(getContext(), PathActivity.class);
+        Intent intent = new Intent(getContext(), PathGaodeActivity.class);
+//        Intent intent = new Intent(getContext(), PathActivity.class);
         intent.putExtra(Data.INTENT_IMEI, imei);
         intent.putExtra(Data.INTENT_NAME, name);
         startActivity(intent);

@@ -17,6 +17,7 @@ import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
@@ -127,6 +128,10 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
 
         mMapView = (MapView) findViewById(R.id.mv_activity_track_gaode);
         mGaodeMap = mMapView.getMap();
+
+        UiSettings uiSettings = mGaodeMap.getUiSettings();
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setTiltGesturesEnabled(false);
 
         mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_track_locate);
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_track_normal);

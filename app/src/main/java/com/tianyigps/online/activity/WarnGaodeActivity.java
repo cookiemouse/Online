@@ -12,6 +12,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
@@ -60,6 +61,10 @@ public class WarnGaodeActivity extends BaseActivity implements AMap.InfoWindowAd
     private void init() {
         mMapView = (MapView) findViewById(R.id.mv_activity_warn_gaode);
         mGaodeMap = mMapView.getMap();
+
+        UiSettings uiSettings = mGaodeMap.getUiSettings();
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setTiltGesturesEnabled(false);
 
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_warn_normal);
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_warn_satellite);
