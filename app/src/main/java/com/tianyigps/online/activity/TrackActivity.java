@@ -29,6 +29,7 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
@@ -158,6 +159,10 @@ public class TrackActivity extends BaseActivity {
         mBaiduMap = mMapView.getMap();
         //  开启地位图层
         mBaiduMap.setMyLocationEnabled(true);
+        UiSettings uiSettings = mBaiduMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setOverlookingGesturesEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
 
         mImageViewLocate = (ImageView) findViewById(R.id.iv_activity_track_locate);
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_track_normal);

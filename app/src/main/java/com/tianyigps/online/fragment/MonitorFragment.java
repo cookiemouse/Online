@@ -34,6 +34,7 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Projection;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
@@ -254,6 +255,10 @@ public class MonitorFragment extends Fragment {
         mBaiduMap = mMapView.getMap();
         //  开启地位图层
         mBaiduMap.setMyLocationEnabled(true);
+        UiSettings uiSettings = mBaiduMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setOverlookingGesturesEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
 
         mImageViewTitle1 = view.findViewById(R.id.iv_fragment_monitor_1);
         mImageViewTitle2 = view.findViewById(R.id.iv_fragment_monitor_2);

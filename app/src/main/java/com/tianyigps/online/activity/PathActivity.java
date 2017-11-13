@@ -32,6 +32,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
@@ -167,6 +168,10 @@ public class PathActivity extends AppCompatActivity {
         mBaiduMap = mMapView.getMap();
         //  开启地位图层
         mBaiduMap.setMyLocationEnabled(true);
+        UiSettings uiSettings = mBaiduMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setOverlookingGesturesEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
 
         mTextViewSatellite = (TextView) findViewById(R.id.tv_activity_path_satellite);
         mTextViewNormal = (TextView) findViewById(R.id.tv_activity_path_normal);
