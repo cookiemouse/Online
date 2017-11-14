@@ -27,6 +27,7 @@ public class CookieCluster {
     private static int DIC_DISTANCE_20000 = 9;
     private static int DIC_DISTANCE_25000 = 10;
 
+    private static double COORDINATE_RANGE_0 = 0;
     private static double COORDINATE_RANGE_5 = 0.000032;
     private static double COORDINATE_RANGE_10 = 0.000064;
     private static double COORDINATE_RANGE_20 = 0.000127;
@@ -175,8 +176,13 @@ public class CookieCluster {
                 calculateCluster(COORDINATE_RANGE_5);
                 break;
             }
+            case 21: {
+                calculateCluster(COORDINATE_RANGE_0);
+                break;
+            }
             default: {
                 Log.e("Tag", "CookieClusterManager.default");
+                calculateCluster(COORDINATE_RANGE_0);
                 break;
             }
         }
