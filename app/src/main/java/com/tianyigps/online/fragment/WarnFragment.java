@@ -187,7 +187,7 @@ public class WarnFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount) {
+                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount && totalItemCount > visibleItemCount) {
                     Log.i(TAG, "onScroll: request");
                     mIsRequestAble = false;
                     mIsAddMore = true;
@@ -248,6 +248,7 @@ public class WarnFragment extends Fragment {
     private void getWarnInfo(String type, String lastId, String condition) {
         mSwipeRefreshLayout.setRefreshing(true);
         mNetManager.getWarnList(mToken, mCid, type, lastId, condition);
+        mListView.setEnabled(false);
     }
 
     //  显示对话框
@@ -310,6 +311,7 @@ public class WarnFragment extends Fragment {
             if (mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
+            mListView.setEnabled(true);
             switch (msg.what) {
                 case Data.MSG_ERO: {
                     break;
