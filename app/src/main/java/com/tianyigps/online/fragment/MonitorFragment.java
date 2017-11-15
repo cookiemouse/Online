@@ -492,6 +492,11 @@ public class MonitorFragment extends Fragment {
                 Log.i(TAG, "onSuccess: result-->" + result);
                 Gson gson = new Gson();
                 InfoWindowBean infoWindowBean = gson.fromJson(result, InfoWindowBean.class);
+                if (null == infoWindowBean){
+                    mStringMessage = Data.DEFAULT_MESSAGE;
+                    myHandler.sendEmptyMessage(Data.MSG_MSG);
+                    return;
+                }
                 if (!infoWindowBean.isSuccess()) {
                     mStringMessage = infoWindowBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
@@ -605,7 +610,7 @@ public class MonitorFragment extends Fragment {
                             } else {
                                 mIsActivation = true;
 
-                                int direction = Integer.valueOf(redisobjBean.getDirection());
+//                                int direction = Integer.valueOf(redisobjBean.getDirection());
 
                                 //  计算状态
                                 long currentTime = 0;
@@ -1055,12 +1060,12 @@ public class MonitorFragment extends Fragment {
     //  获取某台设备的信息，并显示infowindow，公开给外部使用
     public void showPointNew(String imeiStr) {
 //        boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNew(mToken, mCid, "", imeiStr, false);
+        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
     }
 
     //  获取关注列表的设备信息，并添加Marker
     public void showPointNew() {
-        mNetManager.showPointNew(mToken, mCid, "", "", true);
+        mNetManager.showPointNewPost(mToken, mCid, "", "", true);
     }
 
     //  刷新页面设备
@@ -1070,12 +1075,13 @@ public class MonitorFragment extends Fragment {
             imeiStr += (str + ",");
         }
         boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNew(mToken, mCid, mCidStr, imeiStr, attention);
+        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, attention);
     }
 
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
-        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
+        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", attention);
+//        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
     }
 
     //  跳转到跟踪页面
@@ -1223,13 +1229,17 @@ public class MonitorFragment extends Fragment {
                     if (null != mMarkerDataList) {
                         mBaiduPointList.clear();
                         mImeiList.clear();
-                        for (MarkerData markerData : mMarkerDataList) {
-                            mImeiList.add(markerData.getImei());
-                            mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
-                                    , false
-                                    , markerData.getImei()
-                                    , markerData.getType()
-                                    , markerData.getDirection()));
+                        //  不用for each方法，避免java.util.ConcurrentModificationException
+                        for (int i = 0; i < mMarkerDataList.size(); i++) {
+                            MarkerData markerData = mMarkerDataList.get(i);
+                            if (!RegularU.isEmpty(markerData.getImei())) {
+                                mImeiList.add(markerData.getImei());
+                                mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
+                                        , false
+                                        , markerData.getImei()
+                                        , markerData.getType()
+                                        , markerData.getDirection()));
+                            }
                         }
                         removeAllMarker();
                         for (BaiduPoint baiduPoint : mBaiduPointListShow) {
