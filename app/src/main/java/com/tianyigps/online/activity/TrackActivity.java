@@ -266,7 +266,7 @@ public class TrackActivity extends BaseActivity {
                 if (mIsToCenter) {
                     moveToCenter(latLng);
                 }
-                if (null != mLatLngSelf && isFirst) {
+                if (null != mInfoLatLng && isFirst) {
                     isFirst = false;
                     searchDriving(mLatLngSelf, mInfoLatLng);
                 }

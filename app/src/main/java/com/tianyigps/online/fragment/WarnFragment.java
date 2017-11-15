@@ -203,7 +203,7 @@ public class WarnFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount && totalItemCount > visibleItemCount) {
+                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount + 2 && totalItemCount > visibleItemCount) {
                     Log.i(TAG, "onScroll: request");
                     mIsRequestAble = false;
                     mIsAddMore = true;

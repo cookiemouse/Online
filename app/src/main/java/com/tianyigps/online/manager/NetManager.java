@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -584,6 +585,45 @@ public class NetManager {
                 + "&attention=" + attention);
         mRequest = builder.build();
         Log.i(TAG, "showPointNew: url-->" + mRequest.url());
+        Call call = mOkHttpClient.newCall(mRequest);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (null == mOnShowPointNewListener) {
+                    throw new NullPointerException("OnShowPointNewListener is null");
+                }
+                mOnShowPointNewListener.onFailure();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (null == mOnShowPointNewListener) {
+                    throw new NullPointerException("OnShowPointNewListener is null");
+                }
+                mOnShowPointNewListener.onSuccess(response.body().string());
+            }
+        });
+    }
+
+    public void showPointNewPost(String token, int cid, String cidStr, String imeiStr, boolean attention){
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+
+        builder.addFormDataPart("token", token);
+        builder.addFormDataPart("cid", "" + cid);
+        builder.addFormDataPart("cidStr", "" + cidStr);
+        builder.addFormDataPart("imeiStr", "" + imeiStr);
+        builder.addFormDataPart("attention", "" + attention);
+
+        RequestBody requestBody = builder.build();
+
+        mRequest = new Request.Builder()
+                .url(Urls.SHOW_POINT_NEW)
+                .post(requestBody)
+                .build();
+
+        Log.i(TAG, "showPointNewPost: url-->" + mRequest.url());
+
         Call call = mOkHttpClient.newCall(mRequest);
         call.enqueue(new Callback() {
             @Override
