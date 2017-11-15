@@ -4,15 +4,18 @@
              android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="@dimen/dp_32"
-        android:layout_height="@dimen/dp_32"
-        android:src="@drawable/ic_radio_after"/>
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:src="@drawable/ic_cluster"/>
 
     <TextView
         android:id="@+id/tv_view_map_marker_cluster_count"
-        android:layout_width="@dimen/dp_32"
-        android:layout_height="@dimen/dp_32"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:lines="1"
+        android:ellipsize="end"
         android:text="1"
+        android:textSize="@dimen/sp_12"
         android:textColor="@color/colorWhite"
         android:gravity="center"/>
 
