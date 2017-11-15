@@ -3,7 +3,7 @@ package com.tianyigps.online.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,21 +19,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.model.LatLng;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.activity.FragmentContentActivity;
@@ -68,7 +67,7 @@ import java.util.List;
  * Created by cookiemouse on 2017/9/5.
  */
 
-public class MonitorGaodeFragment extends Fragment {
+public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAdapter{
 
     private static final String TAG = "MonitorGaode";
 
@@ -88,6 +87,8 @@ public class MonitorGaodeFragment extends Fragment {
 
     private TextureMapView mMapView;
     private AMap mGaodeMap;
+
+    private Marker mMarkerVir;
 
     private LocateManager mLocateManager;
 
@@ -132,7 +133,7 @@ public class MonitorGaodeFragment extends Fragment {
 
     //  Marker
     private List<MarkerData> mMarkerDataList;
-    private List<Overlay> mOverlayList;
+    private List<Marker> mMarkerList;
     private Overlay mOverlayMarker;
 
     private ToastU mToastU;
@@ -252,6 +253,121 @@ public class MonitorGaodeFragment extends Fragment {
         }
     }
 
+    @Override
+    public View getInfoWindow(Marker marker) {
+        View viewInfo = LayoutInflater.from(getContext()).inflate(R.layout.view_map_info_window_monitor, null);
+
+        TextView tvName = viewInfo.findViewById(R.id.tv_view_info_window_monitor_title);
+        TextView tvStatus = viewInfo.findViewById(R.id.tv_view_info_window_monitor_status_content);
+        TextView tvSpeed = viewInfo.findViewById(R.id.tv_view_info_window_monitor_speed_content);
+        TextView tvLocateType = viewInfo.findViewById(R.id.tv_view_info_window_monitor_type_content);
+        TextView tvCurrentTime = viewInfo.findViewById(R.id.tv_view_info_window_monitor_current_time_content);
+        TextView tvLocateTime = viewInfo.findViewById(R.id.tv_view_info_window_monitor_locate_time_content);
+        TextView tvElectricity = viewInfo.findViewById(R.id.tv_view_info_window_monitor_electricity);
+        TextView tvTrack = viewInfo.findViewById(R.id.tv_view_info_window_monitor_track);
+        TextView tvPath = viewInfo.findViewById(R.id.tv_view_info_window_monitor_path);
+        TextView tvNavigation = viewInfo.findViewById(R.id.tv_view_info_window_monitor_navigation);
+        TextView tvMore = viewInfo.findViewById(R.id.tv_view_info_window_monitor_more);
+        TextView tvGetStation = viewInfo.findViewById(R.id.tv_view_info_window_monitor_get_station);
+        ImageView imageViewClose = viewInfo.findViewById(R.id.iv_view_info_window_monitor_close);
+        ImageView ivElectricity = viewInfo.findViewById(R.id.iv_view_info_window_monitor_electricity);
+        ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
+
+        if (mIsStation) {
+            tvGetStation.setText("获取GPS");
+        } else {
+            tvGetStation.setText("获取基站");
+        }
+
+        if (mIsShowGetStation) {
+            tvGetStation.setVisibility(View.VISIBLE);
+        } else {
+            tvGetStation.setVisibility(View.GONE);
+        }
+        if (mModel == 1) {
+            tvElectricity.setVisibility(View.GONE);
+            ivElectricity.setVisibility(View.GONE);
+            pbElectricity.setVisibility(View.GONE);
+        } else {
+            tvElectricity.setText(mInfoElectricity);
+            tvElectricity.setVisibility(View.VISIBLE);
+            ivElectricity.setVisibility(View.VISIBLE);
+            pbElectricity.setVisibility(View.VISIBLE);
+        }
+
+        tvName.setText(mInfoName);
+        Log.i(TAG, "showInfoWindow: mStatusData-->" + mStatusData);
+        Log.i(TAG, "showInfoWindow: mStatusData.getStatus-->" + mStatusData.getStatus());
+        Log.i(TAG, "showInfoWindow: mStatusData.getStatu-->" + mStatusData.getStatu());
+        tvStatus.setText(mStatusData.getStatus());
+        tvSpeed.setText(mInfoSpeed);
+        tvLocateType.setText(mInfoLocateType);
+        tvCurrentTime.setText(mInfoCurrentTime);
+        tvLocateTime.setText(mInfoLocateTime);
+        pbElectricity.setProgress(mElectricity);
+
+        tvGetStation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 2017/10/13 获取基站
+                Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
+                if (mIsStation) {
+                    showPointNew(mChoiceImei);
+                    mIsStation = false;
+                } else {
+                    mNetManager.getStationInfo(mInfoStationCode);
+                }
+//                mWitchType = !mWitchType;
+            }
+        });
+
+        imageViewClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mIsOpenInfo = false;
+//                mBaiduMap.hideInfoWindow();
+            }
+        });
+
+        tvTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
+                toTrackActivity(mInfoImei);
+            }
+        });
+
+        tvPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
+                toPathActivity(mInfoImei, mInfoName);
+            }
+        });
+
+        tvNavigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
+                toNaviActivity();
+            }
+        });
+
+        tvMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToCenter(mInfoLatLng);
+                toMoreActivity(mInfoImei, mInfoName);
+            }
+        });
+        return viewInfo;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
     private void init(View view) {
         mMapView = view.findViewById(R.id.mv_fragment_monitor_gaode);
         mGaodeMap = mMapView.getMap();
@@ -282,7 +398,7 @@ public class MonitorGaodeFragment extends Fragment {
 
         mLocateManager = new LocateManager(getContext());
 
-        mOverlayList = new ArrayList<>();
+        mMarkerList = new ArrayList<>();
         mMarkerDataList = new ArrayList<>();
 
         mImeiList = new ArrayList<>();
@@ -332,6 +448,9 @@ public class MonitorGaodeFragment extends Fragment {
                 mConcernDialogFragment.show(getChildFragmentManager(), "关注列表");
             }
         });
+
+        mGaodeMap.setInfoWindowAdapter(this);
+
         mImageViewLocate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -344,7 +463,11 @@ public class MonitorGaodeFragment extends Fragment {
                     mIsLocateCar = false;
                     return;
                 }
-                mLocateManager.startLocate();
+                Location location = mGaodeMap.getMyLocation();
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                moveToCenter(latLng);
+                mIsLocateCar = true;
+                mImageViewLocate.setImageResource(R.drawable.ic_location_car);
             }
         });
         mImageViewLeft.setOnClickListener(new View.OnClickListener() {
@@ -402,7 +525,7 @@ public class MonitorGaodeFragment extends Fragment {
 
         mLocateManager.setOnReceiveLocationListener(new LocateManager.OnReceiveLocationListener() {
             @Override
-            public void onReceive(LatLng latLng) {
+            public void onReceive(com.baidu.mapapi.model.LatLng latLng) {
                 Log.i(TAG, "onReceive: latitude-->" + latLng.latitude + ", longitude-->" + latLng.longitude);
 
                 MyLocationData locData = new MyLocationData.Builder()
@@ -415,7 +538,7 @@ public class MonitorGaodeFragment extends Fragment {
                 // 设置定位数据
 //                mGaodeMap.setMyLocationData(locData);
 
-                moveToCenter(latLng);
+//                moveToCenter(latLng);
                 mImageViewLocate.setImageResource(R.drawable.ic_location_car);
                 mIsLocateCar = true;
             }
@@ -429,6 +552,17 @@ public class MonitorGaodeFragment extends Fragment {
             @Override
             public void onGetAddress(String address) {
                 mTextViewAddress.setText(address);
+            }
+        });
+
+        mGaodeMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.i(TAG, "onMarkerClick: obj-->" + marker.getObject());
+//                if (marker.getObject().equals("marker")) {
+//                }
+                    addVirMaker(marker.getPosition());
+                return true;
             }
         });
 /*
@@ -595,9 +729,9 @@ public class MonitorGaodeFragment extends Fragment {
                             if ("3".equals(redisobjBean.getScene())) {
                                 mIsActivation = false;
                                 if (mIsStation && null != mLatLngStation && mChoiceImei.equals(imei)) {
-                                    mMarkerDataList.add(new MarkerData(mLatLngStation, Data.STATUS_OTHER, 0, imei));
+//                                    mMarkerDataList.add(new MarkerData(mLatLngStation, Data.STATUS_OTHER, 0, imei));
                                 } else {
-                                    mMarkerDataList.add(new MarkerData(latLng, Data.STATUS_OTHER, 0, imei));
+//                                    mMarkerDataList.add(new MarkerData(latLng, Data.STATUS_OTHER, 0, imei));
                                 }
                             } else {
                                 mIsActivation = true;
@@ -629,9 +763,9 @@ public class MonitorGaodeFragment extends Fragment {
                                         , speed);
 
                                 if (mIsStation && null != mLatLngStation && mChoiceImei.equals(imei)) {
-                                    mMarkerDataList.add(new MarkerData(mLatLngStation, statusData.getStatu(), 0, imei));
+//                                    mMarkerDataList.add(new MarkerData(mLatLngStation, statusData.getStatu(), 0, imei));
                                 } else {
-                                    mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), 0, imei));
+//                                    mMarkerDataList.add(new MarkerData(latLng, statusData.getStatu(), 0, imei));
                                 }
                             }
 
@@ -842,6 +976,7 @@ public class MonitorGaodeFragment extends Fragment {
 
     //  添加marker
     private void addMarker(LatLng latLng, int type, int direction, String imei, int count) {
+
         //定义Maker坐标点
         if (null == latLng) {
             return;
@@ -849,15 +984,19 @@ public class MonitorGaodeFragment extends Fragment {
         if (null != mOverlayMarker && mFrom == FROM_CHOICE) {
             mOverlayMarker.remove();
         }
-        //构建Marker图标
+        MarkerOptions markerOptions = new MarkerOptions();
         View viewMarker;
         switch (type) {
+            case Data.STATUS_RUNNING: {
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
+                break;
+            }
             case Data.STATUS_OFF: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_gray, null);
                 break;
             }
             case Data.STATUS_ON: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_green, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
                 break;
             }
             case Data.STATUS_OTHER: {
@@ -871,50 +1010,64 @@ public class MonitorGaodeFragment extends Fragment {
                 break;
             }
             default: {
-                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_red, null);
+                viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_car_gray, null);
                 Log.i(TAG, "addMarker: locate_type.default-->" + type);
             }
         }
-        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromView(viewMarker);
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromView(viewMarker);
+        markerOptions.position(latLng).icon(bitmapDescriptor).anchor(0.5f, 0.5f).rotateAngle(direction);
         //构建MarkerOption，用于在地图上添加Marker
         Bundle bundle = new Bundle();
         bundle.putString(Data.KEY_IMEI, imei);
         bundle.putInt(Data.KEY_TYPE, type);
-        OverlayOptions option = new MarkerOptions()
-                .position(latLng)
-                .icon(bitmap)
-                .rotate(direction)
-                .anchor(0.5f, 0.5f)
-                .extraInfo(bundle);
-        //在地图上添加Marker，并显示
-//        mOverlayMarker = mBaiduMap.addOverlay(option);
-        mOverlayList.add(mOverlayMarker);
+
+        Marker mMarkerAdded = mGaodeMap.addMarker(markerOptions);
+        mMarkerAdded.setObject(bundle);
+        mMarkerList.add(mMarkerAdded);
+    }
+
+    //  添加虚拟Marker，让其显示InfoWindow
+    private void addVirMaker(LatLng latLng) {
+        if (null == latLng) {
+            return;
+        }
+        if (null != mMarkerVir) {
+            mMarkerVir.remove();
+        }
+        MarkerOptions markerOptions = new MarkerOptions();
+        View viewMarker = LayoutInflater.from(getContext()).inflate(R.layout.view_map_marker_vir, null);
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromView(viewMarker);
+        markerOptions.position(latLng).icon(bitmapDescriptor);
+
+        mMarkerVir = mGaodeMap.addMarker(markerOptions);
+        mMarkerVir.showInfoWindow();
+        Log.i(TAG, "addVirMaker: ");
     }
 
     //  清除Marker
     private void removeAllMarker() {
 //        mTextViewAddress.setText(null);
-        for (Overlay overlay : mOverlayList) {
-            overlay.remove();
+        for (Marker marker : mMarkerList) {
+            marker.remove();
         }
     }
 
     //  地图移动到目标点
     private void moveToCenter(LatLng latLng) {
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.target(latLng);
-        MapStatus status = builder.build();
-        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-//        mBaiduMap.setMapStatus(update);
+        if (null == latLng) {
+            return;
+        }
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(latLng, mGaodeMap.getCameraPosition().zoom, 0, 0));
+        mGaodeMap.moveCamera(cameraUpdate);
     }
 
     //  地图移动到目标点
     private void moveToInfoCenter(LatLng latLng) {
-        MapStatus.Builder builder = new MapStatus.Builder();
-        Point point = new Point(mWidth / 2, mHeight / 2);
-        builder.target(latLng).targetScreen(point);
-        MapStatus status = builder.build();
-        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+//        MapStatus.Builder builder = new MapStatus.Builder();
+//        Point point = new Point(mWidth / 2, mHeight / 2);
+//        builder.target(latLng).targetScreen(point);
+//        MapStatus status = builder.build();
+//        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
 //        mBaiduMap.animateMapStatus(update);
     }
 
@@ -1026,7 +1179,7 @@ public class MonitorGaodeFragment extends Fragment {
             }
         });
 
-        InfoWindow mInfoWindow = new InfoWindow(viewInfo, latLng, 0);
+//        InfoWindow mInfoWindow = new InfoWindow(viewInfo, latLng, 0);
         //显示InfoWindow
 //        mBaiduMap.showInfoWindow(mInfoWindow);
 
@@ -1039,12 +1192,12 @@ public class MonitorGaodeFragment extends Fragment {
     //  获取某台设备的信息，并显示infowindow，公开给外部使用
     public void showPointNew(String imeiStr) {
 //        boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNew(mToken, mCid, "", imeiStr, false);
+        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
     }
 
     //  获取关注列表的设备信息，并添加Marker
     public void showPointNew() {
-        mNetManager.showPointNew(mToken, mCid, "", "", true);
+        mNetManager.showPointNewPost(mToken, mCid, "", "", true);
     }
 
     //  刷新页面设备
@@ -1054,12 +1207,12 @@ public class MonitorGaodeFragment extends Fragment {
             imeiStr += (str + ",");
         }
         boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNew(mToken, mCid, mCidStr, imeiStr, attention);
+        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, attention);
     }
 
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
-        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
+        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", attention);
     }
 
     //  跳转到跟踪页面
@@ -1196,7 +1349,7 @@ public class MonitorGaodeFragment extends Fragment {
                         removeAllMarker();
                         for (BaiduPoint baiduPoint : mBaiduPointListShow) {
                             Log.i(TAG, "handleMessage: addMaker");
-                            addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
+//                            addMarker(baiduPoint.getLatLng(), baiduPoint.getType(), baiduPoint.getDirection(), baiduPoint.getImei(), baiduPoint.getCount());
                         }
                     }
                     break;
@@ -1235,7 +1388,7 @@ public class MonitorGaodeFragment extends Fragment {
                 }
                 case Data.MSG_6: {
                     //  获取基站数据
-//                    for (Overlay overlay : mOverlayList) {
+//                    for (Overlay overlay : mMarkerList) {
 //                        Marker marker = (Marker) overlay;
 //                        if (marker.getExtraInfo().getString(Data.KEY_IMEI).equals(mChoiceImei)) {
 //                            mIsStation = true;
@@ -1245,14 +1398,14 @@ public class MonitorGaodeFragment extends Fragment {
                     for (MarkerData markerData : mMarkerDataList) {
                         Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
                         if (markerData.getImei().equals(mChoiceImei)) {
-                            markerData.setLatLng(mLatLngStation);
+//                            markerData.setLatLng(mLatLngStation);
                             mIsStation = true;
                             showInfoWindow(mLatLngStation);
                         }
                     }
                     for (BaiduPoint baiduPoint : mBaiduPointList) {
                         if (baiduPoint.getImei().equals(mChoiceImei)) {
-                            baiduPoint.setLatLng(mLatLngStation);
+//                            baiduPoint.setLatLng(mLatLngStation);
                             mIsStation = true;
                             showInfoWindow(mLatLngStation);
                         }
