@@ -34,6 +34,7 @@ import com.yanzhenjie.permission.RationaleListener;
 
 import java.util.List;
 
+import cn.cookiemouse.HttpLib;
 import cn.jpush.android.api.JPushInterface;
 
 public class GuideActivity extends Activity {
@@ -64,6 +65,7 @@ public class GuideActivity extends Activity {
 
         //  初始化极光推送
         JPushInterface.init(getApplicationContext());
+        HttpLib.init(Data.DEFAULT_URL);
 //        JPushInterface.setDebugMode(true);
 
         //  Crasheye

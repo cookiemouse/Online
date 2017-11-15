@@ -24,6 +24,7 @@ public class Data {
 
     //  网络错误
     public static final String DEFAULT_MESSAGE = "网络请求失败，请检查网络！";
+    public static final String DEFAULT_URL = "http://www.cookiemouse.cn/online.x";
 
     //  SharedPreferences
     public final static String DATA_SHAREDPREFERENCES = "online_sharedpreferences";
