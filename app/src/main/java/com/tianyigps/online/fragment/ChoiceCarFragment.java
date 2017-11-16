@@ -324,6 +324,7 @@ public class ChoiceCarFragment extends Fragment {
             @Override
             public void onConcernClick(int position) {
                 // 2017/10/10 关注
+                mSearchPosition = position;
                 AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(position);
                 attention(data.isAttention(), data.getImei());
             }
@@ -331,6 +332,7 @@ public class ChoiceCarFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 // 2017/10/10 item
+                mSearchPosition = position;
                 AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(position);
                 Bundle bundle = new Bundle();
                 bundle.putString(Data.KEY_IMEI, data.getImei());
@@ -711,6 +713,7 @@ public class ChoiceCarFragment extends Fragment {
                         childData.setAttention(true);
                         mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
                     } else {
+                        Log.i(TAG, "handleMessage: mSearchPosition-->" + mSearchPosition);
                         AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(mSearchPosition);
                         data.setAttention(true);
                         mSearchDevicesAdapter.notifyDataSetChanged();
@@ -726,6 +729,7 @@ public class ChoiceCarFragment extends Fragment {
                         childData.setAttention(false);
                         mTerminalBaseExpandableListAdapter.notifyDataSetChanged();
                     } else {
+                        Log.i(TAG, "handleMessage: mSearchPosition-->" + mSearchPosition);
                         AdapterSearchDevicesData data = mAdapterSearchDevicesDataList.get(mSearchPosition);
                         data.setAttention(false);
                         mSearchDevicesAdapter.notifyDataSetChanged();

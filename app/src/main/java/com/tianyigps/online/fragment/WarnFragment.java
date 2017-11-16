@@ -187,7 +187,14 @@ public class WarnFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount + 2 && totalItemCount > visibleItemCount) {
+                boolean request = mIsRequestAble && firstVisibleItem >= totalItemCount - visibleItemCount - 2 && totalItemCount > visibleItemCount;
+                Log.i(TAG, "onScroll: request-->" + request);
+                Log.i(TAG, "onScroll: mIsRequestAble-->" + mIsRequestAble);
+                Log.i(TAG, "onScroll: firstVisibleItem-->" + firstVisibleItem);
+                Log.i(TAG, "onScroll: visibleItemCount-->" + visibleItemCount);
+                Log.i(TAG, "onScroll: totalItemCount-->" + totalItemCount);
+                Log.i(TAG, "onScroll: ");
+                if (request) {
                     Log.i(TAG, "onScroll: request");
                     mIsRequestAble = false;
                     mIsAddMore = true;
@@ -222,7 +229,9 @@ public class WarnFragment extends Fragment {
                 if (!mIsAddMore) {
                     mWarnAdapterDataList.clear();
                 }
-                mIsRequestAble = true;
+                if (warnListBean.getObj().size() > 0) {
+                    mIsRequestAble = true;
+                }
                 for (WarnListBean.ObjBean objBean : warnListBean.getObj()) {
                     mWarnAdapterDataList.add(new WarnAdapterData(objBean.getName()
                             , objBean.getWarn_type()
