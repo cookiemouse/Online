@@ -209,7 +209,7 @@ public class LoginActivity extends BaseActivity {
                 Gson gson = new Gson();
                 CheckUserBean checkUserBean = gson.fromJson(result, CheckUserBean.class);
                 if (!checkUserBean.isSuccess()) {
-                    mStringMessage = "账号或密码错误";
+                    mStringMessage = checkUserBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
                 }

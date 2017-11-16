@@ -6,8 +6,8 @@ package com.tianyigps.online.data;
 
 public class Urls {
 
-    //    private static final String IP = "http://sit.tianyigps.cn/app-service/app"; //  测试环境
-    private static final String IP = "http://121.43.178.183:8000/app-service/app";  //  测试环境
+    private static final String IP = "http://sit.tianyigps.cn/app-service/app"; //  测试环境
+//    private static final String IP = "http://121.43.178.183:8000/app-service/app";  //  测试环境
     //    private static final String IP = "http://www.tianyigps.cn/app";   //  正式环境
 
     private static final String IP_2 = "http://sit.tianyigps.cn";   //  围栏测试环境

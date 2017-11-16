@@ -10,9 +10,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.google.gson.Gson;
@@ -47,6 +49,7 @@ public class GuideActivity extends Activity {
     private MyHandler myHandler;
 
     private SharedManager mSharedManager;
+    private String mStringMessage;
 
     private NetManager mNetManager;
 
@@ -99,6 +102,7 @@ public class GuideActivity extends Activity {
                 Gson gson = new Gson();
                 CheckUserBean checkUserBean = gson.fromJson(result, CheckUserBean.class);
                 if (!checkUserBean.isSuccess()) {
+                    mStringMessage = checkUserBean.getMsg();
                     myHandler.sendEmptyMessage(Data.MSG_ERO);
                     return;
                 }
@@ -108,6 +112,7 @@ public class GuideActivity extends Activity {
 
             @Override
             public void onFailure() {
+                mStringMessage = Data.DEFAULT_MESSAGE;
                 myHandler.sendEmptyMessage(Data.MSG_ERO);
             }
         });
@@ -221,6 +226,13 @@ public class GuideActivity extends Activity {
         builder.create().show();
     }
 
+    //  显示Toast
+    private void showToastCenter(String msg) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -228,6 +240,9 @@ public class GuideActivity extends Activity {
             switch (msg.what) {
                 case Data.MSG_ERO: {
                     //  跳转到登录页
+                    if (!RegularU.isEmpty(mStringMessage)) {
+                        showToastCenter(mStringMessage);
+                    }
                     toLoginActivity();
                     break;
                 }
