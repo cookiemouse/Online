@@ -124,7 +124,7 @@ public class MonitorFragment extends Fragment {
     private String mInfoStationCode = "";
     private StatusData mStatusData;
     private int mInfoDirection, mModel, mElectricity;
-    private LatLng mInfoLatLng;
+    private LatLng mInfoLatLng, mLatLngSelf;
     //  设备是否已启用
     private boolean mIsActivation = true;
 
@@ -300,6 +300,8 @@ public class MonitorFragment extends Fragment {
             showAttentionDevices();
         }
 
+        mLocateManager.startLocate();
+
         myHandler = new MyHandler();
     }
 
@@ -340,7 +342,11 @@ public class MonitorFragment extends Fragment {
                     mIsLocateCar = false;
                     return;
                 }
-                mLocateManager.startLocate();
+                if (null != mLatLngSelf) {
+                    moveToCenter(mLatLngSelf);
+                    mImageViewLocate.setImageResource(R.drawable.ic_location_car);
+                    mIsLocateCar = true;
+                }
             }
         });
         mImageViewLeft.setOnClickListener(new View.OnClickListener() {
@@ -410,10 +416,7 @@ public class MonitorFragment extends Fragment {
                         .build();
                 // 设置定位数据
                 mBaiduMap.setMyLocationData(locData);
-
-                moveToCenter(latLng);
-                mImageViewLocate.setImageResource(R.drawable.ic_location_car);
-                mIsLocateCar = true;
+                mLatLngSelf = latLng;
             }
         });
 
@@ -492,7 +495,7 @@ public class MonitorFragment extends Fragment {
                 Log.i(TAG, "onSuccess: result-->" + result);
                 Gson gson = new Gson();
                 InfoWindowBean infoWindowBean = gson.fromJson(result, InfoWindowBean.class);
-                if (null == infoWindowBean){
+                if (null == infoWindowBean) {
                     mStringMessage = Data.DEFAULT_MESSAGE;
                     myHandler.sendEmptyMessage(Data.MSG_MSG);
                     return;
