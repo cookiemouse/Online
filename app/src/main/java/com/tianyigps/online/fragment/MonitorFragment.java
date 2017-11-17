@@ -155,6 +155,7 @@ public class MonitorFragment extends Fragment {
 
     //  刷新
     private int mFlushTime;
+    private boolean mIsFlush = false;   //是否是刷新设备信息，如果是刷新则不需要移动到中心
 
     @Nullable
     @Override
@@ -1057,22 +1058,27 @@ public class MonitorFragment extends Fragment {
         //  反编码地址
         getAddress(latLng);
 
-        moveToInfoCenter(latLng);
+        if (!mIsFlush) {
+            moveToInfoCenter(latLng);
+        }
     }
 
     //  获取某台设备的信息，并显示infowindow，公开给外部使用
     public void showPointNew(String imeiStr) {
+        mIsFlush = false;
 //        boolean attention = mSharedManager.getShowAttention();
         mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
     }
 
     //  获取关注列表的设备信息，并添加Marker
     public void showPointNew() {
+        mIsFlush = false;
         mNetManager.showPointNewPost(mToken, mCid, "", "", true);
     }
 
     //  刷新页面设备
     private void showPointNewFlush() {
+        mIsFlush = true;
         String imeiStr = "";
         for (String str : mImeiList) {
             imeiStr += (str + ",");
@@ -1083,6 +1089,7 @@ public class MonitorFragment extends Fragment {
 
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
+        mIsFlush = false;
         mNetManager.showPointNewPost(mToken, mCid, cidStr, "", attention);
 //        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
     }

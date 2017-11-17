@@ -116,6 +116,11 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
                 TerminalInfo4MapBean.ObjBean objBean = terminalInfo4MapBean.getObj();
                 TerminalInfo4MapBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
                 double[] gcj = BDTransU.bd2gcj(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                if (null != mNaviLatLngEnd){
+                    if (mNaviLatLngEnd.getLatitude() == gcj[0] && mNaviLatLngEnd.getLongitude() == gcj[1]){
+                        return;
+                    }
+                }
                 mNaviLatLngEnd = new NaviLatLng(gcj[0], gcj[1]);
                 myHandler.sendEmptyMessage(Data.MSG_3);
             }
