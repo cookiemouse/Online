@@ -3,6 +3,7 @@
               android:layout_width="@dimen/dp_256"
               android:layout_height="wrap_content"
               android:orientation="vertical"
+              android:background="@color/colorNull"
               android:paddingBottom="@dimen/dp_12">
 
     <LinearLayout

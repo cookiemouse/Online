@@ -263,6 +263,7 @@ public class WarnFragment extends Fragment {
             @Override
             public void onFailure() {
                 Log.i(TAG, "onFailure: ");
+                mIsAddMore = true;
                 mStringMessage = Data.DEFAULT_MESSAGE;
                 myHandler.sendEmptyMessage(Data.MSG_MSG);
             }

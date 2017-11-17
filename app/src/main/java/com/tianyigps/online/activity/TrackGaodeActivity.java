@@ -319,7 +319,7 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
                         , parkTime
                         , speed);
 
-                myHandler.sendEmptyMessageDelayed(Data.MSG_1, 200);
+                myHandler.sendEmptyMessageDelayed(Data.MSG_1, 400);
             }
 
             @Override
@@ -666,7 +666,9 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
 
                     if (null != mGaodeMap && null != mLatLngInfoGaode) {
                         Location location = mGaodeMap.getMyLocation();
-                        mLatLngSelf = new LatLng(location.getLatitude(), location.getLongitude());
+                        if (null != location) {
+                            mLatLngSelf = new LatLng(location.getLatitude(), location.getLongitude());
+                        }
 
                         if (mZoomMap) {
                             changeZoom(mLatLngSelf, mLatLngInfoGaode);

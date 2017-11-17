@@ -41,11 +41,11 @@ import com.tianyigps.online.activity.NavigationActivity;
 import com.tianyigps.online.activity.PathGaodeActivity;
 import com.tianyigps.online.activity.TrackGaodeActivity;
 import com.tianyigps.online.bean.InfoWindowBean;
+import com.tianyigps.online.bean.MonitorData;
 import com.tianyigps.online.bean.StationBean;
 import com.tianyigps.online.cluster.BaiduPoint;
 import com.tianyigps.online.cluster.CookieCluster;
 import com.tianyigps.online.data.Data;
-import com.tianyigps.online.data.MarkerData;
 import com.tianyigps.online.data.StatusData;
 import com.tianyigps.online.dialog.ConcernDialogFragment;
 import com.tianyigps.online.dialog.OverviewDialogFragment;
@@ -67,7 +67,7 @@ import java.util.List;
  * Created by cookiemouse on 2017/9/5.
  */
 
-public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAdapter{
+public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAdapter {
 
     private static final String TAG = "MonitorGaode";
 
@@ -132,7 +132,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
     private boolean mIsStation = false;
 
     //  Marker
-    private List<MarkerData> mMarkerDataList;
+    private List<MonitorData> mMonitorDataList;
     private List<Marker> mMarkerList;
     private Overlay mOverlayMarker;
 
@@ -164,6 +164,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         mMapView.onCreate(savedInstanceState);
 
         setEventListener();
+
         return view;
     }
 
@@ -180,7 +181,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
             showPointNew(mChoiceImei);
 
             mImeiList.clear();
-            mMarkerDataList.clear();
             mSharedManager.saveShowAttention(false);
             removeAllMarker();
 //            mGaodeMap.hideInfoWindow();
@@ -198,7 +198,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
     public void onPause() {
         mMapView.onPause();
         if (null != mInfoLatLng) {
-            moveToInfoCenter(mInfoLatLng);
+            moveToCenter(mInfoLatLng);
         }
         myHandler.removeMessages(Data.MSG_5);
         super.onPause();
@@ -232,7 +232,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 showPointNew(mChoiceImei);
 
                 mImeiList.clear();
-                mMarkerDataList.clear();
                 mSharedManager.saveShowAttention(false);
                 removeAllMarker();
 //                mBaiduMap.hideInfoWindow();
@@ -325,7 +324,10 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
             @Override
             public void onClick(View view) {
                 mIsOpenInfo = false;
-//                mBaiduMap.hideInfoWindow();
+                if (null != mMarkerVir) {
+                    mMarkerVir.hideInfoWindow();
+                    mMarkerVir.remove();
+                }
             }
         });
 
@@ -399,7 +401,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         mLocateManager = new LocateManager(getContext());
 
         mMarkerList = new ArrayList<>();
-        mMarkerDataList = new ArrayList<>();
+        mMonitorDataList = new ArrayList<>();
 
         mImeiList = new ArrayList<>();
 
@@ -457,7 +459,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 if (mIsLocateCar) {
                     Log.i(TAG, "onClick: mImageViewLocate");
                     if (null != mInfoLatLng) {
-                        moveToInfoCenter(mInfoLatLng);
+                        moveToCenter(mInfoLatLng);
                         mImageViewLocate.setImageResource(R.drawable.ic_location_self);
                     }
                     mIsLocateCar = false;
@@ -561,7 +563,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 Log.i(TAG, "onMarkerClick: obj-->" + marker.getObject());
 //                if (marker.getObject().equals("marker")) {
 //                }
-                    addVirMaker(marker.getPosition());
+                addVirMaker(marker.getPosition());
                 return true;
             }
         });
@@ -631,6 +633,22 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 if (null == infoWindowBean.getObj()) {
                     return;
                 }
+                if (mFrom == FROM_CHOICE) {
+                    mMonitorDataList.clear();
+                }
+                for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
+                    MonitorData monitorData = new MonitorData(objBean.getImei()
+                            , objBean.getName()
+                            , objBean.getModel()
+                            , objBean.getIcon()
+                            , infoWindowBean.getTime()
+                            , objBean.getRedisobj());
+                    mMonitorDataList.add(monitorData);
+                }
+
+                myHandler.sendEmptyMessage(Data.MSG_1);
+
+                /*
                 if (mOnlyInfo) {
                     for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                         if (objBean.getImei().equals(mChoiceImei)) {
@@ -720,7 +738,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 }
                 switch (mFrom) {
                     case FROM_OVERVIEW: {
-                        mMarkerDataList.clear();
                         for (InfoWindowBean.ObjBean objBean : infoWindowBean.getObj()) {
                             InfoWindowBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
                             LatLng latLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
@@ -944,6 +961,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                         break;
                     }
                 }
+                        */
 
             }
 
@@ -1058,17 +1076,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
             return;
         }
         CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(latLng, mGaodeMap.getCameraPosition().zoom, 0, 0));
-        mGaodeMap.moveCamera(cameraUpdate);
-    }
-
-    //  地图移动到目标点
-    private void moveToInfoCenter(LatLng latLng) {
-//        MapStatus.Builder builder = new MapStatus.Builder();
-//        Point point = new Point(mWidth / 2, mHeight / 2);
-//        builder.target(latLng).targetScreen(point);
-//        MapStatus status = builder.build();
-//        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-//        mBaiduMap.animateMapStatus(update);
+        mGaodeMap.animateCamera(cameraUpdate);
     }
 
     //  显示infoWindow
@@ -1186,7 +1194,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         //  反编码地址
         getAddress(latLng);
 
-        moveToInfoCenter(latLng);
+        moveToCenter(latLng);
     }
 
     //  获取某台设备的信息，并显示infowindow，公开给外部使用
@@ -1272,7 +1280,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         } else {
             removeAllMarker();
             mImeiList.clear();
-            mMarkerDataList.clear();
 //            mBaiduMap.hideInfoWindow();
             mBaiduPointList.clear();
             mBaiduPointListShow.clear();
@@ -1285,6 +1292,92 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         Log.i(TAG, "showCompleteDevices: cidStr-->" + cidStr);
         this.mCidStr = cidStr;
         showPointNew(cidStr, mSharedManager.getShowAttention());
+    }
+
+    //  计算并获取某个设备的详细信息
+    private void getInfoByImei(String imei) {
+
+        MonitorData monitorData = null;
+        for (MonitorData data : mMonitorDataList) {
+            if (imei.equals(data.getImei())) {
+                monitorData = data;
+                break;
+            }
+        }
+        if (null == monitorData) {
+            return;
+        }
+
+        InfoWindowBean.ObjBean.RedisobjBean redisobjBean = monitorData.getRedisobjBean();
+
+        mInfoName = monitorData.getName();
+        mModel = Integer.valueOf(monitorData.getModel());
+        if (mIsStation && null != mLatLngStation) {
+            mInfoLatLng = mLatLngStation;
+        } else {
+            mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+        }
+
+        if ("3".equals(redisobjBean.getScene())) {
+            mIsActivation = false;
+            return;
+        } else {
+            mIsActivation = true;
+        }
+        mInfoStationCode = redisobjBean.getStation_code();
+        String locateType = redisobjBean.getLocate_type();
+        if (null == locateType) {
+            locateType = "2";
+        }
+        if (locateType.equals("1")) {
+            int speedT = Integer.valueOf(redisobjBean.getSpeed());
+            if (speedT < 0) {
+                mInfoSpeed = "0km/h";
+            } else {
+                mInfoSpeed = redisobjBean.getSpeed() + "km/h";
+            }
+        } else {
+            mInfoSpeed = "-";
+        }
+//                            mInfoLocateType = LocateTypeU.getLocateType(redisobjBean.getLocate_type());
+        calculateIsGetStation(redisobjBean.getLocate_type(), redisobjBean.getScene());
+        mInfoCurrentTime = redisobjBean.getCurrent_time();
+        mInfoLocateTime = redisobjBean.getLocate_time();
+        mInfoDirection = Integer.valueOf(redisobjBean.getDirection());
+        mInfoElectricity = redisobjBean.getDianliang() + "%";
+        mElectricity = redisobjBean.getDianliang();
+        mInfoImei = monitorData.getImei();
+
+        //  计算状态
+        long currentTime = 0;
+        long locateTime = 0;
+        long parkTime = 0;
+        int speed = 0;
+        if (!RegularU.isEmpty(redisobjBean.getCurrent_time())) {
+            currentTime = TimeFormatU.dateToMillis2(redisobjBean.getCurrent_time());
+        }
+        if (!RegularU.isEmpty(redisobjBean.getLocate_time())) {
+            locateTime = TimeFormatU.dateToMillis2(redisobjBean.getLocate_time());
+        }
+        if (!RegularU.isEmpty(redisobjBean.getPark_time())) {
+            parkTime = TimeFormatU.dateToMillis2(redisobjBean.getPark_time());
+        }
+        if (!RegularU.isEmpty(redisobjBean.getSpeed())) {
+            speed = Integer.valueOf(redisobjBean.getSpeed());
+        }
+
+        Log.i(TAG, "onSuccess: status-->" + StatusU.getStatus(mModel
+                , monitorData.getTime()
+                , currentTime
+                , locateTime
+                , parkTime
+                , speed));
+        mStatusData = StatusU.getStatus(Integer.valueOf(monitorData.getModel())
+                , monitorData.getTime()
+                , currentTime
+                , locateTime
+                , parkTime
+                , speed);
     }
 
     //  计算定位类型，以及是否显示获取基站
@@ -1326,26 +1419,34 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     break;
                 }
                 case Data.MSG_1: {
+                    getInfoByImei(mChoiceImei);
+                    if (!mIsActivation) {
+                        myHandler.sendEmptyMessage(Data.MSG_4);
+                        break;
+                    }
                     //  showPointNew单个
+                    removeAllMarker();
                     addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei, 1);
                     if (mIsOpenInfo) {
-                        showInfoWindow(mInfoLatLng);
+                        addVirMaker(mInfoLatLng);
+                        moveToCenter(mInfoLatLng);
+//                        showInfoWindow(mInfoLatLng);
                     }
                     break;
                 }
                 case Data.MSG_2: {
                     //  showPointNew多个
-                    if (null != mMarkerDataList) {
+                    if (null != mMonitorDataList) {
                         mBaiduPointList.clear();
                         mImeiList.clear();
-                        for (MarkerData markerData : mMarkerDataList) {
-                            mImeiList.add(markerData.getImei());
-                            mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
-                                    , false
-                                    , markerData.getImei()
-                                    , markerData.getType()
-                                    , markerData.getDirection()));
-                        }
+//                        for (MarkerData markerData : mMarkerDataList) {
+//                            mImeiList.add(markerData.getImei());
+//                            mBaiduPointList.add(new BaiduPoint(markerData.getLatLng()
+//                                    , false
+//                                    , markerData.getImei()
+//                                    , markerData.getType()
+//                                    , markerData.getDirection()));
+//                        }
                         removeAllMarker();
                         for (BaiduPoint baiduPoint : mBaiduPointListShow) {
                             Log.i(TAG, "handleMessage: addMaker");
@@ -1395,14 +1496,14 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
 //                            marker.setPosition(mLatLngStation);
 //                        }
 //                    }
-                    for (MarkerData markerData : mMarkerDataList) {
-                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
-                        if (markerData.getImei().equals(mChoiceImei)) {
-//                            markerData.setLatLng(mLatLngStation);
-                            mIsStation = true;
-                            showInfoWindow(mLatLngStation);
-                        }
-                    }
+//                    for (MarkerData markerData : mMarkerDataList) {
+//                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
+//                        if (markerData.getImei().equals(mChoiceImei)) {
+////                            markerData.setLatLng(mLatLngStation);
+//                            mIsStation = true;
+//                            showInfoWindow(mLatLngStation);
+//                        }
+//                    }
                     for (BaiduPoint baiduPoint : mBaiduPointList) {
                         if (baiduPoint.getImei().equals(mChoiceImei)) {
 //                            baiduPoint.setLatLng(mLatLngStation);
