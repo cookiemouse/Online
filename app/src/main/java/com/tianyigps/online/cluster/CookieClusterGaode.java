@@ -2,18 +2,17 @@ package com.tianyigps.online.cluster;
 
 import android.util.Log;
 
-import com.baidu.mapapi.model.LatLng;
+import com.amap.api.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by cookiemouse on 2017/10/13.
+ * Created by cookiemouse on 2017/11/20.
  */
 
-public class CookieCluster {
-
-    private static final String TAG = "CookieCluster";
+public class CookieClusterGaode {
+    private static final String TAG = "CookieClusterGaode";
 
     private static int DIC_DISTANCE_25 = 0;
     private static int DIC_DISTANCE_50 = 1;
@@ -50,56 +49,58 @@ public class CookieCluster {
     private static double COORDINATE_RANGE_2000000 = 12.7040;
 
     private LatLng latLngOne, latLngTwo;
-    private List<BaiduPoint> mBaiduPointListIn, mBaiduPointListOut, mBaiduPointMiddle;
+    private List<GaodePoint> mGaodePointListIn, mGaodePointListOut, mGaodePointMiddle;
 
-    public CookieCluster(List<BaiduPoint> mLatlngPointBaiduListIn) {
-        this.mBaiduPointListIn = mLatlngPointBaiduListIn;
-        mBaiduPointListOut = new ArrayList<>();
-        mBaiduPointMiddle = new ArrayList<>();
+    public CookieClusterGaode(List<GaodePoint> mLatlngPointGaodeListIn) {
+        this.mGaodePointListIn = mLatlngPointGaodeListIn;
+        mGaodePointListOut = new ArrayList<>();
+        mGaodePointMiddle = new ArrayList<>();
     }
 
     private void calculateCluster(double distance) {
         Log.i(TAG, "calculateCluster: distance-->" + distance);
-        Log.i(TAG, "calculateCluster: size-->" + mBaiduPointListIn.size());
-        mBaiduPointListOut.clear();
-        mBaiduPointMiddle.clear();
+        Log.i(TAG, "calculateCluster: size-->" + mGaodePointListIn.size());
+        mGaodePointListOut.clear();
+        mGaodePointMiddle.clear();
 
-        for (BaiduPoint baiduPoint : mBaiduPointListIn) {
-            LatLng latLng = baiduPoint.getLatLng();
+        for (GaodePoint GaodePoint : mGaodePointListIn) {
+            LatLng latLng = GaodePoint.getLatLng();
             if (latLng.latitude < latLngOne.latitude
                     && latLng.longitude > latLngOne.longitude
                     && latLng.latitude > latLngTwo.latitude
-                    && latLng.longitude < latLngTwo.longitude) {
-                mBaiduPointMiddle.add(baiduPoint);
+                    && latLng.longitude < Math.abs(latLngTwo.longitude)) {
+                mGaodePointMiddle.add(GaodePoint);
             }
         }
 
-        for (BaiduPoint baiduPointFirst : mBaiduPointMiddle) {
+        for (GaodePoint GaodePointFirst : mGaodePointMiddle) {
             int countNumber = 1;
-            if (!baiduPointFirst.isClustered()) {
-                for (BaiduPoint latlngPointBaiduSecond : mBaiduPointMiddle) {
-                    if (baiduPointFirst != latlngPointBaiduSecond && !latlngPointBaiduSecond.isClustered()) {
-                        LatLng latLngFirst = baiduPointFirst.getLatLng();
-                        LatLng latLngSecond = latlngPointBaiduSecond.getLatLng();
+            if (!GaodePointFirst.isClustered()) {
+                for (GaodePoint latlngPointGaodeSecond : mGaodePointMiddle) {
+                    if (GaodePointFirst != latlngPointGaodeSecond && !latlngPointGaodeSecond.isClustered()) {
+                        LatLng latLngFirst = GaodePointFirst.getLatLng();
+                        LatLng latLngSecond = latlngPointGaodeSecond.getLatLng();
                         if (Math.abs(latLngFirst.latitude - latLngSecond.latitude) < distance
                                 && Math.abs(latLngFirst.longitude - latLngSecond.longitude) < distance) {
-                            latlngPointBaiduSecond.setClustered(true);
+                            latlngPointGaodeSecond.setClustered(true);
                             countNumber++;
                         }
                     }
                 }
-                baiduPointFirst.setCount(countNumber);
-                mBaiduPointListOut.add(baiduPointFirst);
+                GaodePointFirst.setCount(countNumber);
+                mGaodePointListOut.add(GaodePointFirst);
             }
         }
-        for (BaiduPoint baiduPoint : mBaiduPointListIn) {
-            baiduPoint.setClustered(false);
+        for (GaodePoint GaodePoint : mGaodePointListIn) {
+            GaodePoint.setClustered(false);
         }
     }
 
-    public List<BaiduPoint> getClusterList(int zoom, LatLng leftUp, LatLng rightDown) {
+    public List<GaodePoint> getClusterList(int zoom, LatLng leftUp, LatLng rightDown) {
         this.latLngOne = leftUp;
         this.latLngTwo = rightDown;
+        Log.i(TAG, "getClusterList: zoom-->" + zoom);
+        zoom = zoom + 1;
 
         switch (zoom) {
             case 3: {
@@ -186,6 +187,6 @@ public class CookieCluster {
                 break;
             }
         }
-        return mBaiduPointListOut;
+        return mGaodePointListOut;
     }
 }

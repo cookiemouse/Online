@@ -27,6 +27,7 @@ import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
@@ -57,7 +58,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
     private static final int MARKER_PAUSU = 3;
     private static final int MARKER_END = 4;
 
-    private static final long PAUSE_TIME = 6 * 60 * 1000;
+    private static final long PAUSE_TIME = 3 * 60 * 1000;
 
     private static final String KEY_STOP_TIME = "stop";
     private static final String KEY_START_TIME = "start";
@@ -540,6 +541,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
         for (PathBean.ObjBean.MaplistBean maplistBean : mMapListBeanList) {
             latLngList.add(new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF()));
         }
+        changeZoom(latLngList);
         polylineOptions.addAll(latLngList);
         mPolyline = mGaodeMap.addPolyline(polylineOptions);
     }
@@ -570,6 +572,17 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
         }
         CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(latLng, mGaodeMap.getCameraPosition().zoom, 0, 0));
         mGaodeMap.animateCamera(cameraUpdate);
+    }
+
+    //  改变地图zoom
+    private void changeZoom(List<LatLng> latLngList) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngList) {
+            builder.include(latLng);
+        }
+        LatLngBounds latLngBounds = builder.build();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBounds, 0);
+        mGaodeMap.moveCamera(cameraUpdate);
     }
 
     //  显示选择时间对话框
