@@ -42,6 +42,7 @@ import com.tianyigps.online.dialog.SpeedPickerDialogFragment;
 import com.tianyigps.online.interfaces.OnFindHisPointsListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.BDTransU;
 import com.tianyigps.online.utils.GeoCoderU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.TimeFormatU;
@@ -340,7 +341,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
             public void onGetAddress(String address) {
                 Log.i(TAG, "onGetAddress: address-->" + address);
                 mInfoAddress = address;
-                if (null != mLatLngInfo){
+                if (null != mLatLngInfo) {
                     addVirMaker(mLatLngInfo);
                 }
             }
@@ -360,7 +361,8 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                 double lat = bundle.getDouble(KEY_LAT);
                 double lng = bundle.getDouble(KEY_LNG);
                 mLatLngInfo = new LatLng(lat, lng);
-                mGeoCoderU.searchAddress(lat, lng);
+                double[] latlng = BDTransU.gcj2bd(lat, lng);
+                mGeoCoderU.searchAddress(latlng[0], latlng[1]);
                 return true;
             }
         });
@@ -390,6 +392,8 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                         mMapListBeanList.add(maplistBean);
                     }
                 }
+                //  转换坐标系
+                transType();
                 myHandler.sendEmptyMessage(Data.MSG_1);
             }
 
@@ -539,7 +543,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
         polylineOptions.color(0xff00ff00);
         List<LatLng> latLngList = new ArrayList<>();
         for (PathBean.ObjBean.MaplistBean maplistBean : mMapListBeanList) {
-            latLngList.add(new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF()));
+            latLngList.add(new LatLng(maplistBean.getLatitude(), maplistBean.getLongitude()));
         }
         changeZoom(latLngList);
         polylineOptions.addAll(latLngList);
@@ -611,6 +615,17 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
         builder.create().show();
     }
 
+    //  将坐标转为gcj
+    private void transType() {
+        if (null != mMapListBeanList) {
+            for (PathBean.ObjBean.MaplistBean maplistBean : mMapListBeanList) {
+                double[] latlng = BDTransU.wgs2gcj(maplistBean.getLatitude(), maplistBean.getLongitude());
+                maplistBean.setLatitude(latlng[0]);
+                maplistBean.setLongitude(latlng[1]);
+            }
+        }
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -664,12 +679,12 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                     if (size > 1) {
                         PathBean.ObjBean.MaplistBean maplistBeanStart = mMapListBeanList.get(0);
                         if (null != maplistBeanStart) {
-                            LatLng latLng = new LatLng(maplistBeanStart.getLatitudeF(), maplistBeanStart.getLongitudeF());
+                            LatLng latLng = new LatLng(maplistBeanStart.getLatitude(), maplistBeanStart.getLongitude());
                             addMaker(latLng, MARKER_START, null);
                         }
                         PathBean.ObjBean.MaplistBean maplistBeanEnd = mMapListBeanList.get(size - 1);
                         if (null != maplistBeanEnd) {
-                            LatLng latLng = new LatLng(maplistBeanEnd.getLatitudeF(), maplistBeanEnd.getLongitudeF());
+                            LatLng latLng = new LatLng(maplistBeanEnd.getLatitude(), maplistBeanEnd.getLongitude());
                             addMaker(latLng, MARKER_END, null);
                         }
                         //  绘制轨迹
@@ -678,7 +693,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                         //  绘制超速线
                         for (int i = 0; i < size; i++) {
                             PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(i);
-                            LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
+                            LatLng latLng = new LatLng(maplistBean.getLatitude(), maplistBean.getLongitude());
                             if (isOverSpeed(i)) {
                                 mLatLngOverSpeedList.add(latLng);
                             } else if (mLatLngOverSpeedList.size() > 0) {
@@ -698,7 +713,7 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                         String speed = maplistBean.getSpeed() + " km/h";
                         mTextViewTime.setText(time);
                         mTextViewSpeed.setText(speed);
-                        LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
+                        LatLng latLng = new LatLng(maplistBean.getLatitude(), maplistBean.getLongitude());
                         moveRunMarker(latLng);
                         if (isOutScreen(latLng)) {
                             moveToCenter(latLng);

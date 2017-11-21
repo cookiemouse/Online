@@ -52,6 +52,7 @@ import com.tianyigps.online.interfaces.OnGetStationInfoListener;
 import com.tianyigps.online.interfaces.OnShowPointNewListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
+import com.tianyigps.online.utils.BDTransU;
 import com.tianyigps.online.utils.GeoCoderU;
 import com.tianyigps.online.utils.RegularU;
 import com.tianyigps.online.utils.StatusU;
@@ -572,6 +573,9 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     mMonitorDataList.add(monitorData);
                 }
 
+                //  转换坐标系
+                transType();
+
                 myHandler.sendEmptyMessage(Data.MSG_1);
 
 
@@ -669,6 +673,8 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         mMarkerVir = mGaodeMap.addMarker(markerOptions);
         mMarkerVir.showInfoWindow();
         Log.i(TAG, "addVirMaker: ");
+        //  反编码地址
+        getAddress(latLng);
     }
 
     //  隐藏infoWindow
@@ -677,6 +683,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
             mMarkerVir.hideInfoWindow();
             mMarkerVir.remove();
         }
+        mTextViewAddress.setText(null);
     }
 
     //  清除Marker
@@ -971,9 +978,22 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         }
     }
 
+    //  将bd09坐标转为gcj
+    private void transType() {
+        if (null != mMonitorDataList) {
+            for (MonitorData monitorData : mMonitorDataList) {
+                InfoWindowBean.ObjBean.RedisobjBean redisobjBean = monitorData.getRedisobjBean();
+                double[] latlng = BDTransU.bd2gcj(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                redisobjBean.setLatitudeF(latlng[0]);
+                redisobjBean.setLongitudeF(latlng[1]);
+            }
+        }
+    }
+
     //  反编码地址
     public void getAddress(LatLng latLng) {
-        mGeoCoderU.searchAddress(latLng.latitude, latLng.longitude);
+        double[] latlngT = BDTransU.gcj2bd(latLng.latitude, latLng.longitude);
+        mGeoCoderU.searchAddress(latlngT[0], latlngT[1]);
     }
 
     private class MyHandler extends Handler {
@@ -992,35 +1012,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     break;
                 }
                 case Data.MSG_1: {
-                    /*
-                    switch (mFrom){
-                        case FROM_CHOICE:{
-                            //  showPointNew单个
-                            getInfoByImei(mChoiceImei);
-                            if (!mIsActivation) {
-                                myHandler.sendEmptyMessage(Data.MSG_4);
-                                break;
-                            }
-                            removeAllMarker();
-                            addMarker(mInfoLatLng, mStatusData.getStatu(), mInfoDirection, mChoiceImei, 1);
-                            if (mIsOpenInfo) {
-                                addVirMaker(mInfoLatLng);
-                                moveToCenter(mInfoLatLng);
-                            }
-                            break;
-                        }
-                        case FROM_CONCERN:{
-                            break;
-                        }
-                        case FROM_OVERVIEW:{
-                            break;
-                        }
-                        default:{
-                            Log.i(TAG, "handleMessage: default.mFrom-->" + mFrom);
-                        }
-                    }
-                    */
-
                     //  addMarker
                     if (null != mMonitorDataList) {
                         culculateAllMarker();
