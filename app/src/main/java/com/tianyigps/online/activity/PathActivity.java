@@ -34,6 +34,7 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.tianyigps.online.R;
 import com.tianyigps.online.bean.PathBean;
@@ -60,7 +61,7 @@ public class PathActivity extends AppCompatActivity {
     private static final int MARKER_PAUSU = 3;
     private static final int MARKER_END = 4;
 
-    private static final long PAUSE_TIME = 6 * 60 * 1000;
+    private static final long PAUSE_TIME = 3 * 60 * 1000;
 
     private static final String KEY_STOP_TIME = "stop";
     private static final String KEY_START_TIME = "start";
@@ -445,6 +446,7 @@ public class PathActivity extends AppCompatActivity {
         for (PathBean.ObjBean.MaplistBean maplistBean : mMapListBeanList) {
             latLngList.add(new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF()));
         }
+        changeZoom(latLngList);
         polylineOptions.points(latLngList);
         mOverlayLine = mBaiduMap.addOverlay(polylineOptions);
     }
@@ -575,6 +577,18 @@ public class PathActivity extends AppCompatActivity {
         MapStatus status = builder.build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
         mBaiduMap.setMapStatus(update);
+    }
+
+    //  改变地图zoom
+    private void changeZoom(List<LatLng> latLngList) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : latLngList) {
+            builder.include(latLng);
+        }
+        LatLngBounds latLngBounds = builder.build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
+        mBaiduMap.animateMapStatus(update);
+        Log.i(TAG, "changeZoom: --2");
     }
 
     //  animeToCenter
