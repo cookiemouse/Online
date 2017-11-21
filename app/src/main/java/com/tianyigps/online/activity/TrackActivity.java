@@ -612,8 +612,11 @@ public class TrackActivity extends BaseActivity {
         }
         LatLngBounds latLngBounds = builder.build();
         MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(latLngBounds);
-        mBaiduMap.animateMapStatus(update);
+        mBaiduMap.setMapStatus(update);
         Log.i(TAG, "changeZoom:");
+        if (null != mInfoLatLng) {
+            moveToCenter(mInfoLatLng);
+        }
     }
 
     //  基站与GPS位置
@@ -705,6 +708,7 @@ public class TrackActivity extends BaseActivity {
                     //  获取到设备信息
                     myHandler.removeMessages(Data.MSG_2);
                     showInfoWindow(mInfoLatLng);
+                    moveToCenter(mInfoLatLng);
                     mGeoCoderU.searchAddress(mInfoLatLng.latitude, mInfoLatLng.longitude);
                     if (null != mLatLngSelf) {
                         searchDriving(mLatLngSelf, mInfoLatLng);
