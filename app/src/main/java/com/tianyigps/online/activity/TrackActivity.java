@@ -99,7 +99,7 @@ public class TrackActivity extends BaseActivity {
     private SharedManager mSharedManager;
     private String mToken;
     private int mCid;
-    private int mFlushInterval = 40 * 1000;
+    private int mFlushInterval;
 
     private MyHandler myHandler;
     private String mStringMessage;
@@ -180,7 +180,7 @@ public class TrackActivity extends BaseActivity {
         mSharedManager = new SharedManager(this);
         mToken = mSharedManager.getToken();
         mCid = mSharedManager.getCid();
-//        mFlushInterval = mSharedManager.getFlushTime() * 1000;
+        mFlushInterval = mSharedManager.getFlushTime() * 1000;
 
         mGeoCoderU = new GeoCoderU();
 
