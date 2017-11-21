@@ -333,12 +333,14 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
     @Override
     protected void onResume() {
         mMapView.onResume();
+        myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         mMapView.onPause();
+        myHandler.removeMessages(Data.MSG_2);
         super.onPause();
     }
 
@@ -681,6 +683,8 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
                     break;
                 }
                 case Data.MSG_2: {
+                    showPointNew();
+                    myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval);
                     break;
                 }
             }

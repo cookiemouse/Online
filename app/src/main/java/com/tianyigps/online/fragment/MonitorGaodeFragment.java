@@ -788,6 +788,8 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
     //  由OverviewDialogFragment调用，显示关注车辆
     public void showAttentionDevices() {
         mFrom = FROM_OVERVIEW;
+        hideInfoWindow();
+        mIsOpenInfo = false;
         if (mSharedManager.getShowAttention()) {
             showPointNew();
         } else {
