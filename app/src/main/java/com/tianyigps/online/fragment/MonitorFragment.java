@@ -1145,6 +1145,7 @@ public class MonitorFragment extends Fragment {
 
     //  由OverviewDialogFragment调用，显示关注车辆
     public void showAttentionDevices() {
+        mBaiduMap.hideInfoWindow();
         mFrom = FROM_OVERVIEW;
         if (mSharedManager.getShowAttention()) {
             showPointNew();
@@ -1152,7 +1153,6 @@ public class MonitorFragment extends Fragment {
             removeAllMarker();
             mImeiList.clear();
             mMarkerDataList.clear();
-            mBaiduMap.hideInfoWindow();
             mBaiduPointList.clear();
             mBaiduPointListShow.clear();
         }
