@@ -99,7 +99,7 @@ public class TrackActivity extends BaseActivity {
     private SharedManager mSharedManager;
     private String mToken;
     private int mCid;
-    private int mFlushInterval;
+    private int mFlushInterval = 40 * 1000;
 
     private MyHandler myHandler;
     private String mStringMessage;
@@ -116,7 +116,7 @@ public class TrackActivity extends BaseActivity {
     private boolean mIsShow = false;
 
     //  是否需要缩放地图
-    private boolean mZoomMap = true;
+    private boolean mZoomMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +180,7 @@ public class TrackActivity extends BaseActivity {
         mSharedManager = new SharedManager(this);
         mToken = mSharedManager.getToken();
         mCid = mSharedManager.getCid();
-        mFlushInterval = mSharedManager.getFlushTime() * 1000;
+//        mFlushInterval = mSharedManager.getFlushTime() * 1000;
 
         mGeoCoderU = new GeoCoderU();
 
