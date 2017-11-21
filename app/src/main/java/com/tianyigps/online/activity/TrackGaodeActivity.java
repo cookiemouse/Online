@@ -683,6 +683,8 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
                     break;
                 }
                 case Data.MSG_2: {
+                    //  保证只有一个msg_2
+                    myHandler.removeMessages(Data.MSG_2);
                     showPointNew();
                     myHandler.sendEmptyMessageDelayed(Data.MSG_2, mFlushInterval);
                     break;

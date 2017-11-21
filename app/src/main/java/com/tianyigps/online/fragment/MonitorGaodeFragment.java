@@ -124,7 +124,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
     private boolean mIsActivation = true;
 
     //  获取基站，基站坐标
-    private LatLng mLatLngStation;
+    private LatLng mLatLngStation, mLatLngSource;
     private boolean mIsStation = false;
 
     //  Marker
@@ -261,8 +261,10 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         ProgressBar pbElectricity = viewInfo.findViewById(R.id.pb_view_map_info_window_monitor);
 
         if (mIsStation) {
-            tvGetStation.setText("获取GPS");
+            tvGetStation.setText("状态返回");
+            tvLocateType.setText("基站定位");
         } else {
+            tvLocateType.setText(mInfoLocateType);
             tvGetStation.setText("获取基站");
         }
 
@@ -288,7 +290,6 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         Log.i(TAG, "showInfoWindow: mStatusData.getStatu-->" + mStatusData.getStatu());
         tvStatus.setText(mStatusData.getStatus());
         tvSpeed.setText(mInfoSpeed);
-        tvLocateType.setText(mInfoLocateType);
         tvCurrentTime.setText(mInfoCurrentTime);
         tvLocateTime.setText(mInfoLocateTime);
         pbElectricity.setProgress(mElectricity);
@@ -299,9 +300,10 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 // TODO: 2017/10/13 获取基站
                 Log.i(TAG, "onClick: mInfoStationCode-->" + mInfoStationCode);
                 if (mIsStation) {
-                    showPointNew(mChoiceImei);
                     mIsStation = false;
+                    myHandler.sendEmptyMessage(Data.MSG_1);
                 } else {
+                    mIsStation = true;
                     mNetManager.getStationInfo(mInfoStationCode);
                 }
 //                mWitchType = !mWitchType;
@@ -595,7 +597,8 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 Gson gson = new Gson();
                 StationBean stationBean = gson.fromJson(result, StationBean.class);
                 StationBean.LocationBean lcLocationBean = stationBean.getLocation();
-                mLatLngStation = new LatLng(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
+                double[] latlng = BDTransU.bd2gcj(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
+                mLatLngStation = new LatLng(latlng[0], latlng[1]);
 
                 myHandler.obtainMessage(Data.MSG_6).sendToTarget();
             }
@@ -825,11 +828,11 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
 
         mInfoName = monitorData.getName();
         mModel = Integer.valueOf(monitorData.getModel());
-        if (mIsStation && null != mLatLngStation) {
-            mInfoLatLng = mLatLngStation;
-        } else {
-            mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
-        }
+//        if (mIsStation && null != mLatLngStation) {
+//            mInfoLatLng = mLatLngStation;
+//        } else {
+//        }
+        mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
 
         if ("3".equals(redisobjBean.getScene())) {
             mIsActivation = false;
@@ -998,6 +1001,36 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         mGeoCoderU.searchAddress(latlngT[0], latlngT[1]);
     }
 
+    //  替换基站坐标
+    private void replaceLatlng(String imei) {
+        if (null != mLatLngStation) {
+            if (null != mMonitorDataList) {
+                //  将基站数据洗入列表
+                for (MonitorData monitorData : mMonitorDataList) {
+                    InfoWindowBean.ObjBean.RedisobjBean redisobjBean = monitorData.getRedisobjBean();
+                    if (imei.equals(redisobjBean.getImei())) {
+                        if (mIsStation) {
+                            if (null == mLatLngSource) {
+                                mLatLngSource = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
+                            }
+                            Log.i(TAG, "replaceLatlng: mLatLngSource-->" + mLatLngSource.latitude + ", " + mLatLngSource.longitude);
+                            redisobjBean.setLatitudeF(mLatLngStation.latitude);
+                            redisobjBean.setLongitudeF(mLatLngStation.longitude);
+                        } else {
+                            //  洗回原始数据
+                            if (null != mLatLngSource) {
+                                redisobjBean.setLatitudeF(mLatLngSource.latitude);
+                                redisobjBean.setLongitudeF(mLatLngSource.longitude);
+                                mLatLngSource = null;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -1016,6 +1049,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 case Data.MSG_1: {
                     //  addMarker
                     if (null != mMonitorDataList) {
+                        replaceLatlng(mChoiceImei);
                         culculateAllMarker();
                         clustMarkerAndShow();
                         for (MonitorData monitorData : mMonitorDataList) {
@@ -1073,29 +1107,8 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 }
                 case Data.MSG_6: {
                     //  获取基站数据
-//                    for (Overlay overlay : mMarkerList) {
-//                        Marker marker = (Marker) overlay;
-//                        if (marker.getExtraInfo().getString(Data.KEY_IMEI).equals(mChoiceImei)) {
-//                            mIsStation = true;
-//                            marker.setPosition(mLatLngStation);
-//                        }
-//                    }
-//                    for (MarkerData markerData : mMarkerDataList) {
-//                        Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
-//                        if (markerData.getImei().equals(mChoiceImei)) {
-////                            markerData.setLatLng(mLatLngStation);
-//                            mIsStation = true;
-//                            showInfoWindow(mLatLngStation);
-//                        }
-//                    }
-                    for (GaodePoint gaodePoint : mGaodePointList) {
-                        if (gaodePoint.getImei().equals(mChoiceImei)) {
-//                            baiduPoint.setLatLng(mLatLngStation);
-                            mIsStation = true;
-//                            showInfoWindow(mLatLngStation);
-                        }
-                    }
-
+                    replaceLatlng(mChoiceImei);
+                    myHandler.sendEmptyMessage(Data.MSG_1);
                     break;
                 }
             }
