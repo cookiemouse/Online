@@ -532,7 +532,12 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     myHandler.sendEmptyMessage(Data.MSG_4);
                     return true;
                 }
-                if (type != Data.MARKER_CLUSTER) {
+                if (type == Data.MARKER_CLUSTER) {
+                    CameraPosition cameraPosition = mGaodeMap.getCameraPosition();
+                    float zoom = cameraPosition.zoom + 1;
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(zoom);
+                    mGaodeMap.animateCamera(cameraUpdate);
+                }else {
                     addVirMaker(marker.getPosition());
                 }
                 return true;
