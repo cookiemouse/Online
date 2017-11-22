@@ -228,6 +228,7 @@ public class FragmentContentActivity extends AppCompatActivity {
                         , ""
                         , mSharedManager.getAccount()
                         , "2");
+                mLocateManager.stopLocate();
             }
         });
     }
