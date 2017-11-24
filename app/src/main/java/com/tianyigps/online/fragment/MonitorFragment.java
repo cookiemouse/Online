@@ -840,6 +840,9 @@ public class MonitorFragment extends Fragment {
                 StationBean stationBean = gson.fromJson(result, StationBean.class);
                 StationBean.LocationBean lcLocationBean = stationBean.getLocation();
                 mLatLngStation = new LatLng(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
+                if (mFrom == FROM_CONCERN){
+                    mFrom = FROM_CHOICE;
+                }
 
                 myHandler.obtainMessage(Data.MSG_6).sendToTarget();
             }
@@ -1301,13 +1304,14 @@ public class MonitorFragment extends Fragment {
 //                        }
 //                    }
 
+                    Log.i(TAG, "handleMessage: mChoiceImei-->" + mChoiceImei);
+                    Log.i(TAG, "handleMessage: size-->" + mMarkerDataList.size());
                     if (mFrom == FROM_CHOICE) {
                         Marker marker = (Marker) mOverlayMarker;
                         marker.setPosition(mLatLngStation);
                         mIsStation = true;
                         showInfoWindow(mLatLngStation);
                     } else {
-                        Log.i(TAG, "handleMessage: mChoiceImei-->" + mChoiceImei);
                         for (MarkerData markerData : mMarkerDataList) {
                             Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
                             if (markerData.getImei().equals(mChoiceImei)) {
