@@ -1033,14 +1033,14 @@ public class MonitorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
-                if (mStatusData.getStatu() == Data.STATUS_ON) {
+                if (mStatusData.getStatu() == Data.STATUS_OFF) {
+                    showNaviDialog("不在线");
+                } else {
                     if ("GPS".equals(mInfoLocateType)) {
                         toNaviActivity();
                     } else {
                         showNaviDialog(mInfoLocateType);
                     }
-                } else {
-                    showNaviDialog("不在线");
                 }
             }
         });
