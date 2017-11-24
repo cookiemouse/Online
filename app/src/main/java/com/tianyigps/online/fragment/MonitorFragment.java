@@ -840,7 +840,9 @@ public class MonitorFragment extends Fragment {
                 StationBean stationBean = gson.fromJson(result, StationBean.class);
                 StationBean.LocationBean lcLocationBean = stationBean.getLocation();
                 mLatLngStation = new LatLng(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
-
+                if (mFrom == FROM_CONCERN){
+                    mFrom = FROM_CHOICE;
+                }
                 myHandler.obtainMessage(Data.MSG_6).sendToTarget();
             }
 
