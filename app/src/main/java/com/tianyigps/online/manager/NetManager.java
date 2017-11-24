@@ -697,9 +697,10 @@ public class NetManager {
      * @param token
      * @param imei
      */
-    public void showTerminalInfo4Map(String token, String imei) {
+    public void showTerminalInfo4Map(String token, String imei, int mapType) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.SHOW_TERMINAL_INFO_FOR_MAP + "token=" + token
+                + "&mapType=" + mapType
                 + "&imei=" + imei);
         mRequest = builder.build();
         Log.i(TAG, "showTerminalInfo4Map: url-->" + mRequest.url());
