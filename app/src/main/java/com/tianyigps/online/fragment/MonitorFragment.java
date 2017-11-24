@@ -1067,13 +1067,13 @@ public class MonitorFragment extends Fragment {
     public void showPointNew(String imeiStr) {
         mIsFlush = false;
 //        boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
+        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, Data.MAP_BAIDU, false);
     }
 
     //  获取关注列表的设备信息，并添加Marker
     public void showPointNew() {
         mIsFlush = false;
-        mNetManager.showPointNewPost(mToken, mCid, "", "", true);
+        mNetManager.showPointNewPost(mToken, mCid, "", "", Data.MAP_BAIDU, true);
     }
 
     //  刷新页面设备
@@ -1084,13 +1084,13 @@ public class MonitorFragment extends Fragment {
             imeiStr += (str + ",");
         }
         boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, attention);
+        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, Data.MAP_BAIDU, attention);
     }
 
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
         mIsFlush = false;
-        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", attention);
+        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", Data.MAP_BAIDU, attention);
 //        mNetManager.showPointNew(mToken, mCid, cidStr, "", attention);
     }
 

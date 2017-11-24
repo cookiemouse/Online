@@ -75,7 +75,7 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
     private ImageView mImageViewLocate;
     private TextView mTextViewNormal, mTextViewSatellite, mTextViewAddress;
 
-    private LatLng mLatLngSelf, mLatLngInfoBaidu, mLatLngInfoGaode;
+    private LatLng mLatLngSelf, mLatLngInfoGaode;
 
     //  左下角定位，false = 定位手机，true = 定位车辆
     private boolean mIsLocateCar = false;
@@ -297,7 +297,7 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
 
 //                mInfoLatLng = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
 
-                mLatLngInfoBaidu = calculateLatlng(redisobjBean.getLocate_type()
+                mLatLngInfoGaode = calculateLatlng(redisobjBean.getLocate_type()
                         , redisobjBean.getLatitudeF()
                         , redisobjBean.getLongitudeF()
                         , redisobjBean.getLatitudeGDZJB()
@@ -499,7 +499,7 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
 
     //  获取某台设备的信息，并显示infowindow
     private void showPointNew() {
-        mNetManager.showTerminalInfo4Map(mToken, mImei);
+        mNetManager.showTerminalInfo4Map(mToken, mImei, Data.MAP_GAODE);
     }
 
     //  基站与GPS位置
@@ -660,11 +660,10 @@ public class TrackGaodeActivity extends BaseActivity implements LocationSource.O
                     break;
                 }
                 case Data.MSG_1: {
-                    double[] latlng = BDTransU.bd2gcj(mLatLngInfoBaidu.latitude, mLatLngInfoBaidu.longitude);
-                    mLatLngInfoGaode = new LatLng(latlng[0], latlng[1]);
                     addMarker(mLatLngInfoGaode, mStatusData.getStatu(), mInfoDirection);
                     addVirMaker(mLatLngInfoGaode);
-                    mGeoCoderU.searchAddress(mLatLngInfoBaidu.latitude, mLatLngInfoBaidu.longitude);
+                    double[] latlng = BDTransU.gcj2bd(mLatLngInfoGaode.latitude, mLatLngInfoGaode.longitude);
+                    mGeoCoderU.searchAddress(latlng[0], latlng[1]);
 
                     if (null != mGaodeMap && null != mLatLngInfoGaode) {
                         Location location = mGaodeMap.getMyLocation();

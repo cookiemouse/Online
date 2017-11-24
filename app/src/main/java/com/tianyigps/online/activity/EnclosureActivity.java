@@ -568,7 +568,7 @@ public class EnclosureActivity extends AppCompatActivity {
 
     //  获取设备信息
     private void getTerminalInfo() {
-        mNetManager.showTerminalInfo4Map(mToken, mImei);
+        mNetManager.showTerminalInfo4Map(mToken, mImei, Data.MAP_BAIDU);
     }
 
     //  获取围栏信息

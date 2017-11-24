@@ -86,8 +86,8 @@ public class Data {
     public final static int LOCATE_NO = 2;
 
     //  地图类型
-    public final static int MAP_BAIDU = 0;
-    public final static int MAP_GAODE = 1;
+    public final static int MAP_BAIDU = 1;
+    public final static int MAP_GAODE = 2;
 
     //  设备状态
     public final static int STATUS_OTHER = 0;

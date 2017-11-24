@@ -601,7 +601,7 @@ public class TrackActivity extends BaseActivity {
 
     //  获取某台设备的信息，并显示infowindow
     private void showPointNew() {
-        mNetManager.showTerminalInfo4Map(mToken, mImei);
+        mNetManager.showTerminalInfo4Map(mToken, mImei, Data.MAP_BAIDU);
     }
 
     //  改变地图zoom

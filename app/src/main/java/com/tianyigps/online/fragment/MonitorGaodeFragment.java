@@ -2,6 +2,7 @@ package com.tianyigps.online.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.location.Location;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -338,7 +340,15 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         tvNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toNaviActivity();
+                if (mStatusData.getStatu() == Data.STATUS_ON) {
+                    if ("GPS".equals(mInfoLocateType)) {
+                        toNaviActivity();
+                    } else {
+                        showNaviDialog(mInfoLocateType);
+                    }
+                } else {
+                    showNaviDialog("不在线");
+                }
             }
         });
 
@@ -537,7 +547,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     float zoom = cameraPosition.zoom + 1;
                     CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(zoom);
                     mGaodeMap.animateCamera(cameraUpdate);
-                }else {
+                } else {
                     addVirMaker(marker.getPosition());
                 }
                 return true;
@@ -580,8 +590,8 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                     mMonitorDataList.add(monitorData);
                 }
 
-                //  转换坐标系
-                transType();
+//                //  转换坐标系
+//                transType();
 
                 myHandler.sendEmptyMessage(Data.MSG_1);
 
@@ -715,12 +725,12 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
     //  获取某台设备的信息，并显示infowindow，公开给外部使用
     public void showPointNew(String imeiStr) {
 //        boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
+        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, Data.MAP_GAODE, false);
     }
 
     //  获取关注列表的设备信息，并添加Marker
     public void showPointNew() {
-        mNetManager.showPointNewPost(mToken, mCid, "", "", true);
+        mNetManager.showPointNewPost(mToken, mCid, "", "", Data.MAP_GAODE, true);
     }
 
     //  刷新页面设备
@@ -730,12 +740,12 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
             imeiStr += (str + ",");
         }
         boolean attention = mSharedManager.getShowAttention();
-        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, attention);
+        mNetManager.showPointNewPost(mToken, mCid, mCidStr, imeiStr, Data.MAP_GAODE, attention);
     }
 
     //  获取帐户下的设备信息，并添加Marker
     public void showPointNew(String cidStr, boolean attention) {
-        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", attention);
+        mNetManager.showPointNewPost(mToken, mCid, cidStr, "", Data.MAP_GAODE, attention);
     }
 
     //  跳转到跟踪页面
@@ -790,7 +800,7 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
         for (String str : mImeiList) {
             imeiStr += (str + ",");
         }
-        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, false);
+        mNetManager.showPointNewPost(mToken, mCid, "", imeiStr, Data.MAP_GAODE, false);
     }
 
     //  由OverviewDialogFragment调用，显示关注车辆
@@ -1034,6 +1044,28 @@ public class MonitorGaodeFragment extends Fragment implements AMap.InfoWindowAda
                 }
             }
         }
+    }
+
+    //  跳转地图
+    private void showNaviDialog(String msg) {
+        String strMsg = "该车辆为" + msg + "，可能与车辆实际位置存在一定误差，是否继续导航。";
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(strMsg);
+        builder.setPositiveButton(R.string.ensure, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  导航
+                toNaviActivity();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //  do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class MyHandler extends Handler {

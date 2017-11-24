@@ -37,7 +37,6 @@ import com.tianyigps.online.data.Data;
 import com.tianyigps.online.interfaces.OnShowTerminalInfoForMapListener;
 import com.tianyigps.online.manager.NetManager;
 import com.tianyigps.online.manager.SharedManager;
-import com.tianyigps.online.utils.BDTransU;
 import com.tianyigps.online.utils.ToastU;
 
 import java.util.ArrayList;
@@ -64,6 +63,8 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
     private MyHandler myHandler;
 
     private String mToken = "", mImei = "";
+
+    private boolean mIsFirst = true;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +116,13 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
                 }
                 TerminalInfo4MapBean.ObjBean objBean = terminalInfo4MapBean.getObj();
                 TerminalInfo4MapBean.ObjBean.RedisobjBean redisobjBean = objBean.getRedisobj();
-                double[] gcj = BDTransU.bd2gcj(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
-                if (null != mNaviLatLngEnd){
-                    if (mNaviLatLngEnd.getLatitude() == gcj[0] && mNaviLatLngEnd.getLongitude() == gcj[1]){
+                if (null != mNaviLatLngEnd) {
+                    if (mNaviLatLngEnd.getLatitude() == redisobjBean.getLatitudeF()
+                            && mNaviLatLngEnd.getLongitude() == redisobjBean.getLongitudeF()) {
                         return;
                     }
                 }
-                mNaviLatLngEnd = new NaviLatLng(gcj[0], gcj[1]);
+                mNaviLatLngEnd = new NaviLatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
                 myHandler.sendEmptyMessage(Data.MSG_3);
             }
 
@@ -437,14 +438,18 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
                 }
                 case Data.MSG_1: {
                     //  重新获取终点
-                    mNetManager.showTerminalInfo4Map(mToken, mImei);
+                    mNetManager.showTerminalInfo4Map(mToken, mImei, Data.MAP_GAODE);
                     myHandler.sendEmptyMessageDelayed(Data.MSG_1, FLUSH_TIME);
                     break;
                 }
                 case Data.MSG_3: {
                     //  重新获取终点成功
-                    mSpeechSynthesizer.startSpeaking("目标车辆移动，将重新归划路径", NavigationActivity.this);
-                    myHandler.sendEmptyMessageDelayed(Data.MSG_2, DELAY);
+                    if (!mIsFirst) {
+                        mSpeechSynthesizer.startSpeaking("目标车辆移动，将重新归划路径", NavigationActivity.this);
+                        mIsFirst = false;
+                        myHandler.sendEmptyMessageDelayed(Data.MSG_2, DELAY);
+                    }
+                    myHandler.sendEmptyMessage(Data.MSG_2);
                     break;
                 }
                 case Data.MSG_2: {

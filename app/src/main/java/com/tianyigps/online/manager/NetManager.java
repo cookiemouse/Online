@@ -574,14 +574,16 @@ public class NetManager {
      * @param cid
      * @param cidStr
      * @param imeiStr
+     * @param mapType
      * @param attention
      */
-    public void showPointNew(String token, int cid, String cidStr, String imeiStr, boolean attention) {
+    public void showPointNew(String token, int cid, String cidStr, String imeiStr, int mapType, boolean attention) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.SHOW_POINT_NEW + "token=" + token
                 + "&cid=" + cid
                 + "&cidStr=" + cidStr
                 + "&imeiStr=" + imeiStr
+                + "&mapType=" + mapType
                 + "&attention=" + attention);
         mRequest = builder.build();
         Log.i(TAG, "showPointNew: url-->" + mRequest.url());
@@ -605,7 +607,7 @@ public class NetManager {
         });
     }
 
-    public void showPointNewPost(String token, int cid, String cidStr, String imeiStr, boolean attention){
+    public void showPointNewPost(String token, int cid, String cidStr, String imeiStr, int mapType, boolean attention) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
 
@@ -613,6 +615,7 @@ public class NetManager {
         builder.addFormDataPart("cid", "" + cid);
         builder.addFormDataPart("cidStr", "" + cidStr);
         builder.addFormDataPart("imeiStr", "" + imeiStr);
+        builder.addFormDataPart("mapType", "" + mapType);
         builder.addFormDataPart("attention", "" + attention);
 
         RequestBody requestBody = builder.build();
@@ -697,10 +700,11 @@ public class NetManager {
      * @param token
      * @param imei
      */
-    public void showTerminalInfo4Map(String token, String imei) {
+    public void showTerminalInfo4Map(String token, String imei, int mapType) {
         Request.Builder builder = new Request.Builder();
         builder.url(Urls.SHOW_TERMINAL_INFO_FOR_MAP + "token=" + token
-                + "&imei=" + imei);
+                + "&imei=" + imei
+                + "&mapType=" + mapType);
         mRequest = builder.build();
         Log.i(TAG, "showTerminalInfo4Map: url-->" + mRequest.url());
         Call call = mOkHttpClient.newCall(mRequest);
