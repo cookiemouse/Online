@@ -444,12 +444,13 @@ public class NavigationActivity extends AppCompatActivity implements AMapNaviVie
                 }
                 case Data.MSG_3: {
                     //  重新获取终点成功
-                    if (!mIsFirst) {
-                        mSpeechSynthesizer.startSpeaking("目标车辆移动，将重新归划路径", NavigationActivity.this);
+                    if (mIsFirst) {
                         mIsFirst = false;
+                        myHandler.sendEmptyMessage(Data.MSG_2);
+                    } else {
+                        mSpeechSynthesizer.startSpeaking("目标车辆移动，将重新归划路径", NavigationActivity.this);
                         myHandler.sendEmptyMessageDelayed(Data.MSG_2, DELAY);
                     }
-                    myHandler.sendEmptyMessage(Data.MSG_2);
                     break;
                 }
                 case Data.MSG_2: {

@@ -1032,6 +1032,7 @@ public class MonitorFragment extends Fragment {
             public void onClick(View view) {
                 moveToCenter(mInfoLatLng);
                 if (mStatusData.getStatu() == Data.STATUS_ON) {
+                    Log.i(TAG, "onClick: mInfoLocateType-->" + mInfoLocateType);
                     if ("GPS".equals(mInfoLocateType)) {
                         toNaviActivity();
                     } else {
@@ -1307,6 +1308,7 @@ public class MonitorFragment extends Fragment {
                         mIsStation = true;
                         showInfoWindow(mLatLngStation);
                     } else {
+                        Log.i(TAG, "handleMessage: mChoiceImei-->" + mChoiceImei);
                         for (MarkerData markerData : mMarkerDataList) {
                             Log.i(TAG, "handleMessage: imei-->" + markerData.getImei());
                             if (markerData.getImei().equals(mChoiceImei)) {
