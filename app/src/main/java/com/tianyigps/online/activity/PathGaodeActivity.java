@@ -708,19 +708,6 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                         }
                         //  绘制轨迹
                         addLine();
-
-                        //  绘制超速线
-                        for (int i = 0; i < size; i++) {
-                            PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(i);
-                            LatLng latLng = new LatLng(maplistBean.getLatitude(), maplistBean.getLongitude());
-                            if (isOverSpeed(i)) {
-                                mLatLngOverSpeedList.add(latLng);
-                            } else if (mLatLngOverSpeedList.size() > 0) {
-                                mLatLngOverSpeedList.add(latLng);
-                                //  绘制
-                                addOverSpeedLine();
-                            }
-                        }
                     }
                     break;
                 }
@@ -750,6 +737,15 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                             bundle.putDouble(KEY_LNG, latLng.longitude);
                             addMaker(latLng, MARKER_PAUSU, bundle);
                         }
+                        //  绘制超速线
+                        if (isOverSpeed(mProgress)) {
+                            PathBean.ObjBean.MaplistBean maplistBeanNext = mMapListBeanList.get(mProgress + 1);
+                            LatLng latLngNext = new LatLng(maplistBeanNext.getLatitude(), maplistBeanNext.getLongitude());
+                            mLatLngOverSpeedList.add(latLng);
+                            mLatLngOverSpeedList.add(latLngNext);
+                            addOverSpeedLine();
+                        }
+
                         if (!mIsPull) {
                             mSeekBar.setProgress(mProgress);
                         }
