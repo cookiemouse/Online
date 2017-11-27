@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'tygps'
+            keyPassword '1qaz@#$%'
+            storeFile file('D:/Workspace/Online/key/tygps.keystore')
+            storePassword '1qaz@#$%'
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {

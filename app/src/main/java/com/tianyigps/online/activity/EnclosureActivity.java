@@ -495,7 +495,7 @@ public class EnclosureActivity extends AppCompatActivity {
                 mLatLngCar = new LatLng(redisobjBean.getLatitudeF(), redisobjBean.getLongitudeF());
                 mIcon = objBean.getIcon();
 
-                myHandler.sendEmptyMessage(Data.MSG_1);
+                myHandler.sendEmptyMessageDelayed(Data.MSG_1, 100);
             }
 
             @Override

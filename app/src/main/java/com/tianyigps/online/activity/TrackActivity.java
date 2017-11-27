@@ -442,7 +442,7 @@ public class TrackActivity extends BaseActivity {
                         , parkTime
                         , speed);
 
-                myHandler.sendEmptyMessage(Data.MSG_1);
+                myHandler.sendEmptyMessageDelayed(Data.MSG_1, 200);
             }
 
             @Override
