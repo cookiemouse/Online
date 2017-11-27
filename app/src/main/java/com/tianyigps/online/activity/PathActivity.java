@@ -100,6 +100,8 @@ public class PathActivity extends AppCompatActivity {
     private int mSpeed = Data.SPEED_100;
 
     private boolean isPlaying = false, isPause = false;
+    //  Seekbar被托动
+    private boolean mIsPull = false;
 
     private GeoCoderU mGeoCoderU;
 
@@ -277,6 +279,23 @@ public class PathActivity extends AppCompatActivity {
                     mImageViewPlay.setSelected(true);
                     myHandler.sendEmptyMessage(Data.MSG_2);
                 }
+            }
+        });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                mIsPull = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mIsPull = false;
+                mProgress = seekBar.getProgress();
             }
         });
 
@@ -718,7 +737,9 @@ public class PathActivity extends AppCompatActivity {
                             bundle.putDouble(KEY_LNG, latLng.longitude);
                             addMaker(latLng, MARKER_PAUSU, bundle);
                         }
-                        mSeekBar.setProgress(mProgress);
+                        if (!mIsPull) {
+                            mSeekBar.setProgress(mProgress);
+                        }
                         mProgress++;
                         myHandler.sendEmptyMessageDelayed(Data.MSG_2, mSpeed);
                     } else {
