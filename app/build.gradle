@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.tianyigps.online"
         minSdkVersion 15
@@ -38,11 +38,11 @@ dependencies {
     compile(name: 'bottomdialog', ext: 'aar')
     compile files('libs/crasheye_2.2.2.jar')
     compile files('libs/AMap3DMap_5.4.0_AMapNavi_5.4.0_AMapSearch_5.3.1_AMapLocation_3.6.0_20170929.jar')
-    compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.yanzhenjie:permission:1.0.8'
     testCompile 'junit:junit:4.12'
     compile files('libs/httplib.jar')
+    implementation 'com.android.support:appcompat-v7:26.0+'
 }
