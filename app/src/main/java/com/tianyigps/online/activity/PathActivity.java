@@ -156,6 +156,12 @@ public class PathActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        myHandler.removeMessages(Data.MSG_2);
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         mMapView.onDestroy();
         super.onDestroy();
@@ -695,19 +701,6 @@ public class PathActivity extends AppCompatActivity {
                         }
                         //  绘制轨迹
                         addLine();
-
-                        //  绘制超速线
-                        for (int i = 0; i < size; i++) {
-                            PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(i);
-                            LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
-                            if (isOverSpeed(i)) {
-                                mLatLngOverSpeedList.add(latLng);
-                            } else if (mLatLngOverSpeedList.size() > 0) {
-                                mLatLngOverSpeedList.add(latLng);
-                                //  绘制
-                                addOverSpeedLine();
-                            }
-                        }
                     }
                     break;
                 }
@@ -737,6 +730,26 @@ public class PathActivity extends AppCompatActivity {
                             bundle.putDouble(KEY_LNG, latLng.longitude);
                             addMaker(latLng, MARKER_PAUSU, bundle);
                         }
+                        //  绘制超速线
+
+                        if (isOverSpeed(mProgress)) {
+                            PathBean.ObjBean.MaplistBean maplistBeanNext = mMapListBeanList.get(mProgress + 1);
+                            LatLng latLngNext = new LatLng(maplistBeanNext.getLatitudeF(), maplistBeanNext.getLongitudeF());
+                            mLatLngOverSpeedList.add(latLng);
+                            mLatLngOverSpeedList.add(latLngNext);
+                            addOverSpeedLine();
+                        }
+//                        for (int i = 0; i < size; i++) {
+//                            PathBean.ObjBean.MaplistBean maplistBean = mMapListBeanList.get(i);
+//                            LatLng latLng = new LatLng(maplistBean.getLatitudeF(), maplistBean.getLongitudeF());
+//                            if (isOverSpeed(i)) {
+//                                mLatLngOverSpeedList.add(latLng);
+//                            } else if (mLatLngOverSpeedList.size() > 0) {
+//                                mLatLngOverSpeedList.add(latLng);
+//                                //  绘制
+//                                addOverSpeedLine();
+//                            }
+//                        }
                         if (!mIsPull) {
                             mSeekBar.setProgress(mProgress);
                         }
