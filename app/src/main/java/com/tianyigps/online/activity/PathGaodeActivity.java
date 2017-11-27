@@ -105,6 +105,8 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
     private LatLng mLatLngInfo;
 
     private boolean isPlaying = false, isPause = false;
+    //  Seekbar被托动
+    private boolean mIsPull = false;
 
     //  日期选择
     DatePickerDialogFragment mDatePickerDialogFragment;
@@ -329,6 +331,23 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                     mImageViewPlay.setSelected(true);
                     myHandler.sendEmptyMessage(Data.MSG_2);
                 }
+            }
+        });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                mIsPull = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mIsPull = false;
+                mProgress = seekBar.getProgress();
             }
         });
 
@@ -731,7 +750,9 @@ public class PathGaodeActivity extends AppCompatActivity implements AMap.InfoWin
                             bundle.putDouble(KEY_LNG, latLng.longitude);
                             addMaker(latLng, MARKER_PAUSU, bundle);
                         }
-                        mSeekBar.setProgress(mProgress);
+                        if (!mIsPull) {
+                            mSeekBar.setProgress(mProgress);
+                        }
                         mProgress++;
                         myHandler.sendEmptyMessageDelayed(Data.MSG_2, mSpeed);
                     } else {
