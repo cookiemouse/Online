@@ -840,7 +840,7 @@ public class MonitorFragment extends Fragment {
                 StationBean stationBean = gson.fromJson(result, StationBean.class);
                 StationBean.LocationBean lcLocationBean = stationBean.getLocation();
                 mLatLngStation = new LatLng(lcLocationBean.getLatitude(), lcLocationBean.getLongitude());
-                if (mFrom == FROM_CONCERN){
+                if (mFrom == FROM_CONCERN) {
                     mFrom = FROM_CHOICE;
                 }
 
@@ -857,6 +857,10 @@ public class MonitorFragment extends Fragment {
 
     //  添加marker
     private void addMarker(LatLng latLng, int type, int direction, String imei, int count) {
+        if (mIsFlush){
+            //  刷新时不添加marker
+            return;
+        }
         //定义Maker坐标点
         if (null == latLng) {
             return;
@@ -1139,10 +1143,10 @@ public class MonitorFragment extends Fragment {
                 break;
             }
         }
-        showPointNew(mChoiceImei);
         if (added) {
             return;
         }
+        showPointNew(mChoiceImei);
         mImeiList.add(imei);
     }
 
