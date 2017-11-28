@@ -133,7 +133,7 @@ public class ChoiceCarFragment extends Fragment {
         //  开始刷新
         if (mCidSelected != 0 && mGroupSelected != 0) {
             myHandler.removeMessages(Data.MSG_9);
-            myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
+            myHandler.sendEmptyMessage(Data.MSG_9);
         }
     }
 
@@ -152,11 +152,9 @@ public class ChoiceCarFragment extends Fragment {
             myHandler.removeMessages(Data.MSG_9);
         } else {
             //  开始刷新
-            mFlushTime = mSharedManager.getFlushTime() * 1000;
-            Log.i(TAG, "onHiddenChanged: mFlushTime-->" + mFlushTime);
             if (mCidSelected != 0 && mGroupSelected != 0) {
                 myHandler.removeMessages(Data.MSG_9);
-                myHandler.sendEmptyMessageDelayed(Data.MSG_9, mFlushTime);
+                myHandler.sendEmptyMessage(Data.MSG_9);
             }
         }
     }
